@@ -13,6 +13,8 @@
     "ws":"4.0.0",
     "ytdl-core":"0.19.0",
     "ffmpeg": "0.0.4",
+    "ffmpeg-node": "0.0.2",
+    "ffmpeg-binaries": "3.2.2-3",
     "request": "2.81.0"
   }
 }
