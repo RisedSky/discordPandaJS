@@ -1,6 +1,6 @@
 {
-  "name": "Test",
-  "description": "Test",
+  "name": "discordPanda",
+  "description": "New bot for discord",
   "version": "0.0.0",
   "main": "discordPanda.js",
   "scripts": {
@@ -8,6 +8,9 @@
   },
   "dependencies": {
     "discord.js": "11.1.0",
+    "opusscript": "0.0.6",
+    "ultron":"1.1.1",
+    "ws":"4.0.0",
     "request": "2.81.0"
   }
 }
