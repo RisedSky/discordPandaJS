@@ -151,7 +151,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 				YouTubeTime = (new Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
 				console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
-				//console.log("temps : " + info.timestamp.length);
 				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
 				YouTubeTitle = info.title;
