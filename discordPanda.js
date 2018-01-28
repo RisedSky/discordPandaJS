@@ -63,7 +63,7 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	console.log(prefixLog + "All rights reserved");
 	console.log(prefixLog + "Bot ready");
 	console.log("------------------------------");
-
+	bot.user.setActivity(prefix+"help • Started and ready !");
 	setTimeout(ChangeState1, 100);
 })
 
@@ -150,6 +150,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				//console.log("url = " + info.thumbnail_url);
 				YouTubeTime = (new Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
+				console.log(new date(info.timestamp / 1000).toISOString());
 				console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
 				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
