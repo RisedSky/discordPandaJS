@@ -63,7 +63,7 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	console.log(prefixLog + "All rights reserved");
 	console.log(prefixLog + "Bot ready");
 	console.log("------------------------------");
-	bot.user.setActivity(prefix+"help • Started and ready !");
+	bot.user.setActivity(prefix + "help • Started and ready !");
 	setTimeout(ChangeState1, 100);
 })
 
@@ -119,6 +119,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 		//------
 		case "play":
+
+			setTimeout(() => {
+				message.delete(MessageID);
+			}, 1000);
+
 			if (!args[1]) {
 				message.react("❌");
 				Mess_Channel.send("Merci de spécifier un lien");
@@ -140,7 +145,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			var server = servers[message.guild.id];
 
-			//Mess_Channel.send("Ajouté: " + String(args).substring(5) + "");
 			server.queue.push(String(args).substring(5));
 
 			//Ajoute les infos pour le embed
@@ -159,7 +163,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			})
 
 			setTimeout(() => {
-				message.delete(MessageID);
 
 				embed = new Discord.RichEmbed()
 					.setColor(0, 255, 255)
@@ -170,7 +173,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
 
 				Mess_Channel.send(embed);
-
 
 				//Récupere le dernier message (donc celui du bot)
 				setTimeout(() => {
@@ -241,9 +243,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 
 		case "ping":
-			Mess_Channel.send("J'ai actuellement un ping de: " + bot.ping + " ms");
+			Mess_Channel.send("J'ai actuellement un ping de: " + bot.ping.toPrecision + " ms");
 			break;
-
+		//---------
 		case "help":
 			embed = new Discord.RichEmbed()
 				.setColor(225, 0, 0)
