@@ -1,3 +1,5 @@
+bot.login(process.env.BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
+
 const Discord = require('discord.js')
 const YTDL = require("ytdl-core")
 const bot = new Discord.Client();
@@ -319,5 +321,3 @@ bot.on('reconnecting', () => {
 bot.on('disconnect', disconnect => {
 	bot.user.setStatus("invisible")
 })
-
-bot.login(process.env.BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
