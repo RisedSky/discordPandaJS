@@ -97,7 +97,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 	switch (args[0].toLowerCase()) {
 
-		case "join":
+		/*case "join":
 			if (message.member.voiceChannel) {
 				message.member.voiceChannel.join()
 					.then(connection => {
@@ -115,7 +115,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				message.react("❌");
 				message.reply("Tu dois être dans un channel vocal pour faire cette commande.");
 			}
-			break;
+			break;*/
 
 		//------
 		case "play":
@@ -146,8 +146,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 				YouTubeLink = args[1];
 				YouTubeThumbnail = info.thumbnail_url;
 				//console.log("url = " + info.thumbnail_url);
-
 				YouTubeTime = (new Date(info.timestamp / 12400).toISOString().substr(11, 8));
+				
 				console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
 				//console.log("temps : " + info.timestamp.length);
 				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
