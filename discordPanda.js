@@ -1,4 +1,4 @@
-const token = process.env.BOT_TOKEN;
+const token = process.env.BOT_TOKEN; //Le Bot fonctionne H24/7
 
 const Discord = require('discord.js')
 const YTDL = require("ytdl-core")
