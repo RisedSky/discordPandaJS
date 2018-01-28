@@ -1,7 +1,6 @@
-//test
-const token = "???";
+const token = process.env.BOT_TOKEN;
 
-const Discord = require('./discord.js')
+const Discord = require('discord.js')
 const YTDL = require("ytdl-core")
 const bot = new Discord.Client();
 const guild = 406356765748232194;
