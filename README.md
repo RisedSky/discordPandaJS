@@ -1,4 +1,4 @@
 # discordPandaJS
 
-A big thanks the bêta tester :
+A big thanks to the bêta tester :
 Skelever, PLFightX
