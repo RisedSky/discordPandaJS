@@ -139,7 +139,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			console.log(MusicLink)
 
 			var server = servers[message.guild.id];
-			message.delete(MessageID);
 
 			//Mess_Channel.send("Ajouté: " + String(args).substring(5) + "");
 			server.queue.push(String(args).substring(5));
@@ -160,6 +159,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 			})
 
 			setTimeout(() => {
+				message.delete(MessageID);
+
 				embed = new Discord.RichEmbed()
 					.setColor(0, 255, 255)
 					.setAuthor(YouTubeTitle, message.author.avatarURL)
