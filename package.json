@@ -1,5 +1,5 @@
 {
-  "name": "discordPanda",
+  "name": "test",
   "description": "New bot for discord",
   "version": "0.0.0",
   "main": "discordPanda.js",
@@ -11,6 +11,7 @@
     "opusscript": "0.0.6",
     "ultron":"1.1.1",
     "ws":"4.0.0",
+    "yt-dl":"0.19.0",
     "request": "2.81.0"
   }
 }
