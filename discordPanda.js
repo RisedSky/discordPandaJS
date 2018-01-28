@@ -135,6 +135,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 				queue: []
 			};
 
+			var MusicLink = message.content.split("&");
+			console.log(MusicLink)
+
 			var server = servers[message.guild.id];
 			message.delete(MessageID);
 
@@ -147,7 +150,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				YouTubeThumbnail = info.thumbnail_url;
 				//console.log("url = " + info.thumbnail_url);
 				YouTubeTime = (new Date(info.timestamp / 12400).toISOString().substr(11, 8));
-				
+
 				console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
 				//console.log("temps : " + info.timestamp.length);
 				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
@@ -163,7 +166,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
 					.setTitle("Musique ajoutée")
 					.addField("Durée de: ", "**" + YouTubeTime + "**")
-					//.addField("test", "bite")
 					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
 
 				Mess_Channel.send(embed);
@@ -238,7 +240,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 
 		case "ping":
-			Mess_Channel.send(bot.ping + " ms");
+			Mess_Channel.send("J'ai actuellement un ping de: " + bot.ping + " ms");
 			break;
 
 		case "help":
@@ -276,6 +278,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			var NomberToDelete = message.content.substr(7);
 			if (NomberToDelete <= 0) {
 				message.channel.send("Merci de mettre un nombre de message à purger");
+				return;
 			}
 			setTimeout(function () {
 				message.channel.bulkDelete(NomberToDelete);
@@ -289,7 +292,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		default:
 			message.delete(MessageID);
-			Mess_Channel.send("Commande invalide");
+			Mess_Channel.send("Commande non reconnue");
+			setTimeout(() => {
+				Mess_Channel.lastMessage.react("❓");
+			}, 1000);
+			break;
 	}
 
 	/*
