@@ -158,11 +158,12 @@ bot.on('message', message => { //Quand une personne envoit un message
 				YouTubeTitle = info.title;
 				YouTubeThumbnail = info.thumbnail_url;
 				YouTubeLink = args[1];
-				YouTubeTime = (new Date(info.timestamp / 1000).toISOString().substr(11, 8));
-
-				console.log("Testnew : " + new Date(info.timestamp / 1000).toISOString());
+				YouTubeTime = Date(info.timestamp / 1000).toISOString().substr(11, 8);
+				var datetest = Date(info.timestamp);
+				console.log("New format : "+ datetest.format('H:i:s'));
+				console.log("Testnew : " + Date(info.timestamp / 1000).toISOString());
 				console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
-				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
+				console.log(Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
 				//console.log(info.title);
 			})
