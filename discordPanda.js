@@ -63,7 +63,7 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	console.log(prefixLog + "Bot ready")
 	console.log("------------------------------")
 	bot.user.setActivity(prefix + "help • Started and ready !");
-	setTimeout(ChangeState1, 100);
+	setTimeout(ChangeState1, 20000);
 	console.log("The bot is now ready !")
 })
 
