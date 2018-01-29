@@ -56,15 +56,15 @@ function play(connection, message) {
 }
 
 bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
-	console.log("Bot Ready !")
 	bot.user.setStatus("online")
-	console.log("------------------------------");
-	console.log(prefixLog + "Bot created by RisedSky & LePandaFou77 <3");
-	console.log(prefixLog + "All rights reserved");
-	console.log(prefixLog + "Bot ready");
-	console.log("------------------------------");
+	console.log("------------------------------")
+	console.log(prefixLog + "Bot created by RisedSky & LePandaFou77 <3")
+	console.log(prefixLog + "All rights reserved")
+	console.log(prefixLog + "Bot ready")
+	console.log("------------------------------")
 	bot.user.setActivity(prefix + "help • Started and ready !");
 	setTimeout(ChangeState1, 100);
+	console.log("The bot is now ready !")
 })
 
 bot.on('guildMemberAdd', member => { //Quand une personne rejoint le discord
@@ -221,13 +221,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "leave":
 			if (bot.voiceConnections.exists) {
 				//bot.voiceConnections.findAll("disconnect", bot.voiceConnections.size);
-				//bot.voiceConnections.find("disconnect");
+				//bot.voiceConnections.find("disconnect");			
+				Mess_Channel.send("Déconnecté du salon `" + message.guild.voiceConnection.channel.name + "`");
+
 				if (message.guild.voiceConnection) {
-					message.guild.voiceConnection.disconnect();
 					console.log("Disconnected from the channel: " + message.guild.voiceConnection.channel.name)
+					message.guild.voiceConnection.disconnect();
 				}
 				//Mess_voiceChannel.leave();
-				Mess_Channel.send("Déconnecté du salon `" + message.guild.voiceConnection.channel.name + "`");
 			}
 			break;
 		//----------
@@ -269,8 +270,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 		//----------
 		case "restart":
-		Node.
-			Mess_Channel.send("Redémarrage en cours ...");
+			Node.
+				Mess_Channel.send("Redémarrage en cours ...");
 			//bot.reconnecting('Mzk1MTU2NzYyMDI3NjIyNDAw.DUSI5A.IyXwu9kKl9Y2rf42jQEgbR-V5QA');
 			bot.disconnect;
 			console.log("Disconnected")
