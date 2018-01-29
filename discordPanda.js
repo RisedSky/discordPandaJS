@@ -48,8 +48,13 @@ function play(connection, message) {
 	server.dispatcher.on("end", function () {
 		if (server.queue[0]) {
 			play(connection, message);
-		}
-		else connection.disconnect;
+		}else{
+			connection.disconnect;
+			if (message.guild.voiceConnection) {
+				Mess_Channel.send("Stopped the music from channel: " + message.guild.voiceConnection.channel.name);
+				message.guild.voiceConnection.disconnect();
+			}
+		} 
 		console.log(DernierMessageIDDuBot);
 		deleteMessageID(message);
 	});
