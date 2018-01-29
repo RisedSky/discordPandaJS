@@ -149,16 +149,15 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			//Ajoute les infos pour le embed
 			YTDL.getInfo(args[1], function (err, info) {
-				YouTubeLink = args[1];
+				YouTubeTitle = info.title;
 				YouTubeThumbnail = info.thumbnail_url;
-				//console.log("url = " + info.thumbnail_url);
+				YouTubeLink = args[1];
 				YouTubeTime = (new Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
-				console.log(new Date(info.timestamp / 1000).toISOString());
+				console.log("Testnew : " + new Date(info.timestamp / 1000).toISOString());
 				console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
 				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
-				YouTubeTitle = info.title;
 				//console.log(info.title);
 			})
 
@@ -225,12 +224,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 				//bot.voiceConnections.find("disconnect");
 				if (message.guild.voiceConnection) {
 					message.guild.voiceConnection.disconnect();
+					console.log("Disconnected from the channel: " + message.guild.voiceConnection.channel.name)
 				}
 				//Mess_voiceChannel.leave();
-				Mess_Channel.send("Déconnecté du salon `" + Mess_Member.voiceChannel.name + "`");
+				Mess_Channel.send("Déconnecté du salon `" + message.guild.voiceConnection.channel.name + "`");
 			}
 			break;
-
+		//----------
 		case "say":
 			//if (message.author.) {
 			const SayMessage = message.content.substr(4);
@@ -241,11 +241,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 			//}
 			//message.channel.send("mdr");
 			break;
-
+		//----------
 		case "ping":
-			Mess_Channel.send("J'ai actuellement un ping de: " + bot.ping.toPrecision + " ms");
+			Mess_Channel.send("J'ai actuellement un ping de: " + parseInt(bot.ping) + " ms :ping_pong:");
 			break;
-		//---------
+		//----------
 		case "help":
 			embed = new Discord.RichEmbed()
 				.setColor(225, 0, 0)
@@ -263,16 +263,20 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
 			Mess_Channel.send(embed);
 			setTimeout(() => {
-				Mess_Channel.lastMessage.react("😃");
-			}, 1000);
+				Mess_Channel.lastMessage.react("✅");
+			}, 500);
 			break;
 
+		//----------
 		case "restart":
+		Node.
 			Mess_Channel.send("Redémarrage en cours ...");
 			//bot.reconnecting('Mzk1MTU2NzYyMDI3NjIyNDAw.DUSI5A.IyXwu9kKl9Y2rf42jQEgbR-V5QA');
 			bot.disconnect;
+			console.log("Disconnected")
 			setTimeout(function () {
 				bot.login('Mzk1MTU2NzYyMDI3NjIyNDAw.DUSI5A.IyXwu9kKl9Y2rf42jQEgbR-V5QA');
+				console.log("Reconnected")
 			}, 5000);
 			break;
 		//-------
