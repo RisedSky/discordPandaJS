@@ -248,6 +248,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//----------
 		case "help":
+
 			embed = new Discord.RichEmbed()
 				.setColor(225, 0, 0)
 				.setAuthor("Voici la liste de toutes les commandes")
@@ -265,13 +266,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 			Mess_Channel.send(embed);
 			setTimeout(() => {
 				Mess_Channel.lastMessage.react("✅");
+				message.delete(MessageID);
 			}, 500);
 			break;
 
 		//----------
 		case "restart":
-			Node.
-				Mess_Channel.send("Redémarrage en cours ...");
+			Mess_Channel.send("Redémarrage en cours ...");
 			//bot.reconnecting('Mzk1MTU2NzYyMDI3NjIyNDAw.DUSI5A.IyXwu9kKl9Y2rf42jQEgbR-V5QA');
 			bot.disconnect;
 			console.log("Disconnected")
