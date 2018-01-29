@@ -3,7 +3,7 @@ const YTDL = require("ytdl-core")
 const bot = new Discord.Client();
 const guild = 406356765748232194;
 
-var BOT_TOKEN = process.env.BOT_TOKEN;
+var BOT_TOKEN = process.env.BOT_TOKEN; //process.env.BOT_TOKEN
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
 
 var prefix = "*";
@@ -12,14 +12,14 @@ var servers = {};
 //var embed = new Discord.RichEmbed();
 
 //Pour le request song
-var YouTubeThumbnail = "";
-var YouTubeTitle = "";
-var YouTubeTime = "";
-var YouTubeLink = "";
+var YouTubeThumbnail;
+var YouTubeTitle;
+var YouTubeTime;
+var YouTubeLink;
 
 //Défini les derniers messages du bot
-var DernierMessageIDDuBot;
 var DernierMessageDuBot;
+var DernierMessageIDDuBot;
 
 var CommandList = ["restart", "leave", "join", "", ""];
 
@@ -36,6 +36,8 @@ function ChangeState2() {
 }
 
 function deleteMessageID(message) {
+	console.log("VIVE LES BTES"+message);
+	console.log("deleted : " + DernierMessageDuBot)
 	message.delete(DernierMessageIDDuBot);
 }
 
@@ -49,15 +51,17 @@ function play(connection, message) {
 	server.dispatcher.on("end", function () {
 		if (server.queue[0]) {
 			play(connection, message);
-		}else{
+		} else {
 			connection.disconnect;
 			if (message.guild.voiceConnection) {
-				Mess_Channel.send("Stopped the music from channel: " + message.guild.voiceConnection.channel.name);
+				message.channel.send("Finished the queue from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:");
 				message.guild.voiceConnection.disconnect();
 			}
-		} 
-		console.log(DernierMessageIDDuBot);
-		deleteMessageID(message);
+		}
+		setTimeout(() => {
+			console.log(DernierMessageIDDuBot);
+			deleteMessageID(message);
+		}, 1500);
 	});
 }
 
@@ -158,12 +162,12 @@ bot.on('message', message => { //Quand une personne envoit un message
 				YouTubeTitle = info.title;
 				YouTubeThumbnail = info.thumbnail_url;
 				YouTubeLink = args[1];
-				YouTubeTime = Date(info.timestamp / 1000).toISOString().substr(11, 8);
-				var datetest = Date(info.timestamp);
-				console.log("New format : "+ datetest.format('H:i:s'));
-				console.log("Testnew : " + Date(info.timestamp / 1000).toISOString());
-				console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
-				console.log(Date(info.timestamp / 1000).toISOString().substr(11, 8));
+				YouTubeTime = new Date(info.timestamp / 1000).toISOString().substr(11, 8);
+
+				//console.log("New format : " + Date.format(info.timestamp('H:i:s')));
+				console.log("Testnew : " + new Date(info.timestamp / 1000).toISOString());
+				//console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
+				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
 
 				//console.log(info.title);
 			})
@@ -182,11 +186,12 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				//Récupere le dernier message (donc celui du bot)
 				setTimeout(() => {
-					console.log("Content: " + Mess_Channel.lastMessage.content);
+					console.log("Content: '" + Mess_Channel.lastMessage.content + "'");
 					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
+					DernierMessageDuBot = Mess_Channel.lastMessage.content;
 				}, 1000);
 
-			}, 2500);
+			}, 3000);
 
 			if (!message.guild.voiceConnection) {
 
@@ -229,10 +234,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 			if (bot.voiceConnections.exists) {
 				//bot.voiceConnections.findAll("disconnect", bot.voiceConnections.size);
 				//bot.voiceConnections.find("disconnect");			
-				Mess_Channel.send("Déconnecté du salon `" + message.guild.voiceConnection.channel.name + "`");
+				//Mess_Channel.send("Déconnecté du salon `" + message.guild.voiceConnection.channel.name + "`");
 
 				if (message.guild.voiceConnection) {
-					console.log("Disconnected from the channel: " + message.guild.voiceConnection.channel.name)
+					Mess_Channel.send("Disconnected from the channel: " + message.guild.voiceConnection.channel.name)
 					message.guild.voiceConnection.disconnect();
 				}
 				//Mess_voiceChannel.leave();
@@ -269,7 +274,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				//.addField("*Join", "Le bot va rejoindre ton channel")
 
-				.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
+				.setFooter("Demandé par " + Mess_Member.nickname + " • ID: " + Mess_Member.id);
 			Mess_Channel.send(embed);
 			setTimeout(() => {
 				Mess_Channel.lastMessage.react("✅");
@@ -291,10 +296,15 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "purge":
 			message.delete(MessageID);
 			var NomberToDelete = message.content.substr(7);
+
 			if (NomberToDelete <= 0) {
 				message.channel.send("Merci de mettre un nombre de message à purger");
 				return;
+			} else if (NomberToDelete > 100) {
+				Mess_Channel.send("Malheureusement, ce bot ne peut supprimer que 100 messages à la fois.");
+				return;
 			}
+
 			setTimeout(function () {
 				message.channel.bulkDelete(NomberToDelete);
 				message.channel.send("Nettoyage en cours...");
@@ -307,7 +317,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		default:
 			message.delete(MessageID);
-			await (message.channel.awaitMessages())
+
 			Mess_Channel.send("Commande non reconnue");
 			setTimeout(() => {
 				Mess_Channel.lastMessage.react("❓");
@@ -344,4 +354,8 @@ bot.on('reconnecting', () => {
 
 bot.on('disconnect', disconnect => {
 	bot.user.setStatus("invisible")
+})
+
+bot.on('resume', () => {
+	console.log("resumed!");
 })
