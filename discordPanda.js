@@ -308,7 +308,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 			message.delete(MessageID);
 			await (message.channel.awaitMessages())
 			Mess_Channel.send("Commande non reconnue");
-			
+			setTimeout(() => {
+				Mess_Channel.lastMessage.react("❓");
+			}, 1000);
 			break;
 	}
 

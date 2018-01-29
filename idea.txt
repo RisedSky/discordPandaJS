@@ -1,0 +1,9 @@
+Faire une commande randomNumber pour le bot:
+*randomNumber (5|20)[args check]
+(Va donner un nombre entre 5 et 20
+
+Do a poll command
+*poll Messageblablablabla|Yes|No
+
+foreach | in content.message => var number++;
+on va check si il y'a 3, ça va donner donc 1 poll et 2 réponses
