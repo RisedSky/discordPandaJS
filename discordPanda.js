@@ -3,7 +3,7 @@ const YTDL = require("ytdl-core")
 const bot = new Discord.Client();
 const guild = 406356765748232194;
 
-var BOT_TOKEN = process.env.BOT_TOKEN; //process.env.BOT_TOKEN
+var BOT_TOKEN = "Mzk1MTU2NzYyMDI3NjIyNDAw.DUSI5A.IyXwu9kKl9Y2rf42jQEgbR-V5QA"; //process.env.BOT_TOKEN
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
 
 var prefix = "*";
@@ -36,7 +36,7 @@ function ChangeState2() {
 }
 
 function deleteMessageID(message) {
-	console.log("VIVE LES BTES"+message);
+	console.log("Big test message = " + message);
 	console.log("deleted : " + DernierMessageDuBot)
 	message.delete(DernierMessageIDDuBot);
 }
@@ -59,7 +59,6 @@ function play(connection, message) {
 			}
 		}
 		setTimeout(() => {
-			console.log(DernierMessageIDDuBot);
 			deleteMessageID(message);
 		}, 1500);
 	});
@@ -107,44 +106,36 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 	switch (args[0].toLowerCase()) {
 
-		/*case "join":
-			if (message.member.voiceChannel) {
-				message.member.voiceChannel.join()
-					.then(connection => {
-						message.channel.send("J'ai rejoint le channel vocal `" + Mess_voiceChannel.name + "`");
-
-						const broadcast = bot.createVoiceBroadcast();
-						broadcast.playFile('./test.mp4');
-						// Play "music.mp3" in all voice connections that the client is in
-						for (const connection of bot.voiceConnections.values()) {
-							connection.playBroadcast(broadcast);
-						}
-					})
-					.catch(console.log)
-			} else {
-				message.react("❌");
-				message.reply("Tu dois être dans un channel vocal pour faire cette commande.");
-			}
-			break;*/
-
-		//------
 		case "play":
 
 			setTimeout(() => {
 				message.delete(MessageID);
-			}, 1000);
+			}, 500);
 
 			if (!args[1]) {
 				message.react("❌");
-				Mess_Channel.send("Merci de spécifier un lien");
+				message.send("Merci de spécifier un lien");
+				setTimeout(() => {
+					message.delete(Mess_Channel.lastMessageID);
+				}, 3000);
 				return;
-			}
-
-			if (!Mess_voiceChannel) {
+			} else if (!Mess_voiceChannel) {
 				message.react("❌");
-				Mess_Channel.send("Tu dois être dans un salon vocal");
+				message.reply("Tu dois être dans un salon vocal");
+				setTimeout(() => {
+					message.delete(Mess_Channel.lastMessageID);
+				}, 3000);
+				return;
+			} else if (Mess_Member.selfDeaf) { //Mettre le fait que ça vérifie si la personne est mute pour éviter de faire user la bande passante pour rien
+				message.react("❌");
+				message.reply("Tu ne dois pas être deafen.");
+				setTimeout(() => {
+					message.delete(Mess_Channel.lastMessageID);
+				}, 3000);
 				return;
 			}
+			
+			var server = servers[message.guild.id];
 
 			if (!servers[message.guild.id]) servers[message.guild.id] = {
 				queue: []
@@ -153,23 +144,18 @@ bot.on('message', message => { //Quand une personne envoit un message
 			var MusicLink = message.content.split("&");
 			console.log(MusicLink)
 
-			var server = servers[message.guild.id];
 
-			server.queue.push(String(args).substring(5));
+			server.queue.push(String(args).substring(5)); //récupere le *play <song> et supprime *play pour mettre que la musique
 
 			//Ajoute les infos pour le embed
 			YTDL.getInfo(args[1], function (err, info) {
-				YouTubeTitle = info.title;
-				YouTubeThumbnail = info.thumbnail_url;
-				YouTubeLink = args[1];
-				YouTubeTime = new Date(info.timestamp / 1000).toISOString().substr(11, 8);
+				YouTubeTitle = info.title; //récupere le titre
+				YouTubeThumbnail = info.thumbnail_url; //récupere la minia
+				YouTubeLink = args[1]; //récupere le lien de la vidéo
+				YouTubeTime = new Date(info.timestamp / 1000).toISOString().substr(11, 8); // récupere le temps et le transforme en h: i: s
 
-				//console.log("New format : " + Date.format(info.timestamp('H:i:s')));
-				console.log("Testnew : " + new Date(info.timestamp / 1000).toISOString());
-				//console.log("temps : " + info.timestamp.length + " -- " + info.timestamp);
-				console.log(new Date(info.timestamp / 1000).toISOString().substr(11, 8));
-
-				//console.log(info.title);
+				var time = new Date(Date.parse(info.timestamp));
+				Mess_Channel.send("Le temps est de : " + time.toLocaleLowerCase);
 			})
 
 			setTimeout(() => {
@@ -181,25 +167,26 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.setTitle("Musique ajoutée")
 					.addField("Durée de: ", "**" + YouTubeTime + "**")
 					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
+				message.log("Timestamp : " + info.timestamp + " | Lenght : " + info.timestamp.length);
 
 				Mess_Channel.send(embed);
 
-				//Récupere le dernier message (donc celui du bot)
-				setTimeout(() => {
-					console.log("Content: '" + Mess_Channel.lastMessage.content + "'");
-					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
-					DernierMessageDuBot = Mess_Channel.lastMessage.content;
-				}, 1000);
+				if (!message.guild.voiceConnection) {
+					message.member.voiceChannel.join()
+						.then(function (connection) {
+							play(connection, message);
+						})
+				};
 
 			}, 3000);
 
-			if (!message.guild.voiceConnection) {
+			//Récupere le dernier message (donc celui du bot)
+			setTimeout(() => {
+				console.log("Content: '" + Mess_Channel.lastMessage.content + "'");
+				DernierMessageDuBot = Mess_Channel.lastMessage.content;
+				DernierMessageIDDuBot = Mess_Channel.lastMessageID;
+			}, 4000);
 
-				message.member.voiceChannel.join()
-					.then(function (connection) {
-						play(connection, message);
-					})
-			};
 			break;
 		//-------
 		case "skip":
@@ -210,7 +197,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}
 
 			message.delete(MessageID);
-			Mess_Channel.send("Succefuly skipped the currently song");
+			Mess_Channel.send("Successfuly skipped the currently song");
 			break;
 		//-------
 		case "stop":
