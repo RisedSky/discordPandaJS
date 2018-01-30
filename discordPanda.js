@@ -3,7 +3,7 @@ const YTDL = require("ytdl-core")
 const bot = new Discord.Client();
 const guild = 406356765748232194;
 
-var BOT_TOKEN = "Mzk1MTU2NzYyMDI3NjIyNDAw.DUSI5A.IyXwu9kKl9Y2rf42jQEgbR-V5QA"; //process.env.BOT_TOKEN
+var BOT_TOKEN = process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
 
 var prefix = "*";
@@ -134,18 +134,20 @@ bot.on('message', message => { //Quand une personne envoit un message
 				}, 3000);
 				return;
 			}
-			
-			var server = servers[message.guild.id];
-
-			if (!servers[message.guild.id]) servers[message.guild.id] = {
-				queue: []
-			};
 
 			var MusicLink = message.content.split("&");
 			console.log(MusicLink)
 
+			//vérifie si le serveur est déjà dans la liste
+			if (!servers[message.guild.id]) servers[message.guild.id] = {
+				queue: []
+			};
 
-			server.queue.push(String(args).substring(5)); //récupere le *play <song> et supprime *play pour mettre que la musique
+			//l'ajoute alors
+			var server = servers[message.guild.id];
+
+			//récupere le *play <song> et supprime *play pour mettre que la musique
+			server.queue.push(String(args).substring(5));
 
 			//Ajoute les infos pour le embed
 			YTDL.getInfo(args[1], function (err, info) {
@@ -153,6 +155,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 				YouTubeThumbnail = info.thumbnail_url; //récupere la minia
 				YouTubeLink = args[1]; //récupere le lien de la vidéo
 				YouTubeTime = new Date(info.timestamp / 1000).toISOString().substr(11, 8); // récupere le temps et le transforme en h: i: s
+				console.log("Timestamp : " + info.timestamp + " | Lenght : " + info.timestamp.length);
+				console.log("Testnewtimestamp : " + new Date(Date.now + info.timestamp));
 
 				var time = new Date(Date.parse(info.timestamp));
 				Mess_Channel.send("Le temps est de : " + time.toLocaleLowerCase);
@@ -167,7 +171,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.setTitle("Musique ajoutée")
 					.addField("Durée de: ", "**" + YouTubeTime + "**")
 					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
-				message.log("Timestamp : " + info.timestamp + " | Lenght : " + info.timestamp.length);
 
 				Mess_Channel.send(embed);
 
@@ -197,7 +200,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}
 
 			message.delete(MessageID);
-			Mess_Channel.send("Successfuly skipped the currently song");
+			Mess_Channel.send("Successfuly skipped the currently song").then(function () {
+				message.delete(Mess_Channel.lastMessageID);
+			});
+
 			break;
 		//-------
 		case "stop":
