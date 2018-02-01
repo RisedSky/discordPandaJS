@@ -63,7 +63,7 @@ function play(connection, message) {
 	}, 1500);
 	*/
 
-	message.log("Le play => " + message)
+	console.log("Le play => " + message)
 	var server = servers[message.guild.id];
 
 	server.dispatcher = connection.playStream(YTDL(server.queue[0], { filter: "audioonly", audioEncondig: "opus" }));
