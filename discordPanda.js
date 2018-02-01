@@ -1,6 +1,6 @@
 //import { Message, Guild, DMChannel } from 'discord.js';
 
-const Discord = require('discord.js')
+const Discord = require("discord.js")
 const YTDL = require("ytdl-core")
 const bot = new Discord.Client();
 const DefaultGuildID = 406356765748232194;
