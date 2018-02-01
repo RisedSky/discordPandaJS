@@ -110,16 +110,12 @@ bot.on('guildMemberAdd', member => { //Quand une personne rejoint le discord
 		defaultChannel.send("Bienvenue <@" + member.id + ">")
 		setTimeout(
 			function () {
-				//member.addRole('406488780711788547'); Ancien rôle
 				member.addRole("Membre");
 			}, 3000
 		);
-
 	} catch (error) {
 		console.log(error)
 	}
-
-	//member.addRoles('406550660906221568')
 })
 
 bot.on('guildCreate', Guild => {
@@ -170,7 +166,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					}, 4000);
 				})
 				return;
-			} else if (Mess_Member.selfDeaf) { //Si la personne est mute pour éviter de faire user la bande passante pour rien
+			} else if (Mess_Member.selfDeaf) { //Si la personnealors on fait éviter de faire user la bande passante pour rien
 				message.react("❌");
 				message.reply("Tu ne dois pas être deafen.").then(function () {
 					DernierMessageDuBot = Mess_Channel.lastMessage;
