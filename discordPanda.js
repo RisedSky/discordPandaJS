@@ -232,7 +232,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					DernierEmbedDuBot = message.lastMessage;
 					DernierEmbedIDDuBot = message.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierEmbedDuBot, DernierMessageIDDuBot)
+						deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot)
 					}, 300000);
 				})
 
@@ -379,7 +379,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					Mess_Channel.lastMessage.react("❓");
 				}, 250);
 			})
-			
+
 			break;
 	}
 })
