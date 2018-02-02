@@ -166,7 +166,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					DernierMessageDuBot = Mess_Channel.lastMessage;
 					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, Mess_Channel.lastMessageID);
+						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
 					}, 4000);
 				})
 				return;
@@ -176,7 +176,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					DernierMessageDuBot = Mess_Channel.lastMessage;
 					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, Mess_Channel.lastMessageID);
+						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
 					}, 4000);
 				})
 				return;
@@ -186,7 +186,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					DernierMessageDuBot = Mess_Channel.lastMessage;
 					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, Mess_Channel.lastMessageID);
+						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
 					}, 4000);
 				})
 				return;
@@ -210,7 +210,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			YTDL.getInfo(args[1], function (err, info) {
 				YouTubeTitle = info.title; //récupere le titre
 				YouTubeThumbnail = info.thumbnail_url; //récupere la minia
-				YouTubeLink = args[1]; //récupere le lien de la vidéo
+				YouTubeLink = info.video_url; //récupere le lien de la vidéo
 				YouTubeTime = new Date(info.timestamp * 1000).toISOString().substr(11, 8); // récupere le temps et le transforme en h: i: s
 				console.log("Timestamp : " + info.timestamp);
 				console.log("Testnewtimestamp : " + new Date(Date.now() + info.timestamp));
@@ -222,7 +222,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			setTimeout(() => {
 
 				embed = new Discord.RichEmbed()
-					.setColor(0, 255, 255)
+					.setColor("#00ff00")
 					.setAuthor(YouTubeTitle, message.author.avatarURL)
 					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
 					.setTitle("Musique ajoutée")
@@ -230,8 +230,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
 
 				Mess_Channel.send(embed).then(function () {
-					DernierEmbedDuBot = message.lastMessage;
-					DernierEmbedIDDuBot = message.lastMessageID;
+					DernierEmbedDuBot = Mess_Channel.lastMessage;
+					DernierEmbedIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
 						deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot)
 					}, 300000);
