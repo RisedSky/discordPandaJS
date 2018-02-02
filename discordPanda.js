@@ -70,22 +70,30 @@ function play(connection, message) {
 
 	server.queue.shift();
 
-	if (DernierEmbedIDDuBot != null){
+	if (DernierEmbedIDDuBot != null) {
 		message.delete(DernierEmbedIDDuBot);
 	}
 
-		server.dispatcher.on("end", function () {
-			if (server.queue[0]) {
-				play(connection, message);
-			} else {
-				//connection.disconnect;
-				if (message.guild.voiceConnection) {
-					message.channel.send("Finished the queue from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:");
-					message.guild.voiceConnection.disconnect();
-				}
-			}
+	server.dispatcher.on("end", function () {
+		if (server.queue[0]) {
+			deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot);
+			play(connection, message);
+		} else {
+			//connection.disconnect;
+			if (message.guild.voiceConnection) {
+				message.channel.send("Finished the queue from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:").then(function () {
+					DernierMessageDuBot = message.channel.lastMessage;
+					DernierMessageIDDuBot = message.channel.lastMessageID;
 
-		});
+					setTimeout(() => {
+						deleteMyMessageID(DernierMessageDuBot, DernierEmbedIDDuBot);
+					}, 5000);
+				});
+				message.guild.voiceConnection.disconnect();
+			}
+		}
+
+	});
 }
 
 bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
@@ -95,6 +103,7 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	console.log(prefixLog + "All rights reserved")
 	console.log(prefixLog + "Bot ready")
 	console.log("------------------------------")
+
 	bot.user.setActivity(prefix + "help • Started and ready !");
 	setTimeout(ChangeState1, 20000);
 	console.log("The bot is now ready !")
@@ -119,7 +128,7 @@ bot.on('guildMemberAdd', member => { //Quand une personne rejoint le discord
 })
 
 bot.on('guildCreate', Guild => {
-	console.log("Je viens de rejoindre le serveur: " + Guild.name)
+	console.log("I just join the server: " + Guild.name)
 	if (Guild.id != DefaultGuildID) {
 		console.log("I just left the server: " + Guild.name);
 		Guild.leave();
@@ -213,7 +222,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
 					.setTitle("Musique ajoutée")
 					.addField("Durée de: ", "**" + YouTubeTime + "**")
-					.setFooter("Demandé par " + Mess_Member.nickname + " • ID: " + Mess_Member.id)
+					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
 
 				Mess_Channel.send(embed).then(function () {
 					DernierEmbedDuBot = message.lastMessage;
@@ -331,7 +340,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				//.addField("*Join", "Le bot va rejoindre ton channel")
 
-				.setFooter("Demandé par " + Mess_Member.nickname + " • ID: " + Mess_Member.id);
+				.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
 			Mess_Channel.send(embed);
 			setTimeout(() => {
 				Mess_Channel.lastMessage.react("✅");
