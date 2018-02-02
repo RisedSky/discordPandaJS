@@ -282,6 +282,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}
 			break;
 		//-------
+		case "queue":
+			var server = servers[message.guild.id];
+
+			var List = server.queue[];
+			for (var i = 0; i < List.length; i++) {
+				console.log(x[i]);
+			}
 		case "say":
 			if (message.member.roles.some(r => ["Staff", "Développeur"].includes(r.name))) {
 				const SayMessage = message.content.substr(4);
@@ -340,6 +347,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField("*play <lien de la musique>", "Le bot va rejoindre ton channel et va jouer de la musique")
 				.addField("*skip", "Le bot va ignorer la musique actuelle")
 				.addField("*stop", "Le bot va arrêter de jouer de la musique")
+				.addField("*queue", "Affiche la liste des musiques")
 				.addField("*say", "Commande pour faire parler le bot (Requiert un rôle Staff)")
 				.addField("*ping", "Affiche le ping du bot")
 				.addField("*purge", "Nettoie un nombre donné (Max 100)")
