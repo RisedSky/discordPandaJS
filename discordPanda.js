@@ -40,7 +40,7 @@ function ChangeState2() {
 }
 
 function ChangeState3() {
-	bot.user.setActivity(prefix + "help | I am on " + bot.guilds.size + " Servers");
+	bot.user.setActivity(prefix + "help | I am on " + bot.guilds.size + " servers");
 	setTimeout(ChangeState1, 15000);
 }
 
@@ -231,6 +231,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 				Mess_Channel.send(embed).then(function () {
 					DernierEmbedDuBot = message.lastMessage;
 					DernierEmbedIDDuBot = message.lastMessageID;
+					setTimeout(() => {
+						deleteMyMessageID(DernierEmbedDuBot, DernierMessageIDDuBot)
+					}, 300000);
 				})
 
 				if (!message.guild.voiceConnection) {
@@ -260,7 +263,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			message.delete(MessageID);
 			message.reply("Successfuly skipped the currently song").then(function () {
-				message.delete(Mess_Channel.lastMessageID);
+				DernierMessageDuBot = Mess_Channel.lastMessage;
+				DernierMessageIDDuBot = Mess_Channel.lastMessageID;
+				deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot)
 			});
 
 			break;
