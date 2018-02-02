@@ -53,15 +53,12 @@ function deleteMyMessageID(message, id) {
 			console.log("Not me")
 			return;
 		}
+		
+		console.log("deleted: " + message)
+		message.delete(id);
 	} catch (error) {
-		console.log("Problem on ligne 51")
+		console.log("Problem on ligne 51 : " + error)
 	}
-	if (message.author.name != bot.user.name) {
-		console.log("Not me")
-		return;
-	}
-	console.log("deleted: " + message)
-	message.delete(id);
 }
 
 function play(connection, message) {
