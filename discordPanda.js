@@ -290,6 +290,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			} catch (error) {
 				console.log("Ligne 285: " + error)
 			}
+			break;
 		case "say":
 			if (message.member.roles.some(r => ["Staff", "Développeur"].includes(r.name))) {
 				const SayMessage = message.content.substr(4);
