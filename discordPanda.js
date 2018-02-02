@@ -53,7 +53,7 @@ function deleteMyMessageID(message, id) {
 			console.log("Not me")
 			return;
 		}
-		
+
 		console.log("deleted: " + message)
 		message.delete(id);
 	} catch (error) {
@@ -282,9 +282,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "queue":
 			var server = servers[message.guild.id];
 
-			var List = server.queue[];
-			for (var i = 0; i < List.length; i++) {
-				console.log(x[i]);
+			try {
+				for (var i = server.queue.length - 1; i >= 0; i--) {
+					console.log(i)
+					Mess_Channel.send(i)
+				}
+			} catch (error) {
+				console.log("Ligne 285: " + error)
 			}
 		case "say":
 			if (message.member.roles.some(r => ["Staff", "Développeur"].includes(r.name))) {
