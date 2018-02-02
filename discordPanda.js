@@ -116,7 +116,8 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	} else console.log("non");
 })
 
-bot.on('guildMemberAdd', member => { //Quand une personne rejoint le discord
+bot.on('guildMemberAdd', member => {
+	//Quand une personne rejoint le discord
 	try {
 		console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
 		const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES"));
@@ -127,7 +128,7 @@ bot.on('guildMemberAdd', member => { //Quand une personne rejoint le discord
 			}, 3000
 		);
 	} catch (error) {
-		console.log(error)
+		console.log("Erreur: " + error);
 	}
 })
 
