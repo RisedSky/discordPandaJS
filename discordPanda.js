@@ -30,17 +30,17 @@ var DernierEmbedIDDuBot;
 var CommandList = ["restart", "leave", "join", "", ""];
 
 function ChangeState1() {
-	bot.user.setActivity(prefix + "help • By RisedSky & LePandaFou77");
+	bot.user.setActivity(prefix + "help | By RisedSky & LePandaFou77");
 	setTimeout(ChangeState2, 15000);
 }
 
 function ChangeState2() {
-	bot.user.setActivity(prefix + "help • Actually working...");
+	bot.user.setActivity(prefix + "help | Actually working...");
 	setTimeout(ChangeState3, 15000);
 }
 
 function ChangeState3() {
-	bot.user.setActivity(prefix + "help • I am on " + bot.guilds.size + " Servers");
+	bot.user.setActivity(prefix + "help | I am on " + bot.guilds.size + " Servers");
 	setTimeout(ChangeState1, 15000);
 }
 
@@ -108,7 +108,7 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	console.log(prefixLog + "Bot ready")
 	console.log("------------------------------")
 
-	bot.user.setActivity(prefix + "help • Started and ready !");
+	bot.user.setActivity(prefix + "help | Started and ready !");
 	setTimeout(ChangeState1, 20000);
 	console.log("The bot is now ready !")
 	if (bot.user.client.guilds.exists("fetchAuditLogs", "ban")) {
