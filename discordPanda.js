@@ -48,6 +48,14 @@ function ChangeState3() {
 function deleteMyMessageID(message, id) {
 	//console.log("message = " + message + " | id=" + id);
 	//console.log(message.author + " - " + bot.user)
+	try {
+		if (message.author.name != bot.user.name) {
+			console.log("Not me")
+			return;
+		}
+	} catch (error) {
+		console.log("Problem on ligne 51")
+	}
 	if (message.author.name != bot.user.name) {
 		console.log("Not me")
 		return;
@@ -67,6 +75,7 @@ function play(connection, message) {
 	var server = servers[message.guild.id];
 
 	server.dispatcher = connection.playStream(YTDL(server.queue[0], { filter: "audioonly", audioEncondig: "opus" }));
+	//connection.
 
 	server.queue.shift();
 
