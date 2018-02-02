@@ -76,13 +76,11 @@ function play(connection, message) {
 
 	server.queue.shift();
 
-	if (DernierEmbedIDDuBot != null) {
-		message.delete(DernierEmbedIDDuBot);
-	}
-
 	server.dispatcher.on("end", function () {
 		if (server.queue[0]) {
-			deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot);
+			if (DernierEmbedIDDuBot != null) {
+				deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot);
+			}
 			play(connection, message);
 		} else {
 			//connection.disconnect;
@@ -92,8 +90,8 @@ function play(connection, message) {
 					DernierMessageIDDuBot = message.channel.lastMessageID;
 
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, DernierEmbedIDDuBot);
-					}, 5000);
+						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
+					}, 10000);
 				});
 				message.guild.voiceConnection.disconnect();
 			}
@@ -134,7 +132,7 @@ bot.on('guildMemberAdd', member => { //Quand une personne rejoint le discord
 })
 
 bot.on('guildCreate', Guild => {
-	console.log("I just join the server: " + Guild.name)
+	console.log("I just join the server: " + Guild.name + " | ID: " + Guild.id)
 	if (Guild.id != DefaultGuildID) {
 		console.log("I just left the server: " + Guild.name);
 		Guild.leave();
@@ -294,7 +292,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "say":
 			if (message.member.roles.some(r => ["Staff", "Développeur"].includes(r.name))) {
 				const SayMessage = message.content.substr(4);
-				message.channel.send("__**" + message.member.displayName + "**__" + " > " + SayMessage);
+				message.channel.send(SayMessage);
 				message.delete(MessageID);
 			} else {
 				message.reply("Vous n'avez pas la permission.");
@@ -307,9 +305,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//----------
 		case "restart":
 			Mess_Channel.send("Redémarrage en cours ...");
+			bot.setStatus("invisible");
 			bot.disconnect;
 			console.log("Disconnected")
-			bot.setStatus("invisible");
 			setTimeout(function () {
 				bot.login(BOT_TOKEN);
 				console.log("Reconnected")
@@ -352,7 +350,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField("*queue", "Affiche la liste des musiques")
 				.addField("*say", "Commande pour faire parler le bot (Requiert un rôle Staff)")
 				.addField("*ping", "Affiche le ping du bot")
-				.addField("*purge", "Nettoie un nombre donné (Max 100)")
+				.addField("*purge", "Nettoie un nombre de message donné **(Max 100)**")
 				.addField("*restart", "Redémarre le bot (**Expérimental**)")
 
 				.addField("*help", "Affichage de toutes les commandes du bot !")
