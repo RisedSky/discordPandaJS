@@ -374,19 +374,22 @@ bot.on('message', message => { //Quand une personne envoit un message
 		default:
 			message.delete(MessageID);
 
-			Mess_Channel.send("Commande non reconnue.");
-			setTimeout(() => {
-				Mess_Channel.lastMessage.react("❓");
-			}, 1000);
+			Mess_Channel.send("Commande non reconnue.").then(function () {
+				setTimeout(() => {
+					Mess_Channel.lastMessage.react("❓");
+				}, 250);
+			})
+			
 			break;
 	}
-
-	/*
-	✅👌🐼🗑️
-	Site 1 : https://emojiterra.com
-	Site 2 : http://smiley.cool/fr/twitter-emoji.php
-	*/
 })
+
+/*
+✅👌🐼🗑️
+Site 1 : https://emojiterra.com
+Site 2 : http://smiley.cool/fr/twitter-emoji.php
+*/
+
 
 bot.on('messageReactionAdd', MessageReaction => {
 	//En cours de création, risque de crash ou de problème technique si utilisé.
