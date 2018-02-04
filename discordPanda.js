@@ -375,7 +375,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				console.log(Math.floor(Math.random() * (max - min + 1)) + min)
 				console.log("Calcul : " + Calcul)
-				Mess_Channel.send("Hmmm voyons voir, entre " + min + " et " + max + " je choisirais " + Math.floor(Math.random() * (max - min + 1)) + min + " !");
+				Mess_Channel.send("Hmmm voyons voir, entre " + min + " et " + max + " je choisirais " + Calcul + " !");
 			} catch (error) {
 				console.log("Erreur #367: " + error)
 				message.reply("Tu t'es trompé dans quelque part garçon... ex: *randomnumber 10 20");
