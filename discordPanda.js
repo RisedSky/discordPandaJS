@@ -62,7 +62,7 @@ function deleteMyMessageID(message, id) {
 }
 
 function play(connection, message) {
-		console.log("Le play => " + message)
+	console.log("Le play => " + message)
 	var server = servers[message.guild.id];
 
 	server.dispatcher = connection.playStream(YTDL(server.queue[0], { filter: "audioonly", audioEncondig: "opus" }));
@@ -155,94 +155,94 @@ bot.on('message', message => { //Quand une personne envoit un message
 	switch (args[0].toLowerCase()) {
 
 		case "play":
-				setTimeout(() => {
-					message.delete(MessageID);
-				}, 750);
+			setTimeout(() => {
+				message.delete(MessageID);
+			}, 750);
 
-				if (!args[1]) {
-					message.react("❌");
-					message.reply("Merci de spécifier un lien").then(function () {
-						setTimeout(() => {
-							deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
-						}, 4000);
-					})
-					return;
-				} else if (!Mess_voiceChannel) {
-					message.react("❌");
-					message.reply("Tu dois être dans un salon vocal").then(function () {
-						setTimeout(() => {
-							deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
-						}, 4000);
-					})
-					return;
-				} else if (Mess_Member.selfDeaf) { //Si la personnealors on fait éviter de faire user la bande passante pour rien
-					message.react("❌");
-					message.reply("Tu ne dois pas être deafen.").then(function () {
-						setTimeout(() => {
-							deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
-						}, 4000);
-					})
-					return;
-				}
+			if (!args[1]) {
+				message.react("❌");
+				message.reply("Merci de spécifier un lien").then(function () {
+					setTimeout(() => {
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
+					}, 4000);
+				})
+				return;
+			} else if (!Mess_voiceChannel) {
+				message.react("❌");
+				message.reply("Tu dois être dans un salon vocal").then(function () {
+					setTimeout(() => {
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
+					}, 4000);
+				})
+				return;
+			} else if (Mess_Member.selfDeaf) { //Si la personnealors on fait éviter de faire user la bande passante pour rien
+				message.react("❌");
+				message.reply("Tu ne dois pas être deafen.").then(function () {
+					setTimeout(() => {
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
+					}, 4000);
+				})
+				return;
+			}
 
-				var MusicLink = message.content.split("&");
-				console.log(MusicLink)
+			var MusicLink = message.content.split("&");
+			console.log(MusicLink)
 
-				//vérifie si le serveur est déjà dans la liste
-				if (!servers[message.guild.id]) servers[message.guild.id] = {
-					queue: []
-				};
+			//vérifie si le serveur est déjà dans la liste
+			if (!servers[message.guild.id]) servers[message.guild.id] = {
+				queue: []
+			};
 
-				//l'ajoute alors
-				var server = servers[message.guild.id];
+			//l'ajoute alors
+			var server = servers[message.guild.id];
 
-				//récupere le *play <song> et supprime *play pour mettre que le lien de la musique
-				server.queue.push(String(args).substring(5));
+			//récupere le *play <song> et supprime *play pour mettre que le lien de la musique
+			server.queue.push(String(args).substring(5));
 
-				//Ajoute les infos pour le embed
-				YTDL.getInfo(args[1], function (err, info) {
-					YouTubeTitle = info.title; //récupere le titre
-					YouTubeThumbnail = info.thumbnail_url; //récupere la minia
-					YouTubeLink = info.video_url; //récupere le lien de la vidéo
-					YouTubeTime = new Date(info.timestamp * 1000).toISOString().substr(11, 8); // récupere le temps et le transforme en h: i: s
-					//console.log("Timestamp : " + info.timestamp);
-					//console.log("Testnewtimestamp : " + new Date(Date.now() + info.timestamp));
+			//Ajoute les infos pour le embed
+			YTDL.getInfo(args[1], function (err, info) {
+				YouTubeTitle = info.title; //récupere le titre
+				YouTubeThumbnail = info.thumbnail_url; //récupere la minia
+				YouTubeLink = info.video_url; //récupere le lien de la vidéo
+				YouTubeTime = new Date(info.timestamp * 1000).toISOString().substr(11, 8); // récupere le temps et le transforme en h: i: s
+				//console.log("Timestamp : " + info.timestamp);
+				//console.log("Testnewtimestamp : " + new Date(Date.now() + info.timestamp));
 
-					var time = new Date(Date.parse(info.timestamp));
-					//Mess_Channel.send("Le temps est de : " + time.toLocaleLowerCase);
+				var time = new Date(Date.parse(info.timestamp));
+				//Mess_Channel.send("Le temps est de : " + time.toLocaleLowerCase);
+			})
+
+			setTimeout(() => {
+
+				embed = new Discord.RichEmbed()
+					.setColor("#00ff00")
+					.setAuthor(YouTubeTitle, message.author.avatarURL)
+					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
+					.setTitle("Musique ajoutée")
+					.addField("Durée de: ", "**" + YouTubeTime + "**")
+					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
+
+				Mess_Channel.send(embed).then(function () {
+					setTimeout(() => {
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
+					}, 300000);
 				})
 
-				setTimeout(() => {
+				if (!message.guild.voiceConnection) {
+					message.member.voiceChannel.join()
+						.then(function (connection) {
+							play(connection, message);
+						})
+				};
 
-					embed = new Discord.RichEmbed()
-						.setColor("#00ff00")
-						.setAuthor(YouTubeTitle, message.author.avatarURL)
-						.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
-						.setTitle("Musique ajoutée")
-						.addField("Durée de: ", "**" + YouTubeTime + "**")
-						.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
+			}, 3000);
 
-					Mess_Channel.send(embed).then(function () {
-						setTimeout(() => {
-							deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
-						}, 300000);
-					})
-
-					if (!message.guild.voiceConnection) {
-						message.member.voiceChannel.join()
-							.then(function (connection) {
-								play(connection, message);
-							})
-					};
-
-				}, 3000);
-
-				//Récupere le dernier message (donc celui du bot) - Correction: Code inutile
-				/*setTimeout(() => {
-					console.log("Content: '" + Mess_Channel.lastMessage.content + "'");
-					DernierMessageDuBot = Mess_Channel.lastMessage.content;
-					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
-				}, 4000);*/
+			//Récupere le dernier message (donc celui du bot) - Correction: Code inutile
+			/*setTimeout(() => {
+				console.log("Content: '" + Mess_Channel.lastMessage.content + "'");
+				DernierMessageDuBot = Mess_Channel.lastMessage.content;
+				DernierMessageIDDuBot = Mess_Channel.lastMessageID;
+			}, 4000);*/
 			break;
 
 		//-------
@@ -303,6 +303,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}
 			break;
 		//-----------
+		//Musique
 		case "say":
 			message.delete(MessageID);
 
@@ -315,22 +316,12 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}
 
 			break;
+
 		//----------
 		case "ping":
 			message.reply("J'ai actuellement un ping de: " + parseInt(bot.ping) + " ms :ping_pong:");
 			break;
 		//----------
-		case "restart":
-			Mess_Channel.send("Redémarrage en cours ...");
-			bot.setStatus("invisible");
-			bot.disconnect;
-			console.log("Disconnected")
-			setTimeout(function () {
-				bot.login(BOT_TOKEN);
-				console.log("Reconnected")
-			}, 5000);
-			break;
-		//-------
 		case "purge": //Ajouter la possibilité de supprimer uniquement les messages du bot (genre *purge-bot 100)
 			setTimeout(function () {
 				message.delete(MessageID);
@@ -356,28 +347,73 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}, 2500);
 			break;
 		//-----------
+		case "restart":
+			Mess_Channel.send("Redémarrage en cours ...");
+			bot.setStatus("invisible");
+			bot.disconnect;
+			console.log("Disconnected")
+			setTimeout(function () {
+				bot.login(BOT_TOKEN);
+				console.log("Reconnected")
+			}, 5000);
+			break;
+		//-------
+		case "randomnumber":
+			try {
+				var argsQueue = message.content.substring(12).split(" ");
+				var argMini = args[1];
+				var argMaxi = args[2];
+
+				//Debug
+				console.log("1: " + argMini)
+				console.log("2: " + argMaxi)
+
+				min = Math.ceil(argMini);
+				max = Math.floor(argMaxi);
+
+				Calcul = Math.floor(Math.random() * (max - min + 1)) + min;
+
+				console.log(Math.floor(Math.random() * (max - min + 1)) + min)
+				console.log("Calcul : " + Calcul)
+				Mess_Channel.send("Hmmm voyons voir, entre " + min + " et " + max + " je choisirais " + Math.floor(Math.random() * (max - min + 1)) + min + " !");
+			} catch (error) {
+				console.log("Erreur #367: " + error)
+				message.reply("Tu t'es trompé dans quelque part garçon... ex: *randomnumber 10 20");
+			}
+			break;
+
+		//--------
 		case "help":
 			embed = new Discord.RichEmbed()
 				.setColor(225, 0, 0)
 				.setAuthor("Voici la liste de toutes les commandes")
 				.setThumbnail(message.author.avatarURL)
+				//Musique
 				.addField("*play <lien de la musique>", "Le bot va rejoindre ton channel et va jouer de la musique")
 				.addField("*skip", "Le bot va ignorer la musique actuelle")
 				.addField("*stop", "Le bot va arrêter de jouer de la musique")
 				.addField("*queue", "Affiche la liste des musiques")
+
 				.addField("*say", "Commande pour faire parler le bot (Requiert un rôle Staff)")
 				.addField("*ping", "Affiche le ping du bot")
 				.addField("*purge", "Nettoie un nombre de message donné **(Max 100)**")
 				.addField("*restart", "Redémarre le bot (**Expérimental**)")
+				.addField("*randomNumber", "Génère un nombre entre un chiffre et un autre | *ex: *randomnumber 2 50*")
 
-				.addField("*help", "Affichage de toutes les commandes du bot !")
+				.addField("*help", "Affiche toutes les commandes du bot !")
 
 				//.addField("*Join", "Le bot va rejoindre ton channel")
 
 				.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
-			Mess_Channel.send(embed);
+			Mess_Channel.send(embed).then(function () {
+				setTimeout(() => {
+					deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
+				}, 20000);
+			})
+
 			setTimeout(() => {
 				Mess_Channel.lastMessage.react("✅");
+
 				message.delete(MessageID);
 			}, 500);
 			break;
