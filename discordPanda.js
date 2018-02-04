@@ -385,7 +385,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 				message.reply("Tu t'es trompé dans quelque part... ex: *randomnumber 10 20");
 			}
 			break;
-
+		case "poll":
+			message.delete(MessageID)
+			message.reply("Cette commande n'est pas encore disponible, soon :tm: :wink:")
+			break;
 		//--------
 		case "help":
 			embed = new Discord.RichEmbed()
@@ -403,6 +406,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField("*purge", "Nettoie un nombre de message donné **(Max 100)**")
 				.addField("*restart", "Redémarre le bot (**Expérimental**)")
 				.addField("*randomNumber", "Génère un nombre entre un chiffre et un autre | *ex: *randomnumber 2 50*")
+				.addField("*poll", "Soon :tm:")
 
 				.addField("*help", "Affiche toutes les commandes du bot !")
 
