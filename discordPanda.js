@@ -153,7 +153,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 	var Mess_voiceChannel = message.member.voiceChannel;
 
 	switch (args[0].toLowerCase()) {
-
+		
+		// - - Musique
 		case "play":
 			setTimeout(() => {
 				message.delete(MessageID);
@@ -303,7 +304,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}
 			break;
 		//-----------
-		//Musique
+		// - - Musique
 		case "say":
 			message.delete(MessageID);
 
@@ -385,9 +386,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 				message.reply("Tu t'es trompé dans quelque part... ex: *randomnumber 10 20");
 			}
 			break;
+		//--------
 		case "poll":
 			message.delete(MessageID)
-			message.reply("Cette commande n'est pas encore disponible, soon :tm: :wink:")
+			message.reply("La commande `*poll` n'est pas encore disponible, elle viendra soon :tm: :wink:")
 			break;
 		//--------
 		case "help":
