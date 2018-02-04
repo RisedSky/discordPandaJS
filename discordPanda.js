@@ -3,7 +3,7 @@
 const Discord = require("discord.js")
 const YTDL = require("ytdl-core")
 const bot = new Discord.Client();
-const DefaultGuildID = 406356765748232194;
+const DefaultGuildID = [406356765748232194, 409382010059096064, 356891225715900427];
 
 var BOT_TOKEN = process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
@@ -62,11 +62,11 @@ function deleteMyMessageID(message, id) {
 }
 
 function play(connection, message) {
-	/*
+	
 	setTimeout(() => {
 		deleteMyMessageID(message, message.id);
 	}, 1500);
-	*/
+	
 
 	console.log("Le play => " + message)
 	var server = servers[message.guild.id];
@@ -78,19 +78,16 @@ function play(connection, message) {
 
 	server.dispatcher.on("end", function () {
 		if (server.queue[0]) {
-			if (DernierEmbedIDDuBot != null) {
+			/*if (DernierEmbedIDDuBot != null) {
 				deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot);
-			}
+			}*/
 			play(connection, message);
 		} else {
 			//connection.disconnect;
 			if (message.guild.voiceConnection) {
 				message.channel.send("Finished the queue from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:").then(function () {
-					DernierMessageDuBot = message.channel.lastMessage;
-					DernierMessageIDDuBot = message.channel.lastMessageID;
-
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
+						deleteMyMessageID(message.channel.lastMessage, message.channel.lastMessageID);
 					}, 10000);
 				});
 				message.guild.voiceConnection.disconnect();
@@ -134,9 +131,17 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('guildCreate', Guild => {
 	console.log("I just join the server: " + Guild.name + " | ID: " + Guild.id)
-	if (Guild.id != DefaultGuildID) {
+
+	/*if (Guild.id != DefaultGuildID) {
 		console.log("I just left the server: " + Guild.name);
 		Guild.leave();
+	}*/
+
+	if (!DefaultGuildID.includes(Guild.id)) {
+		console.log("I just left the server: " + Guild.name + " | ID: " + Guild.id);
+		Guild.leave();
+	} else {
+		console.log("server whatlisted")
 	}
 })
 
@@ -163,30 +168,24 @@ bot.on('message', message => { //Quand une personne envoit un message
 			if (!args[1]) {
 				message.react("❌");
 				message.reply("Merci de spécifier un lien").then(function () {
-					DernierMessageDuBot = Mess_Channel.lastMessage;
-					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
 					}, 4000);
 				})
 				return;
 			} else if (!Mess_voiceChannel) {
 				message.react("❌");
 				message.reply("Tu dois être dans un salon vocal").then(function () {
-					DernierMessageDuBot = Mess_Channel.lastMessage;
-					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
 					}, 4000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personnealors on fait éviter de faire user la bande passante pour rien
 				message.react("❌");
 				message.reply("Tu ne dois pas être deafen.").then(function () {
-					DernierMessageDuBot = Mess_Channel.lastMessage;
-					DernierMessageIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot);
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
 					}, 4000);
 				})
 				return;
@@ -230,10 +229,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
 
 				Mess_Channel.send(embed).then(function () {
-					DernierEmbedDuBot = Mess_Channel.lastMessage;
-					DernierEmbedIDDuBot = Mess_Channel.lastMessageID;
 					setTimeout(() => {
-						deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot)
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
 					}, 300000);
 				})
 
@@ -246,12 +243,12 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			}, 3000);
 
-			//Récupere le dernier message (donc celui du bot)
-			setTimeout(() => {
+			//Récupere le dernier message (donc celui du bot) - Correction: Code inutile
+			/*setTimeout(() => {
 				console.log("Content: '" + Mess_Channel.lastMessage.content + "'");
 				DernierMessageDuBot = Mess_Channel.lastMessage.content;
 				DernierMessageIDDuBot = Mess_Channel.lastMessageID;
-			}, 4000);
+			}, 4000);*/
 
 			break;
 		//-------
@@ -264,49 +261,69 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			message.delete(MessageID);
 			message.reply("Successfuly skipped the currently song").then(function () {
-				DernierMessageDuBot = Mess_Channel.lastMessage;
-				DernierMessageIDDuBot = Mess_Channel.lastMessageID;
-				deleteMyMessageID(DernierMessageDuBot, DernierMessageIDDuBot)
+				setTimeout(() => {
+					deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
+				}, 10000);
 			});
 
 			break;
 		//-------
 		case "stop":
-			var server = servers[message.guild.id];
 			message.delete(MessageID);
+
+			var server = servers[message.guild.id];
+
 			if (message.guild.voiceConnection) {
 				for (var i = server.queue.length - 1; i >= 0; i--) {
 					server.queue.splice(i, 1);
 				}
-				Mess_Channel.send("Stopped all the music from channel: " + message.guild.voiceConnection.channel.name);
+				Mess_Channel.send("Stopped all the music from channel: " + message.guild.voiceConnection.channel.name).then(function () {
+					setTimeout(() => {
+						deleteMyMessageID(Mess_Channel.lastMessage, Mess_Channel.lastMessageID);
+					}, 10000);
+				});
 				message.guild.voiceConnection.disconnect();
 			}
 			break;
 		//-------
 		case "queue":
+			message.delete(MessageID);
+
+			var argsQueue = message.content.substring(5).split(" ");
 			var server = servers[message.guild.id];
+			var x = server.queue;
 
 			try {
-				for (var i = server.queue.length - 1; i >= 0; i--) {
-					console.log(i)
-					Mess_Channel.send(i)
+				// CE CODE FONCTIONNE
+				/*if (argsQueue[1] === "list") {
+					Mess_Channel.send("Oui.");
+				}*/
+
+				for (var i in x) {
+					var y = server.queue.length;
+					console.log(i + " » " + x + " > " + y);
+					Mess_Channel.send(i + " » " + x + " > " + y);
 				}
 			} catch (error) {
-				console.log("Ligne 285: " + error)
+				console.log("Ligne 300: " + error)
 			}
 			break;
+		//-----------
 		case "say":
+			message.delete(MessageID);
+
+			const SayMessage = message.content.substr(4);
+
 			if (message.member.roles.some(r => ["Staff", "Développeur"].includes(r.name))) {
-				const SayMessage = message.content.substr(4);
-				message.channel.send(SayMessage);
-				message.delete(MessageID);
+				Mess_Channel.send(SayMessage);
 			} else {
 				message.reply("Vous n'avez pas la permission.");
 			}
+
 			break;
 		//----------
 		case "ping":
-			Mess_Channel.send("J'ai actuellement un ping de: " + parseInt(bot.ping) + " ms :ping_pong:");
+			message.reply("J'ai actuellement un ping de: " + parseInt(bot.ping) + " ms :ping_pong:");
 			break;
 		//----------
 		case "restart":
