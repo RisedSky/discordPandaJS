@@ -360,6 +360,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//-------
 		case "randomnumber":
 			try {
+				setTimeout(() => {
+					message.delete(MessageID)
+				}, 750);
+
 				var argsQueue = message.content.substring(12).split(" ");
 				var argMini = args[1];
 				var argMaxi = args[2];
@@ -375,10 +379,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				console.log(Math.floor(Math.random() * (max - min + 1)) + min)
 				console.log("Calcul : " + Calcul)
-				Mess_Channel.send("Hmmm voyons voir, entre " + min + " et " + max + " je choisirais " + Calcul + " !");
+				message.reply("Hmmm voyons voir, entre **" + min + "** et **" + max + "** je choisirais **" + Calcul + "** !");
 			} catch (error) {
 				console.log("Erreur #367: " + error)
-				message.reply("Tu t'es trompé dans quelque part garçon... ex: *randomnumber 10 20");
+				message.reply("Tu t'es trompé dans quelque part... ex: *randomnumber 10 20");
 			}
 			break;
 
