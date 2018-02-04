@@ -132,7 +132,7 @@ bot.on('guildCreate', Guild => {
 		Guild.leave();
 	}*/
 
-	if (!DefaultGuildID.includes(Guild.id)) {
+	if (!DefaultGuildID.indexOf(Guild.id)) {
 		console.log("I just left the server: " + Guild.name + " | ID: " + Guild.id);
 		Guild.leave();
 	} else {
