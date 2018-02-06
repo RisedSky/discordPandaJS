@@ -249,7 +249,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.addBlankField()
 
 					.addField("Views", YouTubeViews, true)
-					.addField("Link", ("Click here".link(YouTubeLink)))
+					.addField("Link", "[Click here](" + YouTubeLink + ")", true)
 					/*.setAuthor(YouTubeTitle, message.author.avatarURL)
 					Code qui permet de définir le titre et le logo du demandeur
 					*/
