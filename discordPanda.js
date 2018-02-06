@@ -76,6 +76,11 @@ function play(connection, message) {
 
 	server.dispatcher.on("end", function () {
 		if (server.queue[0]) {
+			try {
+				message.channel.send("test")
+			} catch (error) {
+				console.log(error)
+			}
 			/*if (DernierEmbedIDDuBot != null) {
 				deleteMyMessageID(DernierEmbedDuBot, DernierEmbedIDDuBot);
 			}*/
@@ -385,11 +390,26 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			var NumberToDelete = message.content.substr(7);
 
-			if (NumberToDelete <= 0) {
-				message.reply("Merci de mettre un nombre de message à purger");
+			if (NumberToDelete < 0) {
+				message.reply("Merci de mettre un nombre de message à purger").then(function () {
+					lastMess = Mess_Channel.lastMessage;
+					lastMessID = Mess_Channel.lastMessageID;
+
+					setTimeout(() => {
+						deleteMyMessageID(lastMess, lastMessID);
+					}, 1500)
+				})
 				return;
 			} else if (NumberToDelete > 100) {
-				message.reply("Malheureusement, ce bot ne peut supprimer que 100 messages à la fois.");
+				message.reply("Malheureusement, ce bot ne peut supprimer que 100 messages à la fois.").then(function () {
+					lastMess1 = Mess_Channel.lastMessage;
+					lastMessID1 = Mess_Channel.lastMessageID;
+
+					setTimeout(() => {
+						deleteMyMessageID(lastMess1, lastMessID1);
+					}, 1500)
+				})
+
 				return;
 			}
 
@@ -415,7 +435,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 						}, 1500)
 
 					}, 1500);
-				}, 1500)
+				}, 1700)
 			}, 1000)
 
 			break;
@@ -438,6 +458,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "randomnumber":
 			if (!args[1]) return;
 			if (!args[2]) return;
+
 			args[1] = parseInt(args[1]);
 			args[2] = parseInt(args[2]);
 
@@ -477,11 +498,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//--------
 		case "help":
 			setTimeout(() => {
-				lastMess2 = Mess_Channel.lastMessage;
-				lastMessID2 = Mess_Channel.lastMessageID;
-				lastMess2.react("✅");
-
-				message.delete(MessageID2);
+				message.delete(MessageID);
 			}, 500);
 
 			embed = new Discord.RichEmbed()
@@ -495,11 +512,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "stop", "Le bot va arrêter de jouer de la musique")
 				.addField(prefix + "queue", "Affiche la liste des musiques")
 
-				.addField(prefix + "say", "Commande pour faire parler le bot (Requiert un rôle Staff)")
+				.addField(prefix + "say", "Commande pour faire parler le bot **(Requiert un rôle Staff)**")
 				.addField(prefix + "ping", "Affiche le ping du bot")
 				.addField(prefix + "purge", "Nettoie un nombre de message donné **(Max 100)**")
-				.addField(prefix + "restart", "Redémarre le bot (**Expérimental**)")
-				.addField(prefix + "randomNumber", "Génère un nombre entre un chiffre et un autre | " + prefix + "ex: *randomnumber 2 50*")
+				.addField(prefix + "restart", "Redémarre le bot **(Expérimental)**")
+				.addField(prefix + "randomNumber", "Génère un nombre entre un chiffre et un autre | **ex: " + prefix + "randomnumber 2 50**")
 				.addField(prefix + "poll", "Soon :tm:")
 
 				.addField(prefix + "help", "Affiche toutes les commandes du bot !")
