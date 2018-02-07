@@ -11,10 +11,13 @@ const whitelistedServer = [406356765748232194, 356891225715900427, 3688370559937
 
 //const DefaultGuildID = [406356765748232194];
 
+//--------Dev----------
 var BOT_TOKEN = process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
 
 var prefix = "*";
+//--------Dev----------
+
 var prefixLog = "[!] ";
 var servers = {};
 //var embed = new Discord.RichEmbed();
@@ -129,7 +132,8 @@ bot.on('guildMemberAdd', member => {
 
 		setTimeout(
 			function () {
-				member.addRole("Membre");
+				let RoleMember = message.guild.roles.find("name", "Membre");
+				member.addRole(RoleMember);
 			}, 3000
 		);
 	} catch (error) {
@@ -189,7 +193,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 						}, 4000);
 					})
 					return;
-				} else if (Mess_Member.selfDeaf) { //Si la personnealors on fait éviter de faire user la bande passante pour rien
+				} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
 					message.react("❌");
 					message.reply("Tu ne dois pas être deafen.").then(function () {
 						lastMess = Mess_Channel.lastMessage;
@@ -290,18 +294,51 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 		//-------
 		case "skip":
+			setTimeout(() => {
+				message.delete(MessageID);
+			}, 750);
+
+			if (!Mess_voiceChannel) {
+				message.reply("Tu dois être dans un salon vocal").then(function () {
+					lastMess = Mess_Channel.lastMessage;
+					lastMessID = Mess_Channel.lastMessageID;
+					setTimeout(() => {
+						deleteMyMessageID(lastMess, lastMessID);
+					}, 4000);
+				})
+				return;
+			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
+				message.reply("Tu ne dois pas être deafen.").then(function () {
+					lastMess2 = Mess_Channel.lastMessage;
+					lastMessID2 = Mess_Channel.lastMessageID;
+					setTimeout(() => {
+						deleteMyMessageID(lastMess2, lastMessID2);
+					}, 10000);
+				})
+				return;
+			} else if (Mess_voiceChannel.name != message.guild.voiceConnection.channel.name) {
+				message.reply("Tu n'es pas dans mon salon vocal.").then(function () {
+					lastMess1 = Mess_Channel.lastMessage;
+					lastMessID1 = Mess_Channel.lastMessageID;
+					setTimeout(() => {
+						deleteMyMessageID(lastMess1, lastMessID1);
+					}, 4000);
+				})
+				return;
+			}
+			//console.log("User: " + Mess_voiceChannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
+
 			var server = servers[message.guild.id];
 
 			if (server.dispatcher) {
 				server.dispatcher.end();
 			}
 
-			message.delete(MessageID);
 			message.reply("Successfuly skipped the currently song").then(function () {
-				lastMess = Mess_Channel.lastMessage;
-				lastMessID = Mess_Channel.lastMessageID;
+				lastMess3 = Mess_Channel.lastMessage;
+				lastMessID3 = Mess_Channel.lastMessageID;
 				setTimeout(() => {
-					deleteMyMessageID(lastMess, lastMessID);
+					deleteMyMessageID(lastMess3, lastMessID3);
 				}, 10000);
 			});
 
@@ -390,6 +427,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//----------
 		case "purge": //Ajouter la possibilité de supprimer uniquement les messages du bot (genre *purge-bot 100)
+			let can_manage_chans = message.channel.permissionsFor(message.member).hasPermission("MANAGE_MESSAGES");
+
 			setTimeout(function () {
 				message.delete(MessageID);
 			}, 500);
@@ -403,9 +442,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 					setTimeout(() => {
 						deleteMyMessageID(lastMess, lastMessID);
-					}, 1500)
+					}, 3000)
 				})
 				return;
+
 			} else if (NumberToDelete > 100) {
 				message.reply("Malheureusement, ce bot ne peut supprimer que 100 messages à la fois.").then(function () {
 					lastMess1 = Mess_Channel.lastMessage;
@@ -413,7 +453,18 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 					setTimeout(() => {
 						deleteMyMessageID(lastMess1, lastMessID1);
-					}, 1500)
+					}, 3000)
+				})
+
+				return;
+			} else if (!can_manage_chans) {
+				message.reply("Malheureusement, tu n'as pas la permission **(MANAGE_MESSAGES)**.").then(function () {
+					lastMess2 = Mess_Channel.lastMessage;
+					lastMessID2 = Mess_Channel.lastMessageID;
+
+					setTimeout(() => {
+						deleteMyMessageID(lastMess2, lastMessID2);
+					}, 3000)
 				})
 
 				return;
@@ -422,22 +473,22 @@ bot.on('message', message => { //Quand une personne envoit un message
 			setTimeout(function () {
 				message.channel.bulkDelete(NumberToDelete);
 				message.channel.send("Nettoyage en cours...").then(function () {
-					lastMess1 = Mess_Channel.lastMessage;
-					lastMessID1 = Mess_Channel.lastMessageID;
+					lastMess3 = Mess_Channel.lastMessage;
+					lastMessID3 = Mess_Channel.lastMessageID;
 
 					setTimeout(() => {
-						deleteMyMessageID(lastMess1, lastMessID1);
+						deleteMyMessageID(lastMess3, lastMessID3);
 					}, 1500)
 
 				}, 1500);
 
 				setTimeout(function () {
 					message.channel.send("Nettoyage terminé ! :white_check_mark:").then(function () {
-						lastMess2 = Mess_Channel.lastMessage;
-						lastMessID2 = Mess_Channel.lastMessageID;
+						lastMess4 = Mess_Channel.lastMessage;
+						lastMessID4 = Mess_Channel.lastMessageID;
 
 						setTimeout(() => {
-							deleteMyMessageID(lastMess2, lastMessID2);
+							deleteMyMessageID(lastMess4, lastMessID4);
 						}, 1500)
 
 					}, 1500);
@@ -502,6 +553,16 @@ bot.on('message', message => { //Quand une personne envoit un message
 			message.reply("La commande `*poll` n'est pas encore disponible, elle viendra soon :tm: :wink:");
 			break;
 		//--------
+		case "kappa":
+			setTimeout(() => {
+				message.delete(MessageID)
+			}, 750);
+
+			//Ancien code: message.sendFolder(images / Kappahd.png)
+			Mess_Channel.send("", { file: __dirname + "/images/Kappahd.png" })
+
+			break;
+		//--------
 		case "help":
 			setTimeout(() => {
 				message.delete(MessageID);
@@ -516,7 +577,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "play <lien de la musique>", "Le bot va rejoindre ton channel et va jouer de la musique")
 				.addField(prefix + "skip", "Le bot va ignorer la musique actuelle")
 				.addField(prefix + "stop", "Le bot va arrêter de jouer de la musique")
-				.addField(prefix + "queue", "Affiche la liste des musiques")
+				.addField(prefix + "queue", "Affiche la liste des musiques **(Expérimental)**")
 
 				.addField(prefix + "say", "Commande pour faire parler le bot **(Requiert un rôle Staff)**")
 				.addField(prefix + "ping", "Affiche le ping du bot")
@@ -524,6 +585,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "restart", "Redémarre le bot **(Expérimental)**")
 				.addField(prefix + "randomNumber", "Génère un nombre entre un chiffre et un autre | **ex: " + prefix + "randomnumber 2 50**")
 				.addField(prefix + "poll", "Soon :tm:")
+				.addField(prefix + "kappa", "Kappa")
 
 				.addField(prefix + "help", "Affiche toutes les commandes du bot !")
 
@@ -538,15 +600,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 					deleteMyMessageID(lastMess1, lastMessID1);
 				}, 30000);
 			})
-
-			break;
-		case "kappa":
-			setTimeout(() => {
-				message.delete(MessageID)
-			}, 750);
-
-			//message.sendFolder(images / Kappahd.png)
-			Mess_Channel.send("", { file: __dirname + "/images/Kappahd.png" })
 
 			break;
 		//----------
