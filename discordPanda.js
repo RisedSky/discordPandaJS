@@ -1,14 +1,15 @@
-//import { Message, Guild, DMChannel } from 'discord.js';
-
 const Discord = require("discord.js")
 const YTDL = require("ytdl-core");
 //const moment = require("moment");
 const bot = new Discord.Client();
 
 // 406356765748232194 = Official Server
-//356891225715900427 = Rised-bot Server
-const DefaultGuildID = [406356765748232194, 356891225715900427];
+// 356891225715900427 = Rised-bot Server
+// 368837055993741323 = Benpoke Server
+// 410876225754759169 = ZenDev - Test Bot
+const whitelistedServer = [406356765748232194, 356891225715900427, 368837055993741323, 410876225754759169]
 
+//const DefaultGuildID = [406356765748232194];
 
 var BOT_TOKEN = process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
@@ -139,7 +140,7 @@ bot.on('guildMemberAdd', member => {
 bot.on('guildCreate', Guild => {
 	console.log("I just join the server: " + Guild.name + " | ID: " + Guild.id)
 
-	if (!DefaultGuildID.indexOf(Guild.id)) {
+	if (!whitelistedServer.indexOf(Guild.id)) {
 		console.log("I just left the server: " + Guild.name + " | ID: " + Guild.id);
 		Guild.leave();
 	} else {
@@ -163,121 +164,126 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 		// - - Musique
 		case "play":
-			setTimeout(() => {
-				message.delete(MessageID);
-			}, 750);
+			try {
+				setTimeout(() => {
+					message.delete(MessageID);
+				}, 750);
 
-			if (!args[1]) {
-				message.react("❌");
-				message.reply("Merci de spécifier un lien").then(function () {
-					lastMess = Mess_Channel.lastMessage;
-					lastMessID = Mess_Channel.lastMessageID;
-					setTimeout(() => {
-						deleteMyMessageID(lastMess, lastMessID);
-					}, 4000);
-				})
-				return;
-			} else if (!Mess_voiceChannel) {
-				message.react("❌");
-				message.reply("Tu dois être dans un salon vocal").then(function () {
-					lastMess = Mess_Channel.lastMessage;
-					lastMessID = Mess_Channel.lastMessageID;
-					setTimeout(() => {
-						deleteMyMessageID(lastMess, lastMessID);
-					}, 4000);
-				})
-				return;
-			} else if (Mess_Member.selfDeaf) { //Si la personnealors on fait éviter de faire user la bande passante pour rien
-				message.react("❌");
-				message.reply("Tu ne dois pas être deafen.").then(function () {
-					lastMess = Mess_Channel.lastMessage;
-					lastMessID = Mess_Channel.lastMessageID;
-					setTimeout(() => {
-						deleteMyMessageID(lastMess, lastMessID);
-					}, 4000);
-				})
-				return;
-			}
+				if (!args[1]) {
+					message.react("❌");
+					message.reply("Merci de spécifier un lien").then(function () {
+						lastMess = Mess_Channel.lastMessage;
+						lastMessID = Mess_Channel.lastMessageID;
+						setTimeout(() => {
+							deleteMyMessageID(lastMess, lastMessID);
+						}, 4000);
+					})
+					return;
+				} else if (!Mess_voiceChannel) {
+					message.react("❌");
+					message.reply("Tu dois être dans un salon vocal").then(function () {
+						lastMess = Mess_Channel.lastMessage;
+						lastMessID = Mess_Channel.lastMessageID;
+						setTimeout(() => {
+							deleteMyMessageID(lastMess, lastMessID);
+						}, 4000);
+					})
+					return;
+				} else if (Mess_Member.selfDeaf) { //Si la personnealors on fait éviter de faire user la bande passante pour rien
+					message.react("❌");
+					message.reply("Tu ne dois pas être deafen.").then(function () {
+						lastMess = Mess_Channel.lastMessage;
+						lastMessID = Mess_Channel.lastMessageID;
+						setTimeout(() => {
+							deleteMyMessageID(lastMess, lastMessID);
+						}, 4000);
+					})
+					return;
+				}
 
-			var MusicLink = message.content.split("&");
-			console.log(MusicLink)
+				var MusicLink = message.content.split("&");
+				console.log(MusicLink)
 
-			//vérifie si le serveur est déjà dans la liste
-			if (!servers[message.guild.id]) servers[message.guild.id] = {
-				queue: []
-			};
-
-			//l'ajoute alors
-			var server = servers[message.guild.id];
-
-			//récupere le *play <song> et supprime *play pour mettre que le lien de la musique
-			server.queue.push(String(args).substring(5));
-
-			var YouTubeTimeSec; //utile pour après
-			var YouTubeUploader;
-			var YouTubeViews;
-
-			//Ajoute les infos pour le embed
-			YTDL.getInfo(args[1], function (err, info) {
-				var date = new Date(null); //défini comme null la date
-				date.setSeconds(info.length_seconds); //la défini avec des secondes
-
-				YouTubeTimeSec = info.length_seconds; //défini en secondes
-				YouTubeViews = info.view_count;
-
-				YouTubeUploader = info.author.name;
-				YouTubeTitle = info.title; //récupere le titre
-				YouTubeThumbnail = info.thumbnail_url; //récupere la minia
-				YouTubeLink = info.video_url; //récupere le lien de la vidéo
-
-				var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
-
-				YouTubeTime = result;
-			})
-
-			setTimeout(() => {
-
-				embed = new Discord.RichEmbed()
-					//défini la couleur embed en vert
-					.setColor("#00ff00")
-
-					//miniature + lien vers la vidéo en cliquant sur la minia
-					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
-
-					//petit logo à gauche du titre
-					.setAuthor("Song added", "https://cdn.iconscout.com/public/images/icon/premium/png-512/volume-high-song-sound-35c8ba26d38fbd69-512x512.png")
-					.setTitle(YouTubeTitle)
-
-					.addField("Uploaded by", YouTubeUploader, true)
-					.addField("Duration", "**" + YouTubeTime + "**", true) //temps
-
-					.addBlankField()
-
-					.addField("Views", YouTubeViews, true)
-					.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-					/*.setAuthor(YouTubeTitle, message.author.avatarURL)
-					Code qui permet de définir le titre et le logo du demandeur
-					*/
-
-
-					.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
-
-				Mess_Channel.send(embed).then(function () {
-					lastMess3 = Mess_Channel.lastMessage;
-					lastMessID3 = Mess_Channel.lastMessageID;
-					setTimeout(() => {
-						deleteMyMessageID(lastMess3, lastMessID3);
-					}, YouTubeTimeSec * 1000);
-				})
-
-				if (!message.guild.voiceConnection) {
-					message.member.voiceChannel.join()
-						.then(function (connection) {
-							play(connection, message);
-						})
+				//vérifie si le serveur est déjà dans la liste
+				if (!servers[message.guild.id]) servers[message.guild.id] = {
+					queue: []
 				};
 
-			}, 3000);
+				//l'ajoute alors
+				var server = servers[message.guild.id];
+
+				//récupere le *play <song> et supprime *play pour mettre que le lien de la musique
+				server.queue.push(String(args).substring(5));
+
+				var YouTubeTimeSec; //utile pour après
+				var YouTubeUploader;
+				var YouTubeViews;
+
+				//Ajoute les infos pour le embed
+				YTDL.getInfo(args[1], function (err, info) {
+
+					YouTubeTimeSec = info.length_seconds; //défini en secondes
+					YouTubeViews = info.view_count;
+
+					YouTubeUploader = info.author.name;
+					YouTubeTitle = info.title; //récupere le titre
+					YouTubeThumbnail = info.thumbnail_url; //récupere la minia
+					YouTubeLink = info.video_url; //récupere le lien de la vidéo
+
+					var date = new Date(null); //défini comme null la date
+					date.setSeconds(YouTubeTimeSec); //la défini avec des secondes
+
+					var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+
+					YouTubeTime = result;
+				})
+
+				setTimeout(() => {
+
+					embed = new Discord.RichEmbed()
+						//défini la couleur embed en vert
+						.setColor("#00ff00")
+
+						//miniature + lien vers la vidéo en cliquant sur la minia
+						.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
+
+						//petit logo à gauche du titre
+						.setAuthor("Song added", "https://cdn.iconscout.com/public/images/icon/premium/png-512/volume-high-song-sound-35c8ba26d38fbd69-512x512.png")
+						.setTitle(YouTubeTitle)
+
+						.addField("Uploaded by", YouTubeUploader, true)
+						.addField("Duration", "**" + YouTubeTime + "**", true) //temps
+
+						.addBlankField()
+
+						.addField("Views", YouTubeViews, true)
+						.addField("Link", "[Click here](" + YouTubeLink + ")", true)
+						/*.setAuthor(YouTubeTitle, message.author.avatarURL)
+						Code qui permet de définir le titre et le logo du demandeur
+						*/
+
+
+						.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
+
+					Mess_Channel.send(embed).then(function () {
+						lastMess3 = Mess_Channel.lastMessage;
+						lastMessID3 = Mess_Channel.lastMessageID;
+						setTimeout(() => {
+							deleteMyMessageID(lastMess3, lastMessID3);
+						}, YouTubeTimeSec * 1000);
+					})
+
+					if (!message.guild.voiceConnection) {
+						message.member.voiceChannel.join()
+							.then(function (connection) {
+								play(connection, message);
+							})
+					};
+
+				}, 3000);
+			} catch (error) {
+				console.log("Erreur dans le play, quelque chose ne va pas: " + error)
+			}
 
 
 			break;
@@ -534,9 +540,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 			})
 
 			break;
-		case "Kappa":
-			message.sendFolder (images/Kappahd.png)
-			
+		case "kappa":
+			setTimeout(() => {
+				message.delete(MessageID)
+			}, 750);
+
+			//message.sendFolder(images / Kappahd.png)
+			Mess_Channel.send("", { file: __dirname + "/images/Kappahd.png" })
+
 			break;
 		//----------
 		default:
@@ -547,15 +558,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 			Mess_Channel.send("Commande non reconnue.").then(function () {
 				lastMess = Mess_Channel.lastMessage;
 				lastMessID = Mess_Channel.lastMessageID;
-				setTimeout(() => {
-					deleteMyMessageID(lastMess, lastMessID)
-				}, 10000);
 
 				setTimeout(() => {
 					lastMess.react("❓");
 				}, 250);
 
-
+				setTimeout(() => {
+					deleteMyMessageID(lastMess, lastMessID)
+				}, 10000);
 			})
 
 			break;
