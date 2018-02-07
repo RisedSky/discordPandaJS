@@ -534,7 +534,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 			})
 
 			break;
-
+		case "Kappa":
+			Promise.resolve({upload: path.join(__dirname, '../../images/Kappahd.png')})
+			
+			break;
 		//----------
 		default:
 			setTimeout(() => {
