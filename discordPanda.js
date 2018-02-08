@@ -164,14 +164,16 @@ bot.on('message', message => { //Quand une personne envoit un message
 	var Mess_Member = message.member;
 	var Mess_voiceChannel = message.member.voiceChannel;
 
+	setTimeout(() => {
+		message.delete(MessageID);
+	}, 750);
+
 	switch (args[0].toLowerCase()) {
 
 		// - - Musique
 		case "play":
 			try {
-				setTimeout(() => {
-					message.delete(MessageID);
-				}, 750);
+
 
 				if (!args[1]) {
 					message.react("❌");
@@ -294,9 +296,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 		//-------
 		case "skip":
-			setTimeout(() => {
-				message.delete(MessageID);
-			}, 750);
 
 			if (!Mess_voiceChannel) {
 				message.reply("Tu dois être dans un salon vocal").then(function () {
@@ -345,7 +344,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//-------
 		case "stop":
-			message.delete(MessageID);
 
 			var server = servers[message.guild.id];
 
@@ -365,7 +363,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//-------
 		case "queue":
-			message.delete(MessageID);
 
 			var argsQueue = message.content.substring(5).split(" ");
 			var server = servers[message.guild.id];
@@ -393,8 +390,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 		// - - Musique
 		//-----------
 		case "say":
-			message.delete(MessageID);
-
 			const SayMessage = message.content.substr(4);
 
 			if (message.member.roles.some(r => ["Staff", "Développeur"].includes(r.name))) {
@@ -413,10 +408,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 		//----------
 		case "ping":
-			setTimeout(() => {
-				message.delete(MessageID);
-			}, 750);
-
 			message.reply("J'ai actuellement un ping de: " + parseInt(bot.ping) + " ms :ping_pong:").then(function () {
 				lastMess = Mess_Channel.lastMessage;
 				lastMessID = Mess_Channel.lastMessageID;
@@ -428,10 +419,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//----------
 		case "purge": //Ajouter la possibilité de supprimer uniquement les messages du bot (genre *purge-bot 100)
 			let can_manage_chans = message.channel.permissionsFor(message.member).hasPermission("MANAGE_MESSAGES");
-
-			setTimeout(function () {
-				message.delete(MessageID);
-			}, 500);
 
 			var NumberToDelete = message.content.substr(7);
 
@@ -498,9 +485,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//-----------
 		case "restart":
-			setTimeout(() => {
-				message.delete(MessageID);
-			}, 750);
 			Mess_Channel.send("Redémarrage en cours ...");
 			bot.user.setStatus("invisible");
 			bot.disconnect;
@@ -520,9 +504,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			args[2] = parseInt(args[2]);
 
 			try {
-				setTimeout(() => {
-					message.delete(MessageID)
-				}, 750);
 
 				var argsQueue = message.content.substring(12).split(" ");
 				var argMini = args[1];
@@ -547,16 +528,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//--------
 		case "poll":
-			setTimeout(() => {
-				message.delete(MessageID);
-			}, 750);
 			message.reply("La commande `*poll` n'est pas encore disponible, elle viendra soon :tm: :wink:");
 			break;
 		//--------
 		case "kappa":
-			setTimeout(() => {
-				message.delete(MessageID)
-			}, 750);
 
 			//Ancien code: message.sendFolder(images / Kappahd.png)
 			Mess_Channel.send("", { file: __dirname + "/images/Kappahd.png" })
@@ -564,9 +539,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//--------
 		case "help":
-			setTimeout(() => {
-				message.delete(MessageID);
-			}, 500);
 
 			embed = new Discord.RichEmbed()
 				.setColor(225, 0, 0)
@@ -604,9 +576,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//----------
 		default:
-			setTimeout(() => {
-				message.delete(MessageID);
-			}, 750);
 
 			Mess_Channel.send("Commande non reconnue.").then(function () {
 				lastMess = Mess_Channel.lastMessage;
