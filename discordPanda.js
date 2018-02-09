@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const YTDL = require("ytdl-core");
+const URL = require('url');
 //const moment = require("moment");
 const bot = new Discord.Client();
 
@@ -199,6 +200,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				}
 
 				var parsed = URL.parse(args[1]);
+
 				var YouTubeTimeSec;
 				var YouTubeUploader;
 				var YouTubeViews;
