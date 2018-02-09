@@ -125,7 +125,7 @@ bot.on('guildMemberAdd', member => {
 			defaultChannel.send("Bienvenue sur le serveur officiel du serveur Boti-Panda,  <@" + member.id + ">")
 			setTimeout(
 				function () {
-					RoleMember = await message.guild.roles.find("name", "Membre");
+					RoleMember = message.guild.roles.find("name", "Membre");
 					member.addRole(RoleMember);
 				}, 3000
 			);
