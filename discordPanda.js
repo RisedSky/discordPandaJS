@@ -124,7 +124,7 @@ bot.on('guildMemberAdd', member => {
 
 	console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
 
-	if (member.guild.id = DefaultGuildID) {
+	if (member.guild.id === DefaultGuildID) {
 		try {
 			const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES") && c.type === 'text');
 
@@ -329,6 +329,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					}, 4000);
 				})
 				return;
+
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
 				message.reply("Tu ne dois pas être deafen.").then(function () {
 					lastMess = Mess_Channel.lastMessage;
@@ -337,6 +338,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					}, 10000);
 				})
 				return;
+
 			} else if (Mess_voiceChannel.name != message.guild.voiceConnection.channel.name) {
 				message.reply("Tu n'es pas dans mon salon vocal.").then(function () {
 					lastMess = Mess_Channel.lastMessage;
@@ -354,12 +356,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 				server.dispatcher.end();
 			}
 
-			message.reply("Successfuly skipped the currently song").then(function () {
-				lastMess = Mess_Channel.lastMessage;
-				setTimeout(() => {
-					deleteMyMessageID(lastMess)
-				}, 10000);
-			});
+			message.reply("Successfuly skipped the currently song")
+				.then(function () {
+					lastMess = Mess_Channel.lastMessage;
+					setTimeout(() => {
+						deleteMyMessageID(lastMess)
+					}, 10000);
+				});
 
 			break;
 		//-------
@@ -473,17 +476,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			setTimeout(function () {
 				message.channel.bulkDelete(NumberToDelete);
-				message.channel.send("Nettoyage en cours...").then(function () {
-					lastMess = Mess_Channel.lastMessage;
-
-					setTimeout(() => {
-						deleteMyMessageID(lastMess)
-					}, 1500)
-
-				}, 1500);
-
-				setTimeout(function () {
-					message.channel.send("Nettoyage terminé ! :white_check_mark:").then(function () {
+				message.channel.send("Nettoyage en cours...")
+					.then(function () {
 						lastMess = Mess_Channel.lastMessage;
 
 						setTimeout(() => {
@@ -491,6 +485,17 @@ bot.on('message', message => { //Quand une personne envoit un message
 						}, 1500)
 
 					}, 1500);
+
+				setTimeout(function () {
+					message.channel.send("Nettoyage terminé ! :white_check_mark:")
+						.then(function () {
+							lastMess1 = Mess_Channel.lastMessage;
+
+							setTimeout(() => {
+								deleteMyMessageID(lastMess1)
+							}, 1500)
+
+						}, 1500);
 				}, 1700)
 			}, 1000)
 
@@ -509,8 +514,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//-------
 		case "randomnumber":
-			if (!args[1]) return;
-			if (!args[2]) return;
+			if (!args[1]) {
+				Mess.reply("You need to add a number (first should be the minimum)")
+				return;
+			} if (!args[2]) {
+				Mess.reply("You need to add a number (second should be the maximum)")
+				return;
+			}
 
 			args[1] = parseInt(args[1]);
 			args[2] = parseInt(args[2]);
