@@ -549,7 +549,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			Mess_Channel.send("", { file: __dirname + "/images/Kappahd.png" })
 
 			break;
-		//--------
+		//-------
 		case "help":
 
 			embed = new Discord.RichEmbed()
@@ -558,6 +558,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.setThumbnail(message.author.avatarURL)
 				.setDescription("Créé par RisedSky & LePandaFou77")
 				//Musique
+				//.addField(prefix + "help music", "Affiche toutes les commandes **music** du bot !")
 				.addField(prefix + "play <lien de la musique>", "Le bot va rejoindre ton channel et va jouer de la musique")
 				.addField(prefix + "skip", "Le bot va ignorer la musique actuelle")
 				.addField(prefix + "stop", "Le bot va arrêter de jouer de la musique")
@@ -585,6 +586,33 @@ bot.on('message', message => { //Quand une personne envoit un message
 			})
 
 			break;
+		/*case "help music":
+			embed = new Discord.RichEmbed()
+				.setColor(225, 0, 0)
+				.setAuthor("Voici la liste de toutes les commandes", bot.user.avatarURL)
+				.setThumbnail(message.author.avatarURL)
+				.setDescription("Créé par RisedSky & LePandaFou77")
+				//Musique
+				.addField(prefix + "play <lien de la musique>", "Le bot va rejoindre ton channel et va jouer de la musique")
+				.addField(prefix + "stop", "Le bot va arrêter de jouer de la musique")
+				.addField(prefix + "skip", "Le bot va ignorer la musique actuelle")
+				.addField(prefix + "queue", "Affiche la liste des musiques **(Expérimental)**")
+
+				.addField(prefix + "help", "Affiche toutes les commandes du bot !")
+				.addField(prefix + "help music", "Affiche toutes les commandes **music** du bot !")
+
+				//.addField("*Join", "Le bot va rejoindre ton channel")
+
+				.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
+
+			Mess_Channel.send(embed).then(function () {
+				lastMess = Mess_Channel.lastMessage;
+				setTimeout(() => {
+					deleteMyMessageID(lastMess)
+				}, 30000);
+			})
+
+			break;*/
 		//----------
 		default:
 
