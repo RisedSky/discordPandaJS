@@ -40,8 +40,6 @@ var DernierEmbedIDDuBot;
 
 var CommandList = ["restart", "leave", "join", "", ""];
 
-
-
 function ChangeState1() {
 	bot.user.setActivity(prefix + "help | By RisedSky & LePandaFou77");
 	setTimeout(ChangeState2, 15000);
@@ -145,10 +143,10 @@ bot.on('guildMemberAdd', member => {
 })
 
 bot.on('guildCreate', Guild => {
-	console.log("I just join the server: " + Guild.name + " | ID: " + Guild.id)
+	console.log("I just join the server: '" + Guild.name + "' | ID: " + Guild.id)
 
 	if (!whitelistedServer.indexOf(Guild.id)) {
-		console.log("I just left the server: " + Guild.name + " | ID: " + Guild.id);
+		console.log("I just left the server: '" + Guild.name + "' | ID: " + Guild.id);
 		Guild.leave();
 		return;
 	} else {
@@ -158,8 +156,12 @@ bot.on('guildCreate', Guild => {
 	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
 	console.log(defaultChannel.name)
 
-	defaultChannel.send("Hey! I'm **" + bot.user.username + "**\n\nYou can use **`" + prefix + "help`** to see my commands.");
+	msgToSend = [];
+	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
+	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
+	msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
 
+	defaultChannel.send(msgToSend);
 
 })
 
