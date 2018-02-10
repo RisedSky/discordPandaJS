@@ -9,13 +9,13 @@
   "dependencies": {
     "discord.js": "11.3.0",
     "opusscript": "0.0.6",
-    "ultron":"1.1.1",
-    "ws":"4.0.0",
-    "ytdl-core":"0.20.1",
+    "ultron": "1.1.1",
+    "ws": "4.0.0",
+    "ytdl-core": "0.20.1",
     "ffmpeg": "0.0.4",
     "ffmpeg-node": "0.0.2",
     "ffmpeg-binaries": "3.2.2-3",
     "request": "2.83.0",
-    "url": "0.11.0"    
+    "url": "0.11.0"
   }
 }

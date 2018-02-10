@@ -28,6 +28,8 @@ var YouTubeTitle; //Défini le titre de la vidéo
 var YouTubeTime; //Défini le temps de la vidéo
 var YouTubeLink; //Défini le lien de la vidéo
 
+var PlayingMusic;
+
 //Défini les derniers messages du bot
 var DernierMessageDuBot;
 var DernierMessageIDDuBot;
@@ -37,6 +39,8 @@ var DernierEmbedDuBot;
 var DernierEmbedIDDuBot;
 
 var CommandList = ["restart", "leave", "join", "", ""];
+
+
 
 function ChangeState1() {
 	bot.user.setActivity(prefix + "help | By RisedSky & LePandaFou77");
@@ -65,7 +69,7 @@ function deleteMyMessageID(message) {
 		message.delete(750);
 
 	} catch (error) {
-		console.log("Problem on ligne 51 : " + error)
+		console.log("Problem on ligne 72: " + error)
 	}
 }
 
@@ -81,15 +85,17 @@ function play(connection, message) {
 	server.dispatcher.on("end", function () {
 		if (server.queue[0]) {
 
+
 			play(connection, message);
 		} else {
 			//connection.disconnect;
 			if (message.guild.voiceConnection) {
-				message.channel.send("Finished the queue from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:").then(function () {
-					setTimeout(() => {
-						deleteMyMessageID(message.channel.lastMessage);
-					}, 10000);
-				});
+				message.channel.send("Finished the queue from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:")
+					.then(function () {
+						setTimeout(() => {
+							deleteMyMessageID(message.channel.lastMessage);
+						}, 10000);
+					});
 				message.guild.voiceConnection.disconnect();
 			}
 		}
@@ -116,20 +122,19 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 })
 
 bot.on('guildMemberAdd', member => {
-	//Quand une personne rejoint un de mes serveurs discord du bot
+	//Quand une personne rejoint un des serveurs discord du bot
 
 	console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
-	const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES"));
 
 	if (member.guild.id = DefaultGuildID) {
 		try {
+			const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES") && c.type === 'text');
+
 			defaultChannel.send("Bienvenue sur le serveur officiel du serveur Boti-Panda,  <@" + member.id + ">")
-			setTimeout(
-				function () {
-					RoleMember = message.guild.roles.find("name", "Membre");
-					member.addRole(RoleMember);
-				}, 3000
-			);
+			setTimeout(function () {
+				RoleMember = message.guild.roles.find("name", "Membre");
+				member.addRole(RoleMember);
+			}, 3000);
 		} catch (error) {
 			console.log("Erreur: " + error);
 		}
@@ -145,9 +150,17 @@ bot.on('guildCreate', Guild => {
 	if (!whitelistedServer.indexOf(Guild.id)) {
 		console.log("I just left the server: " + Guild.name + " | ID: " + Guild.id);
 		Guild.leave();
+		return;
 	} else {
-		console.log("server whatlisted")
+		console.log("server whitelisted")
 	}
+
+	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
+	console.log(defaultChannel.name)
+
+	defaultChannel.send("Hey! I'm **" + bot.user.username + "**\n\nYou can use **`" + prefix + "help`** to see my commands.");
+
+
 })
 
 bot.on('message', message => { //Quand une personne envoit un message
@@ -199,6 +212,17 @@ bot.on('message', message => { //Quand une personne envoit un message
 					return;
 				}
 
+				//vérifie si le serveur est déjà dans la liste
+				if (!servers[message.guild.id]) servers[message.guild.id] = {
+					queue: []
+				};
+
+				//l'ajoute alors
+				var server = servers[message.guild.id];
+
+				var MusicLink = message.content.split("&");
+				console.log(MusicLink)
+
 				var parsed = URL.parse(args[1]);
 
 				var YouTubeTimeSec;
@@ -214,6 +238,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					} else if (parsed.host.match(/(www\.)?soundcloud.com/i)) {
 						console.log("C'est du soundcloud")
 
+
 					}
 
 				} else {
@@ -223,32 +248,19 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				}
 
-				var MusicLink = message.content.split("&");
-				console.log(MusicLink)
-
-				//vérifie si le serveur est déjà dans la liste
-				if (!servers[message.guild.id]) servers[message.guild.id] = {
-					queue: []
-				};
-
-				//l'ajoute alors
-				var server = servers[message.guild.id];
-
-
-
 				//Ajoute les infos pour le embed
 				YTDL.getInfo(args[1], function (err, info) {
 
 					YouTubeTimeSec = info.length_seconds; //défini en secondes
-					YouTubeViews = info.view_count;
+					YouTubeViews = info.view_count; //défini le nombre de vues de la vidéo
 
-					YouTubeUploader = info.author.name;
+					YouTubeUploader = info.author.name; //récupere le nom du YTBeur
 					YouTubeTitle = info.title; //récupere le titre
 					YouTubeThumbnail = info.thumbnail_url; //récupere la minia
 					YouTubeLink = info.video_url; //récupere le lien de la vidéo
 
 					var date = new Date(null); //défini comme null la date
-					date.setSeconds(YouTubeTimeSec); //la défini avec des secondes
+					date.setSeconds(YouTubeTimeSec); //défini la date avec des secondes
 
 					var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
 
@@ -280,14 +292,15 @@ bot.on('message', message => { //Quand une personne envoit un message
 						/*.setAuthor(YouTubeTitle, message.author.avatarURL)
 						Code qui permet de définir le titre et le logo du demandeur
 						*/
-						.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
+						.setFooter("Asked by " + Mess_Member.displayName + " • ID: " + Mess_Member.id)
 
-					Mess_Channel.send(embed).then(function () {
-						lastMess1 = Mess_Channel.lastMessage;
-						setTimeout(() => {
-							deleteMyMessageID(lastMess1)
-						}, YouTubeTimeSec * 1000);
-					})
+					Mess_Channel.send(embed)
+						.then(function () {
+							lastMessEmbed = bot.user.lastMessageID;
+							setTimeout(() => {
+								deleteMyMessageID(lastMessEmbed)
+							}, YouTubeTimeSec * 1000);
+						})
 
 					if (!message.guild.voiceConnection) {
 						message.member.voiceChannel.join()
@@ -596,6 +609,10 @@ Site 1 : https://emojiterra.com
 Site 2 : http://smiley.cool/fr/twitter-emoji.php
 */
 
+bot.on('voiceStateUpdate', GuildMember => {
+	console.log(GuildMember.displayName)
+	//console.log("voiceStateUpdate =>" + GuildMember.voiceChannel.name);
+})
 
 bot.on('messageReactionAdd', MessageReaction => {
 	//En cours de création, risque de crash ou de problème technique si utilisé.
