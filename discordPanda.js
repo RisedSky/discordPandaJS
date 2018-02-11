@@ -4,12 +4,8 @@ const URL = require('url');
 //const moment = require("moment");
 const bot = new Discord.Client();
 
-// 406356765748232194 = Official Server
-// 356891225715900427 = Rised-bot Server
-// 368837055993741323 = Benpoke Server
-// 410876225754759169 = ZenDev - Test Bot
-const whitelistedServer = [406356765748232194, 356891225715900427, 368837055993741323, 410876225754759169]
-const DefaultGuildID = 406356765748232194;
+var whitelistedServer = require("./whitelistServer.js");
+const DefaultGuildID = 412262889156771842;
 
 //--------Dev----------
 var BOT_TOKEN = process.env.BOT_TOKEN;
@@ -21,6 +17,8 @@ var prefix = "*";
 var prefixLog = "[!] ";
 var servers = {};
 //var embed = new Discord.RichEmbed();
+var EmojiGreenTickString = "<:greenTick:411970302533435393>";
+var EmojiRedTickString = "<:redTick:411970302843551754>";
 
 //Pour le request song
 var YouTubeThumbnail; //Défini la miniature
@@ -41,7 +39,7 @@ var DernierEmbedIDDuBot;
 var CommandList = ["restart", "leave", "join", "", ""];
 
 function ChangeState1() {
-	bot.user.setActivity(prefix + "help | By RisedSky & LePandaFou77");
+	bot.user.setActivity(prefix + "help | By RisedSky & PLfightX");
 	setTimeout(ChangeState2, 15000);
 }
 
@@ -104,7 +102,7 @@ function play(connection, message) {
 bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	bot.user.setStatus("online")
 	console.log("------------------------------")
-	console.log(prefixLog + "Bot created by RisedSky & LePandaFou77 <3")
+	console.log(prefixLog + "Bot created by RisedSky & PLfightX <3")
 	console.log(prefixLog + "All rights reserved")
 	console.log(prefixLog + "Bot ready")
 	console.log("------------------------------")
@@ -177,10 +175,19 @@ bot.on('message', message => { //Quand une personne envoit un message
 	var Mess_Member = message.member;
 	var Mess_voiceChannel = message.member.voiceChannel;
 
-	message.delete(750);
+	try {
+		message.delete(750)
+	} catch (error) {
+		console.log("Can't delete this message: " + error)
+	}
 
 	switch (args[0].toLowerCase()) {
 
+
+		/*case "whitelist":
+			Mess_Channel.send(whitelistedServer.WhiteListServer);
+
+			break;*/
 		// - - Musique
 		case "play":
 			try {
@@ -554,9 +561,47 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//--------
 		case "kappa":
-
-			//Ancien code: message.sendFolder(images / Kappahd.png)
 			Mess_Channel.send("", { file: __dirname + "/images/Kappahd.png" })
+			break;
+		//-------
+		case "verif-perms":
+			const SEND_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("SEND_MESSAGES") && message.channel.type === 'text'
+			const MANAGE_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("MANAGE_MESSAGES") && message.channel.type === 'text'
+			const ADMINISTRATORPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADMINISTRATOR") && message.channel.type === 'text'
+			const USE_EXTERNAL_EMOJISPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("USE_EXTERNAL_EMOJIS") && message.channel.type === 'text'
+			var PermissionYes = EmojiGreenTickString;
+			var PermissionNo = EmojiRedTickString;
+
+			//console.log(bot.emojis.array())
+
+			/*if (SEND_MESSAGESPerm) PermissionYes
+			else PermissionNo*/
+
+			function PermissionCheck(PermToCheck) {
+				if (PermToCheck === true) {
+					return PermissionYes;
+				} else {
+					return PermissionNo;
+				}
+			}
+
+			embed = new Discord.RichEmbed()
+				.setColor("green")
+				.setAuthor("Permissions check", bot.user.avatarURL)
+				.setThumbnail(message.author.avatarURL)
+				.setDescription("Looking permission for **<#" + Mess_Channel.id + ">**")
+
+				.addField("SEND_MESSAGES", PermissionCheck(SEND_MESSAGESPerm), true)
+				.addField("MANAGE_MESSAGES", PermissionCheck(MANAGE_MESSAGESPerm), true)
+				.addField("ADMINISTRATOR", PermissionCheck(ADMINISTRATORPerm), true)
+				.addField("USE_EXTERNAL_EMOJIS", PermissionCheck(USE_EXTERNAL_EMOJISPerm), true)
+
+				.setFooter("Asked by " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
+
+			Mess_Channel.send(embed);
+
+			//message.guild.me).hasPermissions("SEND_MESSAGES") && c.type === 'text')
+			//const truc = message.guild.channels.find(c => c.permissionsFor(message.guild.me).hasPermissions("SEND_MESSAGES") && c.type === 'text')
 
 			break;
 		//-------
@@ -566,7 +611,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.setColor(225, 0, 0)
 				.setAuthor("Voici la liste de toutes les commandes", bot.user.avatarURL)
 				.setThumbnail(message.author.avatarURL)
-				.setDescription("Créé par RisedSky & LePandaFou77")
+				.setDescription("Créé par RisedSky & PLfightX")
 				//Musique
 				//.addField(prefix + "help music", "Affiche toutes les commandes **music** du bot !")
 				.addField(prefix + "play <lien de la musique>", "Le bot va rejoindre ton channel et va jouer de la musique")
@@ -578,7 +623,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "ping", "Affiche le ping du bot")
 				.addField(prefix + "purge", "Nettoie un nombre de message donné **(Max 100)**")
 				.addField(prefix + "restart", "Redémarre le bot **(Expérimental)**")
-				.addField(prefix + "randomNumber", "Génère un nombre entre un chiffre et un autre | **ex: " + prefix + "randomnumber 2 50**")
+				.addField(prefix + "randomnumber", "Génère un nombre entre un chiffre et un autre | **ex: " + prefix + "randomnumber 2 50**")
 				.addField(prefix + "poll", "Soon :tm:")
 				.addField(prefix + "kappa", "Kappa")
 
@@ -586,7 +631,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				//.addField("*Join", "Le bot va rejoindre ton channel")
 
-				.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
+				.setFooter("Asked by " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
 
 			Mess_Channel.send(embed).then(function () {
 				lastMess = Mess_Channel.lastMessage;
@@ -596,36 +641,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 			})
 
 			break;
-		/*case "help music":
-			embed = new Discord.RichEmbed()
-				.setColor(225, 0, 0)
-				.setAuthor("Voici la liste de toutes les commandes", bot.user.avatarURL)
-				.setThumbnail(message.author.avatarURL)
-				.setDescription("Créé par RisedSky & LePandaFou77")
-				//Musique
-				.addField(prefix + "play <lien de la musique>", "Le bot va rejoindre ton channel et va jouer de la musique")
-				.addField(prefix + "stop", "Le bot va arrêter de jouer de la musique")
-				.addField(prefix + "skip", "Le bot va ignorer la musique actuelle")
-				.addField(prefix + "queue", "Affiche la liste des musiques **(Expérimental)**")
-
-				.addField(prefix + "help", "Affiche toutes les commandes du bot !")
-				.addField(prefix + "help music", "Affiche toutes les commandes **music** du bot !")
-
-				//.addField("*Join", "Le bot va rejoindre ton channel")
-
-				.setFooter("Demandé par " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
-
-			Mess_Channel.send(embed).then(function () {
-				lastMess = Mess_Channel.lastMessage;
-				setTimeout(() => {
-					deleteMyMessageID(lastMess)
-				}, 30000);
-			})
-
-			break;*/
 		//----------
 		default:
-
 			Mess_Channel.send("Commande non reconnue.").then(function () {
 				lastMess = Mess_Channel.lastMessage;
 
