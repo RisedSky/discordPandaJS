@@ -1,7 +1,7 @@
 ## discordPandaJS
 
 A big thanks to the bêta-tester :
-Skelever, PLfightX
+Skelever, Sloper39, NizZ_FR
 
 ## If you want to contribute to the project
 
@@ -9,10 +9,10 @@ Just fork the project, then modify what you want, and do a pull request, we will
 
 ## For Updates and help
 
-[![Discord](https://discordapp.com/api/guilds/406356765748232194/widget.png)](https://discord.gg/3KNnDAP)
+[![Discord](https://discordapp.com/api/guilds/412262889156771842/widget.png)](https://discord.gg/t2DFzWx)
 
-| [![twitter](https://cdn.discordapp.com/attachments/155726317222887425/252192520094613504/twiter_banner.JPG)](https://twitter.com/) | [![discord](https://cdn.discordapp.com/attachments/266240393639755778/281920766490968064/discord.png)](https://discord.gg/3KNnDAP) |
+| [![twitter](https://cdn.discordapp.com/attachments/155726317222887425/252192520094613504/twiter_banner.JPG)](https://twitter.com/) | [![discord](https://cdn.discordapp.com/attachments/266240393639755778/281920766490968064/discord.png)](https://discord.gg/t2DFzWx) |
 | --- | --- |
 | **Soon** | **Join my Discord server for some help / updates.** |
 
-Our official server : https://discord.gg/3KNnDAP
+Our official server : https://discord.gg/t2DFzWx
