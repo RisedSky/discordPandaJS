@@ -18,8 +18,13 @@ var prefix = "*";
 var prefixLog = "[!] ";
 var servers = {};
 //var embed = new Discord.RichEmbed();
+
 var EmojiGreenTickString = "<:greenTick:411970302533435393>";
 var EmojiRedTickString = "<:redTick:411970302843551754>";
+
+var PermissionYes = EmojiGreenTickString;
+var PermissionNo = EmojiRedTickString;
+
 
 //Pour le request song
 var YouTubeThumbnail; //Défini la miniature
@@ -57,7 +62,7 @@ function ChangeState3() {
 
 function deleteMyMessageID(message) {
 	try {
-		if (message.author.name != bot.user.name) {
+		if (!message.author.name === bot.user.name) {
 			console.log("Not me")
 			return;
 		}
@@ -67,6 +72,14 @@ function deleteMyMessageID(message) {
 
 	} catch (error) {
 		console.log("Problem on ligne 72: " + error)
+	}
+}
+
+function PermissionCheck(PermToCheck) {
+	if (PermToCheck === true) {
+		return PermissionYes;
+	} else {
+		return PermissionNo;
 	}
 }
 
@@ -348,13 +361,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 				return;
 
-			} else if (Mess_voiceChannel.name != message.guild.voiceConnection.channel.name) {
-				message.reply("Tu n'es pas dans mon salon vocal.").then(function () {
-					lastMess = Mess_Channel.lastMessage;
-					setTimeout(() => {
-						deleteMyMessageID(lastMess)
-					}, 4000);
-				})
+			} else if (!Mess_voiceChannel.name === message.guild.voiceConnection.channel.name) {
+				message.reply("Tu n'es pas dans mon salon vocal.")
+					.then(function () {
+						lastMess = Mess_Channel.lastMessage;
+						setTimeout(() => {
+							deleteMyMessageID(lastMess)
+						}, 4000);
+					})
 				return;
 			}
 			//console.log("User: " + Mess_voiceChannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
@@ -423,13 +437,15 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "say":
 			const SayMessage = message.content.substr(4);
 
-			if (message.member.roles.some(r => ["Staff", "Développeur"].includes(r.name))) {
+			let member_has_ADMINISTRATOR = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("ADMINISTRATOR") && message.channel.type === 'text'
+
+			if (member_has_ADMINISTRATOR) {
 				Mess_Channel.send(SayMessage);
 			} else {
-				message.reply("Vous n'avez pas la permission.").then(function () {
-					lastMess = Mess_Channel.lastMessage;
+				message.reply("Vous n'avez pas la permission. **(ADMINISTRATOR)**").then(function () {
+					lastMessSay = Mess_Channel.lastMessage;
 					setTimeout(() => {
-						deleteMyMessageID(lastMess)
+						deleteMyMessageID(lastMessSay)
 					}, 10000)
 				})
 			}
@@ -446,12 +462,23 @@ bot.on('message', message => { //Quand une personne envoit un message
 			})
 			break;
 		//----------
-		case "purge": //Ajouter la possibilité de supprimer uniquement les messages du bot (genre *purge-bot 100)
-			let can_manage_chans = message.channel.permissionsFor(message.member).hasPermission("MANAGE_MESSAGES");
+		case "purge":
+			//Ajouter la possibilité de supprimer uniquement les messages du bot (genre *purge-bot 100)
+			//let can_manage_chans = message.channel.permissionsFor(message.member).hasPermission("MANAGE_MESSAGES");
+
+
+			//Vérfie si la personne a bien la perm MANAGE_MESSAGES
+			let member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
+
+			//Vérifie si le bot à la perm MANAGE_MESSAGES
+			let BOT_HAS_MANAGE_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 
 			var NumberToDelete = message.content.substr(7);
 
-			if (NumberToDelete < 0) {
+			if (!BOT_HAS_MANAGE_MESSAGESPerm) {
+				message.reply("Malheureusement, je n'ai pas la permission **(MANAGE_MESSAGES)**.");
+				return;
+			} else if (NumberToDelete < 0) {
 				message.reply("Merci de mettre un nombre de message à purger").then(function () {
 					lastMess = Mess_Channel.lastMessage;
 
@@ -471,7 +498,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 
 				return;
-			} else if (!can_manage_chans) {
+			} else if (!member_has_MANAGE_MESSAGES) {
 				message.reply("Malheureusement, tu n'as pas la permission **(MANAGE_MESSAGES)**.").then(function () {
 					lastMess = Mess_Channel.lastMessage;
 
@@ -496,7 +523,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					}, 1500);
 
 				setTimeout(function () {
-					message.channel.send("Nettoyage terminé ! :white_check_mark:")
+					message.channel.send("Nettoyage terminé ! " + EmojiGreenTickString)
 						.then(function () {
 							lastMess1 = Mess_Channel.lastMessage;
 
@@ -558,6 +585,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}
 			break;
 		//--------
+		case "randomuser":
+			console.log(
+				message.guild.memberCount
+			)
+			break;
+		//--------
+
 		case "poll":
 			message.reply("La commande `*poll` n'est pas encore disponible, elle viendra soon :tm: :wink:");
 			break;
@@ -571,27 +605,19 @@ bot.on('message', message => { //Quand une personne envoit un message
 			const MANAGE_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 			const ADMINISTRATORPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADMINISTRATOR") && message.channel.type === 'text'
 			const USE_EXTERNAL_EMOJISPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("USE_EXTERNAL_EMOJIS") && message.channel.type === 'text'
-			var PermissionYes = EmojiGreenTickString;
-			var PermissionNo = EmojiRedTickString;
 
 			//console.log(bot.emojis.array())
 
 			/*if (SEND_MESSAGESPerm) PermissionYes
 			else PermissionNo*/
 
-			function PermissionCheck(PermToCheck) {
-				if (PermToCheck === true) {
-					return PermissionYes;
-				} else {
-					return PermissionNo;
-				}
-			}
+			
 
 			embed = new Discord.RichEmbed()
 				.setColor("green")
-				.setAuthor("Permissions check", bot.user.avatarURL)
+				.setAuthor("Permissions checking", bot.user.avatarURL)
 				.setThumbnail(message.author.avatarURL)
-				.setDescription("Looking permission for **<#" + Mess_Channel.id + ">**")
+				.setDescription("Looking **my** permission for **<#" + Mess_Channel.id + ">**")
 
 				.addField("SEND_MESSAGES", PermissionCheck(SEND_MESSAGESPerm), true)
 				.addField("MANAGE_MESSAGES", PermissionCheck(MANAGE_MESSAGESPerm), true)
