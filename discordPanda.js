@@ -5,6 +5,7 @@ const URL = require('url');
 const bot = new Discord.Client();
 
 var whitelistedServer = require("./whitelistServer.js");
+var StringWhitelistServer = String(whitelistedServer);
 const DefaultGuildID = 412262889156771842;
 
 //--------Dev----------
@@ -143,7 +144,8 @@ bot.on('guildMemberAdd', member => {
 bot.on('guildCreate', Guild => {
 	console.log("I just join the server: '" + Guild.name + "' | ID: " + Guild.id)
 
-	if (!whitelistedServer.indexOf(Guild.id)) {
+
+	if (!StringWhitelistServer.indexOf(Guild.id)) {
 		console.log("I just left the server: '" + Guild.name + "' | ID: " + Guild.id);
 		Guild.leave();
 		return;
@@ -190,37 +192,37 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;*/
 		// - - Musique
 		case "play":
+			if (!args[1]) {
+				message.react("❌");
+				message.reply("Merci de spécifier un lien").then(function () {
+					lastMess = Mess_Channel.lastMessage;
+					setTimeout(() => {
+						deleteMyMessageID(lastMess)
+					}, 4000);
+				})
+				return;
+
+			} else if (!Mess_voiceChannel) {
+				message.react("❌");
+				message.reply("Tu dois être dans un salon vocal").then(function () {
+					lastMess = Mess_Channel.lastMessage;
+					setTimeout(() => {
+						deleteMyMessageID(lastMess)
+					}, 4000);
+				})
+				return;
+			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
+				message.react("❌");
+				message.reply("Tu ne dois pas être deafen.").then(function () {
+					lastMess = Mess_Channel.lastMessage;
+					setTimeout(() => {
+						deleteMyMessageID(lastMess)
+					}, 4000);
+				})
+				return;
+			}
+
 			try {
-				if (!args[1]) {
-					message.react("❌");
-					message.reply("Merci de spécifier un lien").then(function () {
-						lastMess = Mess_Channel.lastMessage;
-						setTimeout(() => {
-							deleteMyMessageID(lastMess)
-						}, 4000);
-					})
-					return;
-
-				} else if (!Mess_voiceChannel) {
-					message.react("❌");
-					message.reply("Tu dois être dans un salon vocal").then(function () {
-						lastMess = Mess_Channel.lastMessage;
-						setTimeout(() => {
-							deleteMyMessageID(lastMess)
-						}, 4000);
-					})
-					return;
-				} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
-					message.react("❌");
-					message.reply("Tu ne dois pas être deafen.").then(function () {
-						lastMess = Mess_Channel.lastMessage;
-						setTimeout(() => {
-							deleteMyMessageID(lastMess)
-						}, 4000);
-					})
-					return;
-				}
-
 				//vérifie si le serveur est déjà dans la liste
 				if (!servers[message.guild.id]) servers[message.guild.id] = {
 					queue: []
