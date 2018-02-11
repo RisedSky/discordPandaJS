@@ -22,6 +22,8 @@ var servers = {};
 var EmojiGreenTickString = "<:greenTick:411970302533435393>";
 var EmojiRedTickString = "<:redTick:411970302843551754>";
 
+//test
+
 var PermissionYes = EmojiGreenTickString;
 var PermissionNo = EmojiRedTickString;
 
