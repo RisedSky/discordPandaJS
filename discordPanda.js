@@ -771,7 +771,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			Mess_Channel.send(embed).then(function () {
 				lastMessHelp = message.guild.me.lastMessage;
 				setTimeout(() => {
-					deleteMyMessageID(lastMess)
+					deleteMyMessageID(lastMessHelp)
 				}, 30000);
 			})
 
