@@ -887,7 +887,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//----------
 		default:
 			Mess_Channel.send("Commande non reconnue." + EmojiThonkongString).then(function () {
-				lastMess = message.guild.me.lastMessage();
+				lastMess = message.guild.me.lastMessage;
 				setTimeout(() => {
 					lastMess.react("❓");
 					lastMess.react(EmojiThonkong);
