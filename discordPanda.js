@@ -643,6 +643,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//-----------
 		// - - Musique
 		//-----------
+
+		/*case "google":
+
+		break;*/
+		//----------
 		case "say":
 			const SayMessage = message.content.substr(4);
 
@@ -660,9 +665,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 		//----------
 		case "ping":
-			message.reply("My ping is: " + parseInt(bot.ping) + " ms :ping_pong:").then(function () {
-				deleteMyMessage(message.guild.me.lastMessage, 15000);
-			})
+			Mess_Channel.send("My ping is: ?").then(function (newMessage) {
+				newMessage.edit("My ping is: " + (newMessage.createdTimestamp - message.createdTimestamp) + ' ms :ping_pong:');
+			});
 			break;
 		//----------
 		case "purge":
@@ -701,24 +706,29 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 
 				return;
+			} else if (!args[1]) {
+				message.reply("You didn't put the number of message you want to clear.").then(function () {
+					deleteMyMessage(message.guild.me.lastMessage, 6000);
+				})
+
+				return;
 			}
 
-			setTimeout(function () {
-				message.channel.bulkDelete(NumberToDelete);
-				message.channel.send("Cleaning " + NumberToDelete + " messages... :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
-					.then(function () {
-						deleteMyMessage(message.guild.me.lastMessage, 4500);
-					}, 1500);
-
+			try {
 				setTimeout(function () {
-					message.channel.send("The channel is now like a new one ! :wink: " + EmojiGreenTickString)
-						.then(function () {
+					message.channel.bulkDelete(NumberToDelete);
+					message.channel.send("Cleaning " + NumberToDelete + " messages... :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
+						.then(function (newMessage) {
+							setTimeout(() => {
+								newMessage.edit("The channel is now like a new one ! :wink: " + EmojiGreenTickString)
+							}, 2500);
 							deleteMyMessage(message.guild.me.lastMessage, 6500);
+						});
+				}, 1400)
 
-						}, 1500);
-				}, 1700)
-			}, 1400)
-
+			} catch (error) {
+				console.log("Purge problem: " + error)
+			}
 			break;
 		//-----------
 		case "restart":
@@ -851,6 +861,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				.addBlankField()
 
+				//.addField(prefix + "google", "Donne le lien de votre recherche")
 				.addField(prefix + "say", "Commande pour faire parler le bot **(Requiert la perm 'ADMINISTRATOR')**")
 				.addField(prefix + "ping", "Affiche le ping du bot")
 				.addField(prefix + "purge", "Nettoie un nombre de message donné **(Max 100)**")
@@ -860,7 +871,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "kappa", "Kappa", true)
 
 				.addBlankField()
-				
+
 				.addField(prefix + "invite", "Give you the invite link to add me ! *(Actually you need to MP risedsky to add your server in the whitelist)*")
 				.addField(prefix + "help", "Affiche toutes les commandes du bot !")
 
