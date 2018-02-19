@@ -883,7 +883,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.setFooter("Asked by " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
 
 			Mess_Channel.send(embed).then(function () {
-				deleteMyMessage(message.guild.me.lastMessage, 60000);
+				deleteMyMessage(message.guild.me.lastMessage, 120 * 1000);
 			})
 
 			break;
