@@ -416,13 +416,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 			console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
 			setTimeout(() => {
 				Mess.react(EmojiGreenTick)
-			}, 500);
 
-			setTimeout(() => {
 				Mess.react(EmojiRedTick)
-
 				channelTopic = "";
-			}, 750);
+			}, 500);
 			return;
 		} else if (channelTopic.includes("<wait:")) {
 			//doit trouver où est le wait pour récuperer le nombre (en terme de timeout en s).
@@ -433,7 +430,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 
 			console.log("Waitsearch: " + waitsearch + " -- waitNumber: " + waitNumber + " -- waitnumber1: " + waitnumber1)
+		}else if(channelTopic.includes("<nocmds>")){
+			return;
 		}
+
 	} catch (error) {
 		console.log("channeTopic problem: " + error);
 	}
@@ -862,7 +862,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "skip", "The bot will skip your music")
 				.addField(prefix + "stop", "Le bot va arrêter de jouer de la musique")
 				.addField(prefix + "queue", "Affiche la liste des musiques")
-
 				.addBlankField()
 
 				//.addField(prefix + "google", "Donne le lien de votre recherche")
