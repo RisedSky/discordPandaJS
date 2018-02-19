@@ -362,8 +362,8 @@ function play(connection, message) {
 		var user = server.queue[0]["user"];
 
 		//console.log("Le play => " + message)
-		console.log("[play] serveur queue [0] => " + server.queue[0])
-		console.log("[play] message.content => " + message.content)
+		//console.log("[play] serveur queue [0] => " + server.queue[0])
+		//console.log("[play] message.content => " + message.content)
 
 		server.dispatcher = connection.playStream(
 			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus" })
@@ -376,8 +376,9 @@ function play(connection, message) {
 
 		server.dispatcher.on("end", function () {
 			if (server.queue[0]) {
-				play(connection, message);
-
+				setTimeout(() => {
+					play(connection, message);
+				}, 1000);
 			} else {
 				//connection.disconnect;
 				if (message.guild.voiceConnection) {
@@ -388,9 +389,11 @@ function play(connection, message) {
 					message.guild.voiceConnection.disconnect();
 				}
 			}
-		});
 
-		server.queue.splice(0, 1);
+			setTimeout(() => {
+				server.queue.splice(0, 1);
+			}, 1500);
+		})
 
 	} catch (error) {
 		console.log("[play] Function play: " + error)
@@ -412,6 +415,17 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 	var channelTopic = String(message.channel.topic).toLowerCase();
 
+	//vérifie si le serveur est déjà dans la liste
+	if (!servers[message.guild.id]) {
+		servers[message.guild.id] = {
+			queue: [],
+			now_playing_data: {}
+		}
+	}
+
+	//l'ajoute alors
+	var server = servers[message.guild.id];
+
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
@@ -432,7 +446,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 
 			console.log("Waitsearch: " + waitsearch + " -- waitNumber: " + waitNumber + " -- waitnumber1: " + waitnumber1)
-		}else if(channelTopic.includes("<nocmds>")){
+		} else if (channelTopic.includes("<nocmds>")) {
 			return;
 		}
 
@@ -443,18 +457,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 	if (!message.content.startsWith(prefix)) return;
 
 	try {
-		message.delete(1000)
+		message.delete(1000);
 	} catch (error) {
 		console.log("Can't delete this message: " + error)
 	}
-
-	//vérifie si le serveur est déjà dans la liste
-	if (!servers[message.guild.id]) servers[message.guild.id] = {
-		queue: []
-	};
-
-	//l'ajoute alors
-	var server = servers[message.guild.id];
 
 	switch (args[0].toLowerCase()) {
 
@@ -563,10 +569,20 @@ bot.on('message', message => { //Quand une personne envoit un message
 						deleteMyMessage(message.guild.me.lastMessage, 6000);
 					})
 				return;
+			} else if (!server.queue[0]) {
+				message.reply("I didn't found any musics after the one i'm playing.")
+				return;
 			}
 			//console.log("User: " + Mess_voiceChannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
 
 			console.log(server.dispatcher);
+
+			var video_id = server.queue[0]["id"];
+			var title = server.queue[0]["title"];
+			var user = server.queue[0]["user"];
+
+			server.now_playing_data["title"] = title;
+			server.now_playing_data["user"] = user;
 
 			/*if (currentlySong === null) {
 				message.reply("No music is actually playing.").then(function () {
@@ -576,11 +592,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}*/
 
 			if (server.dispatcher) {
-				server.dispatcher.end();
-				message.reply("Successfuly skipped the song: " + currentlySong)
+				message.reply("Successfuly skipped the song.\n\nNow playing: `" + title + "` *(requested by " + user + ")*")
 					.then(function () {
-						deleteMyMessage(message.guild.me.lastMessage, 10000);
+						deleteMyMessage(message.guild.me.lastMessage, 30000);
 					});
+				server.dispatcher.end();
 			}
 
 			break;
@@ -837,12 +853,13 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//-------
 		case "invite":
 			try {
+				
 				message.author.createDM();
 				message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
 				message.author.send("And here is the link of my official discord server: https://discord.gg/t2DFzWx")
 
 			} catch (error) {
-				message.reply("Your DM are closed. I can't DM you :worried: ").then(function(){
+				message.reply("Your DM are closed. I can't DM you :worried: ").then(function () {
 					deleteMyMessage(message.guild.me.lastMessage, 5000);
 				})
 				console.log("Invite error: " + error + " | User: " + message.author.username)
@@ -856,7 +873,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.setColor(225, 0, 0)
 				.setAuthor("Voici la liste de toutes les commandes", bot.user.avatarURL)
 				.setThumbnail(message.author.avatarURL)
-				.setDescription("Créé par RisedSky & PLfightX")
+				.setDescription("* Créé par RisedSky & PLfightX *")
 				//Musique
 				//.addField(prefix + "help music", "Affiche toutes les commandes **music** du bot !")
 				.addField(prefix + "play [title/music's link]", "The bot will join your server and will play your music")
@@ -872,8 +889,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "purge", "Nettoie un nombre de message donné **(Max 100)**")
 				//.addField(prefix + "restart", "Redémarre le bot **(Expérimental)**")
 				.addField(prefix + "randomnumber", "Génère un nombre entre un chiffre et un autre | **ex: " + prefix + "randomnumber 2 50**")
-				.addField(prefix + "poll", "Soon :tm:", true)
-				.addField(prefix + "kappa", "Kappa", true)
+				.addField(prefix + "poll", "Soon :tm:")
+				.addField(prefix + "kappa", "Kappa")
 
 				.addBlankField()
 
@@ -891,7 +908,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//----------
 		default:
-			Mess_Channel.send("Commande non reconnue." + EmojiThonkongString).then(function () {
+			Mess_Channel.send("Commande non reconnue. " + EmojiThonkongString).then(function () {
 				lastMess = message.guild.me.lastMessage;
 				setTimeout(() => {
 					lastMess.react("❓");
