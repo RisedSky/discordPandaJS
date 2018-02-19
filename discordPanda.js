@@ -667,6 +667,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "ping":
 			Mess_Channel.send("My ping is: ?").then(function (newMessage) {
 				newMessage.edit("My ping is: " + (newMessage.createdTimestamp - message.createdTimestamp) + ' ms :ping_pong:');
+				deleteMyMessage(message.guild.me.lastMessage, 7000);
 			});
 			break;
 		//----------
