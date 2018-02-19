@@ -628,7 +628,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					.addBlankField();
 
 				for (var i in xQueue) {
-					embedQueue.addField(+"[" + i + "] » " + xQueue[i]['title'], "*requested by " + xQueue[i]['user'] + "*")
+					embedQueue.addField("[" + i + "] » " + xQueue[i]['title'], "*requested by " + xQueue[i]['user'] + "*")
 				}
 
 				embedQueue.addBlankField();
