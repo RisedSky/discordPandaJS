@@ -112,6 +112,76 @@ function PermissionCheck(PermToCheck) {
 	}
 }
 
+
+bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
+	bot.user.setStatus("online")
+	console.log("------------------------------")
+	console.log(prefixLog + "Bot created by RisedSky & PLfightX <3")
+	console.log(prefixLog + "All rights reserved")
+	console.log(prefixLog + "Bot ready")
+	console.log("------------------------------")
+
+	bot.user.setActivity(prefix + "help | Started and ready !");
+	setTimeout(ChangeState1, 20000);
+	console.log("The bot is now ready !")
+	if (bot.user.client.guilds.exists("fetchAuditLogs", "ban")) {
+		console.log("Il y'a eu des bans");
+	} else {
+		console.log("Pas eu de ban");
+	}
+
+})
+
+bot.on('guildMemberAdd', member => {
+	//Quand une personne rejoint un des serveurs discord du bot
+
+	console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
+
+	if (member.guild.id == DefaultGuildID) {
+		try {
+			const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES") && c.type === 'text');
+
+			defaultChannel.send("Bienvenue sur le serveur officiel Boti-Panda,  <@" + member.id + ">")
+			console.log(member.guild.roles.find("name", "Bêta-Tester").id);
+			RoleMember = member.guild.roles.find("name", "Bêta-Tester").id;
+
+			setTimeout(function () {
+				member.addRole(RoleMember);
+			}, 3000);
+		} catch (error) {
+			console.log("guildMemberAddError : " + error);
+		}
+	} else {
+		return;
+	}
+
+})
+
+bot.on('guildCreate', Guild => {
+	console.log("I just join the server: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name)
+
+
+	if (!StringWhitelistServer.indexOf(Guild.id)) {
+		console.log("I just left the server: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
+		Guild.leave();
+		return;
+	} else {
+		console.log("server whitelisted")
+	}
+
+	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
+	console.log(defaultChannel.name)
+
+	msgToSend = [];
+	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
+	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
+	msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
+
+	defaultChannel.send(msgToSend);
+
+})
+
+
 //#region "Functions pour la musique"
 
 function search_video(message, query, playit) {
@@ -328,74 +398,6 @@ function play(connection, message) {
 }
 
 //#endregion
-
-bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
-	bot.user.setStatus("online")
-	console.log("------------------------------")
-	console.log(prefixLog + "Bot created by RisedSky & PLfightX <3")
-	console.log(prefixLog + "All rights reserved")
-	console.log(prefixLog + "Bot ready")
-	console.log("------------------------------")
-
-	bot.user.setActivity(prefix + "help | Started and ready !");
-	setTimeout(ChangeState1, 20000);
-	console.log("The bot is now ready !")
-	if (bot.user.client.guilds.exists("fetchAuditLogs", "ban")) {
-		console.log("Il y'a eu des bans");
-	} else {
-		console.log("Pas eu de ban");
-	}
-
-})
-
-bot.on('guildMemberAdd', member => {
-	//Quand une personne rejoint un des serveurs discord du bot
-
-	console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
-
-	if (member.guild.id === DefaultGuildID) {
-		try {
-			const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES") && c.type === 'text');
-
-			defaultChannel.send("Bienvenue sur le serveur officiel Boti-Panda,  <@" + member.id + ">")
-			console.log(member.guild.roles.find("name", "Bêta-Tester").id);
-			RoleMember = member.guild.roles.find("name", "Bêta-Tester").id;
-
-			setTimeout(function () {
-				member.addRole(RoleMember);
-			}, 3000);
-		} catch (error) {
-			console.log("guildMemberAddError : " + error);
-		}
-	} else {
-		return;
-	}
-
-})
-
-bot.on('guildCreate', Guild => {
-	console.log("I just join the server: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name)
-
-
-	if (!StringWhitelistServer.indexOf(Guild.id)) {
-		console.log("I just left the server: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
-		Guild.leave();
-		return;
-	} else {
-		console.log("server whitelisted")
-	}
-
-	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
-	console.log(defaultChannel.name)
-
-	msgToSend = [];
-	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
-	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
-	msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-
-	defaultChannel.send(msgToSend);
-
-})
 
 bot.on('message', message => { //Quand une personne envoit un message
 	if (message.author.bot) return;
