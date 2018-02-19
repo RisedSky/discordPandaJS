@@ -839,6 +839,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 				message.author.send("And here is the link of my official discord server: https://discord.gg/t2DFzWx")
 
 			} catch (error) {
+				message.reply("Your DM are closed. I can't DM you :worried: ").then(function(){
+					deleteMyMessage(message.guild.me.lastMessage, 5000);
+				})
 				console.log("Invite error: " + error + " | User: " + message.author.username)
 			}
 
