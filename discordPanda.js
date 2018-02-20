@@ -932,7 +932,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "purge", "Nettoie un nombre de message donné **(Max 100)**")
 				//.addField(prefix + "restart", "Redémarre le bot **(Expérimental)**")
 				.addField(prefix + "randomnumber", "Génère un nombre entre un chiffre et un autre | **ex: " + prefix + "randomnumber 2 50**")
-				.addField(prefix + "poll", "Soon :tm:")
+				.addField(prefix + "poll", "Permet de poser une question à deux réponses | **ex: " + prefix + "poll Question ? | réponse 1 | réponse 2")
 				.addField(prefix + "kappa", "Kappa")
 
 				.addBlankField()
