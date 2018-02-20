@@ -434,6 +434,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 	//l'ajoute alors
 	var server = servers[message.guild.id];
 
+	if (!message.content.startsWith(prefix)) return;
+
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
@@ -465,8 +467,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 	} catch (error) {
 		console.log("channeTopic problem: " + error);
 	}
-
-	if (!message.content.startsWith(prefix)) return;
 
 	try {
 		message.delete(1000);
@@ -516,7 +516,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 					} else if (parsed.host.match(/(www\.)?soundcloud.com/i)) {
 						console.log("C'est du soundcloud")
-						message.reply("Soundcloud n'est pas encore pris en compte soon :tm:").then(function (){
+						message.reply("Soundcloud n'est pas encore pris en compte soon :tm:").then(function () {
 							deleteMyMessage(message.guild.me.lastMessage, 2500)
 						})
 						return;
@@ -842,20 +842,20 @@ bot.on('message', message => { //Quand une personne envoit un message
 			message.delete(750);
 			cont = message.content
 			b1 = cont.indexOf(" | ")
-			b2 = cont.indexOf(" | ", cont.indexOf(" | ")+3)
-			question = cont.substr(5, b1-5);
-			prop1 = cont.substr(b1+3, b2-b1-3);
-			prop2 = cont.substr(b2+3);
+			b2 = cont.indexOf(" | ", cont.indexOf(" | ") + 3)
+			question = cont.substr(5, b1 - 5);
+			prop1 = cont.substr(b1 + 3, b2 - b1 - 3);
+			prop2 = cont.substr(b2 + 3);
 			if (question == "" || prop1 == "" || prop2 == "") break;
 			embed = new Discord.RichEmbed()
 				.setColor("DARK_PURPLE")
-				.setAuthor("Sondage de "+message.member.displayName, message.author.displayAvatarURL)
+				.setAuthor("Sondage de " + message.member.displayName, message.author.displayAvatarURL)
 				.setTitle(question)
 				.addField(prop1, ":one:", true)
 				.addField(prop2, ":two:", true);
 
 			Mess_Channel.send(embed)
-				.then(function(message) {
+				.then(function (message) {
 					message.react("1%E2%83%A3")
 					message.react("2%E2%83%A3")
 				});
