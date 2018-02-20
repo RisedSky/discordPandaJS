@@ -363,6 +363,9 @@ function play(connection, message) {
 		var title = server.queue[0]["title"];
 		var user = server.queue[0]["user"];
 
+		server.now_playing_data["title"] = title;
+		server.now_playing_data["user"] = user;
+
 		//console.log("Le play => " + message)
 		//console.log("[play] serveur queue [0] => " + server.queue[0])
 		//console.log("[play] message.content => " + message.content)
@@ -377,6 +380,11 @@ function play(connection, message) {
 		//console.log(currentlySong)
 
 		server.dispatcher.on("end", function () {
+
+			if (!server.loopit) {
+				server.queue.splice(0, 1);
+			}
+
 			if (server.queue[0]) {
 				setTimeout(() => {
 					play(connection, message);
@@ -390,12 +398,6 @@ function play(connection, message) {
 
 					message.guild.voiceConnection.disconnect();
 				}
-			}
-
-			if (!server.loopit) {
-				setTimeout(() => {
-					server.queue.splice(0, 1);
-				}, 1500);
 			}
 
 		})
@@ -453,6 +455,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			console.log("Waitsearch: " + waitsearch + " -- waitNumber: " + waitNumber + " -- waitnumber1: " + waitnumber1)
 		} else if (channelTopic.includes("<nocmds>")) {
+			message.react(EmojiRedTick)
+			setTimeout(() => {
+				message.clearReactions();
+			}, 800);
 			return;
 		}
 
@@ -500,7 +506,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				if (parsed && parsed.host) {
 					// YouTube URL
 					if (parsed.host.match(/(www\.)?youtube.com|(www\.)?youtu.be/i)) {
-						console.log("C'est du youtube")
+						console.log("C'est un lien youtube")
 						console.log(args[1]);
 
 						q = args[1];
@@ -510,7 +516,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 					} else if (parsed.host.match(/(www\.)?soundcloud.com/i)) {
 						console.log("C'est du soundcloud")
-						message.reply("Soundcloud n'est pas encore pris en compte")
+						message.reply("Soundcloud n'est pas encore pris en compte soon :tm:").then(function (){
+							deleteMyMessage(message.guild.me.lastMessage, 2500)
+						})
 						return;
 					}
 
@@ -522,8 +530,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 					for (var i = 1; i < argsSearch.length; i++) {
 						q += argsSearch[i] + " ";
 					}
-					console.log(argsSearch)
-					console.log("q => " + q)
+					//console.log(argsSearch)
+					//console.log("q => " + q)
 					search_video(message, q, true);
 					return;
 				}
@@ -559,7 +567,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "skip":
 
 			if (!Mess_voiceChannel) {
-				message.reply("You should be in a vocal channel before asking me to play some musics.").then(function () {
+				message.reply("You should be in a vocal channel before asking me to skip some musics.").then(function () {
 					deleteMyMessage(message.guild.me.lastMessage, 6000);
 				})
 				return;
@@ -575,20 +583,17 @@ bot.on('message', message => { //Quand une personne envoit un message
 						deleteMyMessage(message.guild.me.lastMessage, 6000);
 					})
 				return;
-			} else if (!server.queue[0]) {
-				message.reply("I didn't found any musics after the one i'm playing.")
+			} else if (!server.queue[1]) {
+				message.reply("I didn't found any other music.")
 				return;
 			}
 			//console.log("User: " + Mess_voiceChannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
 
 			console.log(server.dispatcher);
 
-			var video_id = server.queue[0]["id"];
-			var title = server.queue[0]["title"];
-			var user = server.queue[0]["user"];
-
-			server.now_playing_data["title"] = title;
-			server.now_playing_data["user"] = user;
+			video_id = server.queue[1]["id"];
+			title = server.queue[1]["title"];
+			user = server.queue[1]["user"];
 
 			/*if (currentlySong === null) {
 				message.reply("No music is actually playing.").then(function () {
@@ -598,13 +603,17 @@ bot.on('message', message => { //Quand une personne envoit un message
 			}*/
 
 			if (server.dispatcher) {
-				message.reply("Successfuly skipped the song.\n\nNow playing: `" + title + "` *(requested by " + user + ")*")
-					.then(function () {
-						deleteMyMessage(message.guild.me.lastMessage, 30000);
+				var msg = [];
+				msg.push("Successfuly skipped the song: `" + server.now_playing_data["title"] + "` *(requested by " + server.now_playing_data["user"] + ")* \n\n");
+				msg.push("Now playing: `" + title + "` *(requested by " + user + ")*")
+				message.reply(msg).then(function () {
+					deleteMyMessage(message.guild.me.lastMessage, 45 * 1000);
 					});
 				server.dispatcher.end();
 			}
 
+			server.now_playing_data["title"] = title;
+			server.now_playing_data["user"] = user;
 			break;
 		//-------
 		case "stop":
@@ -915,7 +924,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.setColor(225, 0, 0)
 				.setAuthor("Voici la liste de toutes les commandes", bot.user.avatarURL)
 				.setThumbnail(message.author.avatarURL)
-				.setDescription("* Créé par RisedSky & PLfightX *")
+				.setDescription("*Created by RisedSky & PLfightX - And obviously helped by the bêta-testers.*")
 				//Musique
 				//.addField(prefix + "help music", "Affiche toutes les commandes **music** du bot !")
 				.addField(prefix + "play [title/music's link]", "The bot will join your server and will play your music")
@@ -924,6 +933,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "stop", "Stop the music")
 				.addField(prefix + "queue", "Music's list")
 				.addField(prefix + "loop", "Will loop the currently song for ever")
+
 				.addBlankField()
 
 				//.addField(prefix + "google", "Donne le lien de votre recherche")
