@@ -228,7 +228,9 @@ function add_to_queue(video, message, playit) {
 
 			if (playit) {
 				if (!message.guild.voiceConnection) {
+					server.loopit = false;
 					message.member.voiceChannel.join().then(function (connection) {
+						if (!message.guild.me.serverDeaf) { message.guild.me.setDeaf(true, "Save bot's bandwith") }
 
 						play(connection, message);
 					})
@@ -390,9 +392,12 @@ function play(connection, message) {
 				}
 			}
 
-			setTimeout(() => {
-				server.queue.splice(0, 1);
-			}, 1500);
+			if (!server.loopit) {
+				setTimeout(() => {
+					server.queue.splice(0, 1);
+				}, 1500);
+			}
+
 		})
 
 	} catch (error) {
@@ -419,7 +424,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 	if (!servers[message.guild.id]) {
 		servers[message.guild.id] = {
 			queue: [],
-			now_playing_data: {}
+			now_playing_data: {},
+			loopit: Boolean
 		}
 	}
 
@@ -656,7 +662,24 @@ bot.on('message', message => { //Quand une personne envoit un message
 				console.log("Queue command problem: " + error)
 			}
 			break;
-
+		//----------
+		case "loop":
+			try {
+				if (server.loopit) {
+					server.loopit = false;
+					message.reply("The currently song won't be repeated :wink: " + EmojiGreenTickString).then(function () {
+						deleteMyMessage(message.guild.me.lastMessage, 10000);
+					})
+				} else {
+					server.loopit = true;
+					message.reply("The currently song will be repeated :wink: " + EmojiGreenTickString).then(function () {
+						deleteMyMessage(message.guild.me.lastMessage, 10000);
+					})
+				}
+			} catch (error) {
+				console.log("Loop error: " + error)
+			}
+			break;
 		//#endregion
 		//-----------
 		// - - Musique
@@ -740,8 +763,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 						.then(function (newMessage) {
 							setTimeout(() => {
 								newMessage.edit("The channel is now like a new one ! :wink: " + EmojiGreenTickString)
+								deleteMyMessage(message.guild.me.lastMessage, 800);
 							}, 2500);
-							deleteMyMessage(message.guild.me.lastMessage, 6500);
 						});
 				}, 1400)
 
@@ -853,7 +876,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//-------
 		case "invite":
 			try {
-				
+
 				message.author.createDM();
 				message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
 				message.author.send("And here is the link of my official discord server: https://discord.gg/t2DFzWx")
@@ -879,8 +902,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "play [title/music's link]", "The bot will join your server and will play your music")
 				.addField(prefix + "search", "Search a music link **(with embed info like " + prefix + "play)**")
 				.addField(prefix + "skip", "The bot will skip your music")
-				.addField(prefix + "stop", "Le bot va arrêter de jouer de la musique")
-				.addField(prefix + "queue", "Affiche la liste des musiques")
+				.addField(prefix + "stop", "Stop the music")
+				.addField(prefix + "queue", "Music's list")
+				.addField(prefix + "loop", "Will loop the currently song for ever")
 				.addBlankField()
 
 				//.addField(prefix + "google", "Donne le lien de votre recherche")
