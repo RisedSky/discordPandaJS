@@ -434,8 +434,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 	//l'ajoute alors
 	var server = servers[message.guild.id];
 
-	if (!message.content.startsWith(prefix)) return;
-
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
@@ -457,6 +455,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			console.log("Waitsearch: " + waitsearch + " -- waitNumber: " + waitNumber + " -- waitnumber1: " + waitnumber1)
 		} else if (channelTopic.includes("<nocmds>")) {
+			if (!message.content.startsWith(prefix)) return;
+
 			message.react(EmojiRedTick)
 			setTimeout(() => {
 				message.clearReactions();
@@ -467,6 +467,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 	} catch (error) {
 		console.log("channeTopic problem: " + error);
 	}
+
+	if (!message.content.startsWith(prefix)) return;
+
 
 	try {
 		message.delete(1000);
@@ -608,7 +611,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				msg.push("Now playing: `" + title + "` *(requested by " + user + ")*")
 				message.reply(msg).then(function () {
 					deleteMyMessage(message.guild.me.lastMessage, 45 * 1000);
-					});
+				});
 				server.dispatcher.end();
 			}
 
@@ -694,9 +697,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 		// - - Musique
 		//-----------
 
-		/*case "google":
+		/*
+		case "google":
 
-		break;*/
+		break;
+		*/
 		//----------
 		case "say":
 			const SayMessage = message.content.substr(4);
@@ -902,6 +907,24 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			break;
 		//-------
+		/*case "staff":
+			try {
+				if(!args[1]){
+					message.reply("There is no text in your message");
+					return;
+				}
+
+				var msgStaff = message.content.substr(6);
+				
+
+
+
+			} catch (error) {
+				console.log(error)
+			}
+			break;
+			*/
+		//-------
 		case "invite":
 			try {
 
@@ -947,6 +970,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				.addBlankField()
 
+				//.addField(prefix + "staff", "Send a message to the staff")
 				.addField(prefix + "invite", "Give you the invite link to add me ! *(Actually you need to MP risedsky to add your server in the whitelist)*")
 				.addField(prefix + "help", "Affiche toutes les commandes du bot !")
 
