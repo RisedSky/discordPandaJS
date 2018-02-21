@@ -994,8 +994,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 		default:
 			Mess_Channel.send("Commande non reconnue. " + EmojiThonkongString).then(function (message) {
 				setTimeout(() => {
-					lastMess.react("❓");
-					lastMess.react(EmojiThonkong);
+					message.react("❓");
+					message.react(EmojiThonkong);
 				}, 250);
 				deleteMyMessage(message, 10000);
 			})
