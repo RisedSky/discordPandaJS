@@ -907,23 +907,31 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			break;
 		//-------
-		/*case "staff":
+		case "staff":
 			try {
-				if(!args[1]){
-					message.reply("There is no text in your message");
+				if (!args[1]) {
+					message.reply(EmojiRedTickString + " There is no text in your message.").then(function (message) {
+						deleteMyMessage(message, 15 * 1000)
+					});
 					return;
 				}
 
 				var msgStaff = message.content.substr(6);
-				
+				bot.fetchUser("145632403946209280").then(function (user) {
+					user.send("Message de: " + message.author.username + "#" + message.author.discriminator + " - ID: " + message.author.id +
+						"\nSur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id +
+						"\n(via la commande " + prefix + "staff) ```" + msgStaff + "```" +
+						"\n----------------------------------------------------------------------------------------------------------------------------------");
 
-
-
+					message.reply("Your message has been sent to my creator :wink: " + EmojiGreenTickString).then(function (message) {
+						deleteMyMessage(message, 5000)
+					})
+				})
 			} catch (error) {
 				console.log(error)
 			}
 			break;
-			*/
+
 		//-------
 		case "invite":
 			try {
@@ -970,7 +978,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				.addBlankField()
 
-				//.addField(prefix + "staff", "Send a message to the staff")
+				.addField(prefix + "staff", "Send a message to the staff")
 				.addField(prefix + "invite", "Give you the invite link to add me ! *(Actually you need to MP risedsky to add your server in the whitelist)*")
 				.addField(prefix + "help", "Affiche toutes les commandes du bot !")
 
