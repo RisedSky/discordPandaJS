@@ -740,9 +740,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "say":
 			const SayMessage = message.content.substr(4);
 
-			let member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
+			let themember_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 
-			if (member_has_MANAGE_MESSAGES) {
+			if (themember_has_MANAGE_MESSAGES) {
 				Mess_Channel.send(SayMessage);
 			} else {
 				message.reply("Vous n'avez pas la permission. **(MANAGE_MESSAGES)**").then(function (message) {
