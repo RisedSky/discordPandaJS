@@ -740,12 +740,12 @@ bot.on('message', message => { //Quand une personne envoit un message
 		case "say":
 			const SayMessage = message.content.substr(4);
 
-			let member_has_ADMINISTRATOR = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("ADMINISTRATOR") && message.channel.type === 'text'
+			let member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 
-			if (member_has_ADMINISTRATOR) {
+			if (member_has_MANAGE_MESSAGES) {
 				Mess_Channel.send(SayMessage);
 			} else {
-				message.reply("Vous n'avez pas la permission. **(ADMINISTRATOR)**").then(function (message) {
+				message.reply("Vous n'avez pas la permission. **(MANAGE_MESSAGES)**").then(function (message) {
 					deleteMyMessage(message, 10000);
 				})
 			}
