@@ -158,19 +158,38 @@ bot.on('guildMemberAdd', member => {
 })
 
 bot.on('guildCreate', Guild => {
-	console.log("I just join the server: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name)
-
-
-	if (!StringWhitelistServer.indexOf(Guild.id)) {
-		console.log("I just left the server: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
-		Guild.leave();
-		return;
-	} else {
-		console.log("server whitelisted")
-	}
 
 	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
-	console.log(defaultChannel.name)
+
+	var StringallListServers = "";
+	var allListServers = bot.guilds.array();
+
+	for (var i in whitelistedServer.WhiteListServer) {
+		//Debug => console.log(whitelistedServer.WhiteListServer[i])
+		StringallListServers += whitelistedServer.WhiteListServer[i] + ","
+	}
+
+	if (StringallListServers.includes(Guild.id)) {
+		console.log("YES ! A trouvé whitelist =>" + Guild.name)
+		console.log("The server i joined is whitelisted" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
+
+		defaultChannel.send(EmojiGreenTickString + " This server is whitelisted").then(function (message) {
+			deleteMyMessage(message, 1500)
+		})
+	}
+
+	if (!StringallListServers.includes(Guild.id)) {
+		console.log("YES ! A trouvé NOTwhitelist =>" + Guild.name)
+		console.log("I just left the server bcs it's not whitelisted: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
+
+		defaultChannel.send(EmojiGreenTickString + " This server is not whitelisted ! \nDM my creator to be whitelisted !")
+
+		setTimeout(() => {
+		Guild.leave();
+		}, 3000);
+
+		return;
+	}
 
 	msgToSend = [];
 	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
