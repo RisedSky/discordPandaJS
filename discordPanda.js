@@ -6,7 +6,9 @@ const request = require("request");
 const bot = new Discord.Client({ autoReconnect: true });
 
 var whitelistedServer = require("./whitelistServer.js");
-var StringWhitelistServer = String(whitelistedServer);
+var StringWhitelistServer = String(whitelistedServer.WhiteListServer);
+var BlackListUser = require("./blacklistUser.js");
+var StringBlackListUser = String(BlackListUser.BlackListUser);
 var DefaultGuildID = 412262889156771842;
 
 //--------Dev----------
@@ -25,22 +27,34 @@ var servers = {};
 
 //---- ALL EMOJIS ------
 //Emoji string
-var EmojiThonkongString = "<:thonkong:414071099517698059>";
-var EmojiGreenTickString = "<:greenTick:412663578009796619>";
-var EmojiRedTickString = "<:redTick:412663578051477505>";
-var EmojiYouTube_LogoString = "<:youtube-logo:413446051480076288>";
+var EmojiThonkongString = "<:thonkong:414071099517698059>"
+	, EmojiGreenTickString = "<:greenTick:412663578009796619>"
+	, EmojiRedTickString = "<:redTick:412663578051477505>"
+	, EmojiYouTube_LogoString = "<:youtube-logo:413446051480076288>"
+	, EmojiUpvoteString = "<upvote:416350074252034059>"
+	, EmojiDownvoteString = "<downvote:416350074168279061>"
+	, EmojiProhibitedString = "<prohibited:416350020355489803>"
+	, EmojiTwitchLogoString = "<twitchlogo:416350019780870146>"
 
 //Emoji 
-var EmojiThonkong = "thonkong:414071099517698059";
-var EmojiYouTube_Logo = "youtube-logo:413446051480076288";
-var EmojiGreenTick = "greenTick:412663578009796619"
-var EmojiRedTick = "redTick:412663578051477505";
+var EmojiThonkong = "thonkong:414071099517698059"
+	, EmojiYouTube_Logo = "youtube-logo:413446051480076288"
+	, EmojiGreenTick = "greenTick:412663578009796619"
+	, EmojiRedTick = "redTick:412663578051477505"
+	, EmojiUpvote = "upvote:416350074252034059"
+	, EmojiDownvote = "downvote:416350074168279061"
+	, EmojiProhibited = "prohibited:416350074168279061"
+	, EmojiTwitchLogo = "twitchlogo:416350019780870146"
 
 //Emoji ID
-var EmojiThonkong_ID = "414071099517698059";
-var YouTube_Logo_ID = "413446051480076288";
-var GreenTick_ID = "412663578009796619"
-var RedTick_ID = "412663578051477505";
+var Thonkong_ID = "414071099517698059"
+	, YouTube_Logo_ID = "413446051480076288"
+	, GreenTick_ID = "412663578009796619"
+	, RedTick_ID = "412663578051477505"
+	, upvote_ID = "416350074252034059"
+	, downvote_ID = "416350074168279061"
+	, prohibited_ID = "416350020355489803"
+	, TwitchLogo_ID = "416350019780870146"
 
 var PermissionYes = EmojiGreenTickString;
 var PermissionNo = EmojiRedTickString;
@@ -85,7 +99,7 @@ function ChangeState3() {
 function deleteMyMessage(message, time) {
 	if (time === null) {
 		time = 750;
-		console.log("time changed to 750 bcs it's null")
+		//console.log("time changed to 750 bcs it's null")
 	}
 
 	try {
@@ -93,10 +107,10 @@ function deleteMyMessage(message, time) {
 			//console.log("Not my message")
 			return;
 		}
-		console.log("deleted: " + message)
+		//console.log("deleted: " + message)
 		message.delete(time);
 	} catch (error) {
-		console.log("Problem on ligne 96: " + error)
+		console.log("Problem on deleteMyMessage function: " + error)
 	}
 }
 
@@ -124,7 +138,7 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 	bot.user.setActivity(prefix + "help | Started and ready !");
 	setTimeout(ChangeState1, 20000);
 	console.log("The bot is now ready !")
-	if (bot.user.client.guilds.exists("fetchAuditLogs", "ban")) {
+	if (bot.guilds.exists("fetchAuditLogs", "ban")) {
 		console.log("Il y'a eu des bans");
 	} else {
 		console.log("Pas eu de ban");
@@ -457,9 +471,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 		if (channelTopic.includes("<ideas>")) {
 			console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
 			setTimeout(() => {
-				Mess.react(EmojiGreenTick)
+				Mess.react(EmojiUpvote)
 
-				Mess.react(EmojiRedTick)
+				Mess.react(EmojiDownvote)
 				channelTopic = "";
 			}, 500);
 			return;
@@ -605,7 +619,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					})
 				return;
 			} else if (!server.queue[1]) {
-				message.reply("I didn't found any other music.").then(function (message){
+				message.reply("I didn't found any other music.").then(function (message) {
 					deleteMyMessage(message, 5000)
 				})
 				return;
