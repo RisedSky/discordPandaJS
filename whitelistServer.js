@@ -11,6 +11,6 @@ WhiteListServer.push(405092181519368192); //WindowsMe User Server
 WhiteListServer.push(389494042620329984); //Tard0sTV Server (Polyvalence)
 WhiteListServer.push(288001034083893248); //Tachyro Server
 WhiteListServer.push(307954526152032256); //Discrod Banane (Enoctes) Server
-console.log("Whitelist: " + WhiteListServer)
+//Debug => console.log("Whitelist: " + WhiteListServer)
 
 exports.WhiteListServer = WhiteListServer;
