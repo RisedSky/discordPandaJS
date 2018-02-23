@@ -876,7 +876,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			break;
 		//--------
 		case "poll":
-			message.delete(750);
 			cont = message.content
 			b1 = cont.indexOf(" | ")
 			b2 = cont.indexOf(" | ", cont.indexOf(" | ") + 3)
@@ -889,8 +888,10 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.setAuthor("Sondage de " + message.member.displayName, message.author.displayAvatarURL)
 				.setTitle(question)
 				.addField(prop1, ":one:", true)
-				.addField(prop2, ":two:", true);
+				.addField(prop2, ":two:", true)
 
+				.setFooter("Poll by " + message.author.username)
+				.setTimestamp();
 			Mess_Channel.send(embed)
 				.then(function (message) {
 					message.react("1%E2%83%A3")
