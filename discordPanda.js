@@ -377,6 +377,8 @@ function get_Video_Info(link, message, playit) {
 					*/
 
 					deleteMyMessage(message, YouTubeTimeSec * 1000);
+				}else{
+					deleteMyMessage(message, 600 * 1000)
 				}
 			})
 		}, 1000);
