@@ -209,6 +209,7 @@ bot.on('guildCreate', Guild => {
 	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
 	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
 	msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
+	msgToSend.push("Here is my discord server: https://discord.gg/t2DFzWx")
 
 	defaultChannel.send(msgToSend);
 
