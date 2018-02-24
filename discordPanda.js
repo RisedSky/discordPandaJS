@@ -253,10 +253,17 @@ function add_to_queue(video, message, playit) {
 	var server = servers[message.guild.id];
 
 	YTDL.getInfo("https://www.youtube.com/watch?v=" + video, (error, info) => {
-		var date = new Date(null); //défini comme null la date
-		date.setSeconds(YouTubeTimeSec); //défini la date avec des secondes
-		var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+		if (error) {
+			message.reply("The requested video (" + video + ") does not exist or cannot be played.").then(function (msg) {
+				deleteMyMessage(msg, 15000);
+			})
+			console.log("Error (" + video + "): " + error);
+			return;
+		}
 
+		var date = new Date(null); //défini comme null la date
+		date.setSeconds(info.length_seconds); //défini la date avec des secondes
+		var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
 
 		var YouTubeTimeSec = info.length_seconds //défini en secondes
 			, YouTubeViews = info.view_count //défini le nombre de vues de la vidéo
@@ -265,13 +272,6 @@ function add_to_queue(video, message, playit) {
 			, YouTubeThumbnail = info.thumbnail_url //récupere la minia
 			, YouTubeLink = info.video_url //récupere le lien de la vidéo
 			, YouTubeTime = result
-
-		if (error) {
-			message.reply("The requested video (" + video + ") does not exist or cannot be played.").then(function (msg) {
-				deleteMyMessage(msg, 15000);
-			})
-			console.log("Error (" + video + "): " + error);
-		} else {
 
 			if (playit) {
 				//Si on doit jouer la musique alors
@@ -343,7 +343,7 @@ function add_to_queue(video, message, playit) {
 						YouTubeTime: YouTubeTime
 					}
 				);
-			}
+
 
 			//get_Video_Info(video, message, playit)
 		};
@@ -483,8 +483,7 @@ function play(connection, message) {
 			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus" })
 		);
 
-		connection.volume = 0.5;
-		server.dispatcher.volume = 0.5;
+		server.dispatcher.setVolume(0.5);
 
 		//console.log(currentlySong)
 
