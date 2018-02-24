@@ -586,10 +586,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 		console.log("Can't delete this message: " + error)
 	}
 
-	message.channel.startTyping()
-	setTimeout(() => {
-		message.channel.stopTyping()
-	}, 1500);
 	switch (args[0].toLowerCase()) {
 
 
