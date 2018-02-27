@@ -1004,25 +1004,63 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//--------
 		case "poll":
 			cont = message.content
-			b1 = cont.indexOf(" | ")
-			b2 = cont.indexOf(" | ", cont.indexOf(" | ") + 3)
+			b1 = cont.indexOf(" | ");
+			b2 = cont.indexOf(" | ", b1 + 3);
+			b3 = cont.indexOf(" | ", b2 + 3);
+			if (b3 == -1) b3 = cont.length;
+			b4 = cont.indexOf(" | ", b3 + 3);
+			if (b4 == -1) b4 = cont.length;
+			b5 = cont.indexOf(" | ", b4 + 3);
+			if (b5 == -1) b5 = cont.length;
+			b6 = cont.indexOf(" | ", b5 + 3);
+			if (b6 == -1) b6 = cont.length;
+			b7 = cont.indexOf(" | ", b6 + 3);
+			if (b7 == -1) b7 = cont.length;
+			b8 = cont.indexOf(" | ", b7 + 3);
+			if (b8 == -1) b8 = cont.length;
+			b9 = cont.indexOf(" | ", b8 + 3);
+			if (b9 == -1) b9 = cont.length;
+
 			question = cont.substr(5, b1 - 5);
-			prop1 = cont.substr(b1 + 3, b2 - b1 - 3);
-			prop2 = cont.substr(b2 + 3);
+			prop1 = cont.substr(b1 + 3, b2-b1-3);
+			prop2 = cont.substr(b2 + 3, b3-b2-3);
+			prop3 = cont.substr(b3 + 3, b4-b3-3);
+			prop4 = cont.substr(b4 + 3, b5-b4-3);
+			prop5 = cont.substr(b5 + 3, b6-b5-3);
+			prop6 = cont.substr(b6 + 3, b7-b6-3);
+			prop7 = cont.substr(b7 + 3, b8-b7-3);
+			prop8 = cont.substr(b8 + 3, b9-b8-3);
+			prop9 = cont.substr(b9+3);
+
 			if (question == "" || prop1 == "" || prop2 == "") break;
+
 			embed = new Discord.RichEmbed()
 				.setColor("DARK_PURPLE")
 				.setAuthor("Sondage de " + message.member.displayName, message.author.displayAvatarURL)
 				.setTitle(question)
 				.addField(prop1, ":one:", true)
 				.addField(prop2, ":two:", true)
-
 				.setFooter("Poll by " + message.author.username)
 				.setTimestamp();
+
+			if (prop3 != "") embed.addField(prop3, ":three:", true);
+			if (prop4 != "") embed.addField(prop4, ":four:", true);
+			if (prop5 != "") embed.addField(prop5, ":five:", true);
+			if (prop6 != "") embed.addField(prop6, ":six:", true);
+			if (prop7 != "") embed.addField(prop7, ":seven:", true);
+			if (prop8 != "") embed.addField(prop8, ":eight:", true);
+			if (prop9 != "") embed.addField(prop9, ":nine:", true);
 			Mess_Channel.send(embed)
 				.then(function (msg) {
 					msg.react("1%E2%83%A3")
-					msg.react("2%E2%83%A3")
+					setTimeout(function(){msg.react("2%E2%83%A3")}, 1000);
+					setTimeout(function(){if (prop3 != "") msg.react("3%E2%83%A3")}, 2000);
+					setTimeout(function(){if (prop4 != "") msg.react("4%E2%83%A3")}, 3000);
+					setTimeout(function(){if (prop5 != "") msg.react("5%E2%83%A3")}, 4000);
+					setTimeout(function(){if (prop6 != "") msg.react("6%E2%83%A3")}, 5000);
+					setTimeout(function(){if (prop7 != "") msg.react("7%E2%83%A3")}, 6000);
+					setTimeout(function(){if (prop8 != "") msg.react("8%E2%83%A3")}, 7000);
+					setTimeout(function(){if (prop9 != "") msg.react("9%E2%83%A3")}, 8000);
 				});
 
 			break;
@@ -1135,7 +1173,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				.addField(prefix + "purge", "Clear a selected number of messages **(Max 100)**")
 				//.addField(prefix + "restart", "Redémarre le bot **(Expérimental)**")
 				.addField(prefix + "randomnumber", "Generate a number between one and another | **ex: " + prefix + "randomnumber 2 50**")
-				.addField(prefix + "poll", "Create a poll with **only** 2 answers | **ex: " + prefix + "poll Question ? | Answer1 | Answer2**")
+				.addField(prefix + "poll", "Create a poll with **at least** 2 answers and up to 9 | **ex: " + prefix + "poll Question ? | Answer1 | Answer2 | Answer3**")
 				.addField(prefix + "kappa", "Send a kappa image")
 
 				.addBlankField()
