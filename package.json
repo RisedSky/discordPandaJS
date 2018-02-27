@@ -16,6 +16,7 @@
     "ffmpeg-node": "0.0.2",
     "ffmpeg-binaries": "3.2.2-3",
     "request": "2.83.0",
-    "url": "0.11.0"
+    "url": "0.11.0",
+    "moment": "2.20.1"
   }
 }
