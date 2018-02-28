@@ -709,7 +709,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 			message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
 				deleteMyMessage(msg, 6500)
 			})
-
 			return;
 		} else if (channelTopic.includes("<autopurge:")) {
 			/*if(message.content.startsWith(prefix)){
@@ -720,8 +719,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			var array_purge_sec = channelTopic.split("<autopurge:")[1];
 			var purge_sec = array_purge_sec.split(":>")[0];
-			console.log(purge_sec)
+			//DEBUG => console.log(purge_sec)
 			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
+			return;
 		}
 
 	} catch (error) {
@@ -729,7 +729,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 	}
 
 	if (!message.content.startsWith(prefix)) return;
-
 
 	try {
 		message.delete(1000).catch(error => console.log("can't delete this message: " + error));
