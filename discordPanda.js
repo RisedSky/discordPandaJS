@@ -632,15 +632,8 @@ function play(connection, message) {
 
 //#endregion
 
-bot.on('message', message => { //Quand une personne envoit un message
+bot.on('message', message => { //Quand une personne envoi un message
 	if (!message.guild) return;
-
-	var MessageID = message.id;
-	var args = message.content.substring(prefix.length).split(" ");
-	var Mess = message;
-	var Mess_Channel = message.channel;
-	var Mess_Member = message.member;
-	if (Mess_Member.voiceChannel) { var Mess_voiceChannel = message.member.voiceChannel; }
 
 	var channelTopic = String(message.channel.topic).toLowerCase();
 
@@ -654,24 +647,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		}
 	}
 
-	//l'ajoute alors
-	var server = servers[message.guild.id];
 
-	//#region Permission Du Bot
-	const BOT_SEND_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("SEND_MESSAGES") && message.channel.type === 'text'
-	const BOT_MANAGE_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("MANAGE_MESSAGES") && message.channel.type === 'text'
-	const BOT_ADMINISTRATORPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADMINISTRATOR") && message.channel.type === 'text'
-	const BOT_USE_EXTERNAL_EMOJISPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("USE_EXTERNAL_EMOJIS") && message.channel.type === 'text'
-
-	//#endregion
-
-
-	//#region Permission de la personne
-	const member_Has_BAN_MEMBERS = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("BAN_MEMBERS") && message.channel.type === 'text'
-
-	const member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
-
-	//#endregion
 
 	try {
 
@@ -732,6 +708,33 @@ bot.on('message', message => { //Quand une personne envoit un message
 	
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix)) return;
+
+	//Declaring variable
+	var MessageID = message.id;
+	var args = message.content.substring(prefix.length).split(" ");
+	var Mess = message;
+	var Mess_Channel = message.channel;
+	var Mess_Member = message.member;
+	if (Mess_Member.voiceChannel) { var Mess_voiceChannel = message.member.voiceChannel; }
+
+	//l'ajoute alors
+	var server = servers[message.guild.id];
+
+	//#region Permission Du Bot
+	const BOT_SEND_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("SEND_MESSAGES") && message.channel.type === 'text'
+	const BOT_MANAGE_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("MANAGE_MESSAGES") && message.channel.type === 'text'
+	const BOT_ADMINISTRATORPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADMINISTRATOR") && message.channel.type === 'text'
+	const BOT_USE_EXTERNAL_EMOJISPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("USE_EXTERNAL_EMOJIS") && message.channel.type === 'text'
+
+	//#endregion
+
+
+	//#region Permission de la personne
+	const member_Has_BAN_MEMBERS = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("BAN_MEMBERS") && message.channel.type === 'text'
+
+	const member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
+
+	//#endregion
 
 	try {
 		message.delete(1000).catch(error => console.log("can't delete this message: " + error));
@@ -1113,16 +1116,16 @@ bot.on('message', message => { //Quand une personne envoit un message
 				Mess.reply("You need to add a number (second should be the maximum)")
 				return;
 			}
-                        if(isNaN(args[1]) == true) {
-                        if(isNaN(args[2]) == true) {
+			if (isNaN(args[1]) == true) {
+				if (isNaN(args[2]) == true) {
                            Mess.reply("Please, write a minimum and maximum value to generate a random number")
                            return;
-                        }  else {
+				} else {
                            Mess.reply("Please, write a minimum value to generate a random number")
                            return;
                            }
                         }
-                        if(isNaN(args[2]) == true) {
+			if (isNaN(args[2]) == true) {
                            Mess.reply("Please, write a minimum value to generate a random number")
                            return;
                         }
