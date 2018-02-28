@@ -1113,7 +1113,19 @@ bot.on('message', message => { //Quand une personne envoit un message
 				Mess.reply("You need to add a number (second should be the maximum)")
 				return;
 			}
-
+                        if(isNaN(args[1]) == true) {
+                        if(isNaN(args[2]) == true) {
+                           Mess.reply("Please, write a minimum and maximum value to generate a random number")
+                           return;
+                        }  else {
+                           Mess.reply("Please, write a minimum value to generate a random number")
+                           return;
+                           }
+                        }
+                        if(isNaN(args[2]) == true) {
+                           Mess.reply("Please, write a minimum value to generate a random number")
+                           return;
+                        }
 			args[1] = parseInt(args[1]);
 			args[2] = parseInt(args[2]);
 
