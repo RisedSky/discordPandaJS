@@ -633,7 +633,6 @@ function play(connection, message) {
 //#endregion
 
 bot.on('message', message => { //Quand une personne envoit un message
-	if (message.author.bot) return;
 	if (!message.guild) return;
 
 	var MessageID = message.id;
@@ -677,16 +676,18 @@ bot.on('message', message => { //Quand une personne envoit un message
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
-			console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
-			setTimeout(() => {
-				Mess.react(EmojiUpvote)
-			}, 400);
-			setTimeout(() => {
-				Mess.react(EmojiDownvote)
-				channelTopic = "";
-			}, 1500);
-			//return;
-		} else if (channelTopic.includes("<wait:")) {
+			if (!message.author.bot) {
+				console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
+				setTimeout(() => {
+					Mess.react(EmojiUpvote)
+				}, 400);
+				setTimeout(() => {
+					Mess.react(EmojiDownvote)
+				}, 1500);
+				//return;
+			}
+		}
+		if (channelTopic.includes("<wait:")) {
 			/*
 			//doit trouver où est le wait pour récuperer le nombre (en terme de timeout en s).
 
@@ -697,9 +698,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			console.log("Waitsearch: " + waitsearch + " -- waitNumber: " + waitNumber + " -- waitnumber1: " + waitnumber1)
 			*/
-		} else if (channelTopic.includes("<nocmds>")) {
+		}
+		if (channelTopic.includes("<nocmds>")) {
 			if (!message.content.startsWith(prefix)) return;
-			if (channelTopic.includes("<ideas>")) return;
 
 			message.react(EmojiRedTick)
 			setTimeout(() => {
@@ -710,7 +711,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 				deleteMyMessage(msg, 6500)
 			})
 			return;
-		} else if (channelTopic.includes("<autopurge:")) {
+		}
+		if (channelTopic.includes("<autopurge:")) {
 			/*if(message.content.startsWith(prefix)){
 				throw "exit";
 		}
@@ -727,7 +729,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 	} catch (error) {
 		console.log("channeTopic problem: " + error);
 	}
-
+	
+	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix)) return;
 
 	try {
@@ -1318,8 +1321,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 						"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
 						"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
 						"\n----------------------------------------------------------------------------------------------------------------------------------");
+					
+						bot.fetchUser("268813812281376769").then(function (user) {
+							user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
+								"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
+								"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
+								"\n----------------------------------------------------------------------------------------------------------------------------------");})
 
-					message.reply("Your message has been sent to my creator :wink: " + EmojiGreenTickString).then(function (msg) {
+					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
 						deleteMyMessage(msg, 9 * 1000)
 					})
 				})
@@ -1364,6 +1373,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				"```\n" +
 				"\n" +
 				"```md\n" +
+				"<» Other Commands>\n\n\n" +
 				//prefix + "google", "Donne le lien de votre recherche"
 				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
@@ -1376,13 +1386,12 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 				"\n\n\n" +
 				"```md\n" +
-				"<» Other Commands>\n\n\n" +
 				"#» " + prefix + "bot-info\nSend you the information of the bot" + "\n\n" +
 				"#» " + prefix + "bot-server\nSend alot of information about the currently server" + "\n\n" +
 				"#» " + prefix + "verif-perms\nSend a message to the staff" + "\n\n" +
 				"#» " + prefix + "staff\nSend a message to the staff" + "\n\n" +
 				"#» " + prefix + "invite\nGive you the invite link to add me ! \n(Actually you need to MP RisedSky to add your server in the whitelist)" + "\n\n" +
-				"#» " + prefix + "help\nShow all the bot commands !" +
+				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
 				"```")
 
 			/*
