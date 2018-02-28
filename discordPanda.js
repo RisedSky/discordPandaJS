@@ -685,7 +685,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				Mess.react(EmojiDownvote)
 				channelTopic = "";
 			}, 1500);
-			return;
+			//return;
 		} else if (channelTopic.includes("<wait:")) {
 			/*
 			//doit trouver où est le wait pour récuperer le nombre (en terme de timeout en s).
@@ -721,7 +721,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 			var purge_sec = array_purge_sec.split(":>")[0];
 			//DEBUG => console.log(purge_sec)
 			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
-			return;
+			//return;
 		}
 
 	} catch (error) {
