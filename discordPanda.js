@@ -640,7 +640,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 	var Mess = message;
 	var Mess_Channel = message.channel;
 	var Mess_Member = message.member;
-	var Mess_voiceChannel = message.member.voiceChannel;
+	if (Mess_Member.voiceChannel) { var Mess_voiceChannel = message.member.voiceChannel; }
 
 	var channelTopic = String(message.channel.topic).toLowerCase();
 
