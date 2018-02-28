@@ -11,6 +11,9 @@ var BlackListUser = require("./blacklistUser.js");
 var StringBlackListUser = String(BlackListUser.BlackListUser);
 var DefaultGuildID = 412262889156771842;
 
+var wordsmod;
+const wordsmoderation = ["fuck", "fuck it", "fuck off", "shit", "motherfucker", "shithead", "shithead", "berk", "shitass"]; // Add some words later
+
 //#region Dev
 //--------Dev----------
 yt_api_key = process.env.yt_api_key;
@@ -38,7 +41,7 @@ var EmojiThonkongString = "<:thonkong:414071099517698059>"
 	, EmojiProhibitedString = "<:prohibited:416350020355489803>"
 	, EmojiTwitchLogoString = "<:twitchlogo:416350019780870146>"
 
-//Emoji 
+//Emoji
 var EmojiThonkong = "thonkong:414071099517698059"
 	, EmojiYouTube_Logo = "youtube-logo:413446051480076288"
 	, EmojiGreenTick = "greenTick:412663578009796619"
@@ -360,7 +363,7 @@ function add_to_queue(video, message) {
 
 				.addField("Views", YouTubeViews, true)
 				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-					
+
 				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
 
 
@@ -491,7 +494,7 @@ function get_Video_Info(link, message, playit) {
 
 				.addField("Views", YouTubeViews, true)
 				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-				
+
 				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
 
 
@@ -633,7 +636,6 @@ function play(connection, message) {
 //#endregion
 
 bot.on('message', message => { //Quand une personne envoit un message
-	if (message.author.bot) return;
 	if (!message.guild) return;
 
 	var MessageID = message.id;
@@ -641,9 +643,11 @@ bot.on('message', message => { //Quand une personne envoit un message
 	var Mess = message;
 	var Mess_Channel = message.channel;
 	var Mess_Member = message.member;
-	var Mess_voiceChannel = message.member.voiceChannel;
+	if (Mess_Member.voiceChannel) { var Mess_voiceChannel = message.member.voiceChannel; }
 
 	var channelTopic = String(message.channel.topic).toLowerCase();
+
+	var wordsmessage = message.content.toLowerCase();
 
 	//vérifie si le serveur est déjà dans la liste
 	if (!servers[message.guild.id]) {
@@ -677,16 +681,18 @@ bot.on('message', message => { //Quand une personne envoit un message
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
-			console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
-			setTimeout(() => {
-				Mess.react(EmojiUpvote)
-			}, 400);
-			setTimeout(() => {
-				Mess.react(EmojiDownvote)
-				channelTopic = "";
-			}, 1500);
-			//return;
-		} else if (channelTopic.includes("<wait:")) {
+			if (!message.author.bot) {
+				console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
+				setTimeout(() => {
+					Mess.react(EmojiUpvote)
+				}, 400);
+				setTimeout(() => {
+					Mess.react(EmojiDownvote)
+				}, 1500);
+				//return;
+			}
+		}
+		if (channelTopic.includes("<wait:")) {
 			/*
 			//doit trouver où est le wait pour récuperer le nombre (en terme de timeout en s).
 
@@ -697,9 +703,9 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			console.log("Waitsearch: " + waitsearch + " -- waitNumber: " + waitNumber + " -- waitnumber1: " + waitnumber1)
 			*/
-		} else if (channelTopic.includes("<nocmds>")) {
+		}
+		if (channelTopic.includes("<nocmds>")) {
 			if (!message.content.startsWith(prefix)) return;
-			if (channelTopic.includes("<ideas>")) return;
 
 			message.react(EmojiRedTick)
 			setTimeout(() => {
@@ -710,7 +716,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 				deleteMyMessage(msg, 6500)
 			})
 			return;
-		} else if (channelTopic.includes("<autopurge:")) {
+		}
+		if (channelTopic.includes("<autopurge:")) {
 			/*if(message.content.startsWith(prefix)){
 				throw "exit";
 		}
@@ -728,6 +735,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		console.log("channeTopic problem: " + error);
 	}
 
+	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix)) return;
 
 	try {
@@ -749,7 +757,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 				return;
 
-			} else if (!Mess_voiceChannel) {
+			} else if (!Mess_Member.voiceChannel) {
 				message.react("❌");
 				message.reply("Tu dois être dans un salon vocal").then(function (msg) {
 					deleteMyMessage(msg, 6000);
@@ -837,7 +845,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//-------
 		case "skip":
 
-			if (!Mess_voiceChannel) {
+			if (!Mess_Member.voiceChannel) {
 				message.reply("You should be in a vocal channel before asking me to skip some musics.").then(function (msg) {
 					deleteMyMessage(msg, 6000);
 				})
@@ -848,7 +856,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 				return;
 
-			} else if (!Mess_voiceChannel.name === message.guild.voiceConnection.channel.name) {
+			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
 				message.reply("You are not in the same vocal channel as me.")
 					.then(function (msg) {
 						deleteMyMessage(msg, 6000);
@@ -860,7 +868,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 				return;
 			}
-			//console.log("User: " + Mess_voiceChannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
+			//console.log("User: " + Mess_Member.voicechannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
 
 			console.log(server.dispatcher);
 
@@ -1149,6 +1157,30 @@ bot.on('message', message => { //Quand une personne envoit un message
 				message.reply("Tu t'es trompé dans quelque part... ex: " + prefix + "randomnumber 10 20");
 			}
 			break;
+			case "wordsmoderation":
+			if(args[1].toLowerCase() == "on"){
+				if(wordsmod == true) {
+					Mess_Channel.send("Words moderation is already actived")
+					return;
+				} else {
+					wordsmod = true;
+					Mess_Channel.send("Words moderation has been actived")
+					return;
+				}
+			} else if(args[1].toLowerCase() == "off")
+			{
+				if(wordsmod == true){
+					wordsmod = false
+					Mess_Channel.send("Words moderation has been desactived")
+					return;
+				} else {
+					Mess_Channel.send("Words moderation is already desactived")
+					return;
+				}
+			} else {
+					Mess_Channel.send("An error has occurred")
+			}
+			break;
 		//--------
 		case "randomuser":
 			message.reply("This command is not available for now, `" + prefix + "randomuser" + "` is actually in work for now :wink:").then(function (msg) {
@@ -1331,7 +1363,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 						"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
 						"\n----------------------------------------------------------------------------------------------------------------------------------");
 
-					message.reply("Your message has been sent to my creator :wink: " + EmojiGreenTickString).then(function (msg) {
+						bot.fetchUser("268813812281376769").then(function (user) {
+							user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
+								"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
+								"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
+							"\n----------------------------------------------------------------------------------------------------------------------------------");
+					})
+
+					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
 						deleteMyMessage(msg, 9 * 1000)
 					})
 				})
@@ -1376,6 +1415,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				"```\n" +
 				"\n" +
 				"```md\n" +
+				"<» Other Commands>\n\n\n" +
 				//prefix + "google", "Donne le lien de votre recherche"
 				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
@@ -1386,15 +1426,22 @@ bot.on('message', message => { //Quand une personne envoit un message
 				"#» " + prefix + "kappa\nSend a kappa image" +
 				"```" +
 
-				"\n\n\n" +
+				"\n" +
 				"```md\n" +
-				"<» Other Commands>\n\n\n" +
 				"#» " + prefix + "bot-info\nSend you the information of the bot" + "\n\n" +
 				"#» " + prefix + "bot-server\nSend alot of information about the currently server" + "\n\n" +
 				"#» " + prefix + "verif-perms\nSend a message to the staff" + "\n\n" +
 				"#» " + prefix + "staff\nSend a message to the staff" + "\n\n" +
 				"#» " + prefix + "invite\nGive you the invite link to add me ! \n(Actually you need to MP RisedSky to add your server in the whitelist)" + "\n\n" +
-				"#» " + prefix + "help\nShow all the bot commands !" +
+				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
+				"```" +
+
+				"\n\n\n" +
+				"```md\n" +
+				"<» Channel Tags>\n\n\n" +
+				"#» <nocmds>\nAvoid the use of commands in this channel \n\n" +
+				"#» <ideas>\nWith this tag, the bot will add for or against reactions on every message \n \n" +
+				"#» <autopurge:TIME:>\nDelete every message in this channel after TIME seconds" +
 				"```")
 
 			/*
@@ -1424,6 +1471,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			break;
 	}
+
+	if(wordsmod == true)
+	{
+	  if( wordsmoderation.some(word => wordsmessage.includes(word) )) {
+	  message.delete();
+	  message.reply("please, pay attention to your language.");
+	}
+}
 })
 
 /*
