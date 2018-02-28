@@ -6,4 +6,6 @@ Do a poll command
 *poll Messageblablablabla|Yes|No
 
 foreach | in content.message => var number++;
-on va check si il y'a 3, ça va donner donc 1 poll et 2 réponses
+on va check si il y'a 3, Ã§a va donner donc 1 poll et 2 rÃ©ponses
+
+Enlever la suppression de la liste des commandes du *help en message privÃ©
