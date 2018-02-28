@@ -840,7 +840,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 		//-------
 		case "skip":
 
-			if (!Mess_voiceChannel) {
+			if (!Mess_Member.voiceChannel) {
 				message.reply("You should be in a vocal channel before asking me to skip some musics.").then(function (msg) {
 					deleteMyMessage(msg, 6000);
 				})
@@ -851,7 +851,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 				return;
 
-			} else if (!Mess_voiceChannel.name === message.guild.voiceConnection.channel.name) {
+			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
 				message.reply("You are not in the same vocal channel as me.")
 					.then(function (msg) {
 						deleteMyMessage(msg, 6000);
@@ -863,7 +863,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 				return;
 			}
-			//console.log("User: " + Mess_voiceChannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
+			//console.log("User: " + Mess_Member.voicechannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
 
 			console.log(server.dispatcher);
 
