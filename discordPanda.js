@@ -25,6 +25,10 @@ var prefix = "*";
 var prefixLog = "[!] ";
 var servers = {};
 //var now_playing_data = {};
+var online_since = 0;
+function datenow() {
+	online_since++;
+}
 
 
 //---- ALL EMOJIS ------
@@ -123,6 +127,7 @@ function PermissionCheck(PermToCheck) {
 
 
 bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
+	setInterval(datenow, 1000);
 	bot.user.setStatus("online")
 	console.log("------------------------------")
 	console.log(prefixLog + "Bot created by RisedSky & PLfightX <3")
@@ -1249,15 +1254,21 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//-------
 		case "bot-info":
-			var bot_date_created = moment(bot.user.createdTimestamp).format("DD-MM-YYYY HH:mm:ss");
+			var d = new Date(null);
+			d.setSeconds(online_since);
+			var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+			console.log(bot_online_since_time)
+			//var bot_online_since_time = moment(d).format("HH:mm:ss DD-MM-YYYY")
+			var bot_date_created = moment(bot.user.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
 
 			var embedbot_info = new Discord.RichEmbed()
 				.setColor("#FFFFFF")
 				.setAuthor("Bot-Information", bot.user.avatarURL)
-				.setTitle("*Created by RisedSky*")
+				.setTitle("Created by RisedSky & PLfightX")
 				.addField("I'm developed in Node.js", "**And I'm using Discord.js libraries.**")
 				.addBlankField()
-				.addField("I am created since", bot_date_created)
+				.addField("I am created since", bot_date_created, true)
+				.addField("I am online since", bot_online_since_time, true)
 				.addBlankField()
 				.addField("I am in", bot.guilds.size + " servers", true)
 				.addField("With", bot.users.size + " users", true)
@@ -1273,7 +1284,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//---------
 		case "server-info":
-			var server_date_created = moment(message.guild.createdTimestamp).format("DD-MM-YYYY HH:mm:ss");
+			var server_date_created = moment(message.guild.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
 
 			var embedbot_info = new Discord.RichEmbed()
 				.setColor("#FFFFFF")
