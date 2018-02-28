@@ -12,6 +12,7 @@ WhiteListServer.push(389494042620329984); //Tard0sTV Server (Polyvalence)
 WhiteListServer.push(288001034083893248); //Tachyro Server
 WhiteListServer.push(307954526152032256); //Discrod Banane (Enoctes) Server
 WhiteListServer.push(281529034477797376); //PLfightX Server
+WhiteListServer.push(400730627588227093); //Animation - Étape 6 (25 places (Taros TV / JOLATE)
 //Debug => console.log("Whitelist: " + WhiteListServer)
 
 exports.WhiteListServer = WhiteListServer;
