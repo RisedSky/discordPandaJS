@@ -1326,7 +1326,8 @@ bot.on('message', message => { //Quand une personne envoit un message
 							user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
 								"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
 								"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
-								"\n----------------------------------------------------------------------------------------------------------------------------------");})
+							"\n----------------------------------------------------------------------------------------------------------------------------------");
+					})
 
 					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
 						deleteMyMessage(msg, 9 * 1000)
