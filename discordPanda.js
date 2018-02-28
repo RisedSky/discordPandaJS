@@ -752,7 +752,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				})
 				return;
 
-			} else if (!Mess_voiceChannel) {
+			} else if (!Mess_Member.voiceChannel) {
 				message.react("❌");
 				message.reply("Tu dois être dans un salon vocal").then(function (msg) {
 					deleteMyMessage(msg, 6000);
