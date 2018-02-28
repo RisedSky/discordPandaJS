@@ -1384,7 +1384,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 				"#» " + prefix + "kappa\nSend a kappa image" +
 				"```" +
 
-				"\n\n\n" +
+				"\n" +
 				"```md\n" +
 				"#» " + prefix + "bot-info\nSend you the information of the bot" + "\n\n" +
 				"#» " + prefix + "bot-server\nSend alot of information about the currently server" + "\n\n" +
@@ -1392,6 +1392,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 				"#» " + prefix + "staff\nSend a message to the staff" + "\n\n" +
 				"#» " + prefix + "invite\nGive you the invite link to add me ! \n(Actually you need to MP RisedSky to add your server in the whitelist)" + "\n\n" +
 				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
+				"```" +
+
+				"\n\n\n" +
+				"```md\n" +
+				"<» Channel Tags>\n\n\n" +
+				"#» <nocmds>\nAvoid the use of commands in this channel \n\n" +
+				"#» <ideas>\nWith this tag, the bot will add for or against reactions on every message \n \n" +
+				"#» <autopurge:TIME:>\nDelete every message in this channel after TIME seconds" +
 				"```")
 
 			/*
