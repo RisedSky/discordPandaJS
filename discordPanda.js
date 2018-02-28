@@ -744,6 +744,14 @@ bot.on('message', message => { //Quand une personne envoit un message
 		console.log("Can't delete this message: " + error)
 	}
 
+	if(wordsmod == true)
+	{
+		if( wordsmoderation.some(word => wordsmessage.includes(word) )) {
+		message.delete();
+		message.reply("please, pay attention to your language.");
+	}
+}
+
 	switch (args[0].toLowerCase()) {
 
 
@@ -1178,7 +1186,7 @@ bot.on('message', message => { //Quand une personne envoit un message
 					return;
 				}
 			} else {
-					Mess_Channel.send("An error has occurred")
+					Mess_Channel.send("You must precise ON or OFF")
 			}
 			break;
 		//--------
@@ -1471,14 +1479,6 @@ bot.on('message', message => { //Quand une personne envoit un message
 
 			break;
 	}
-
-	if(wordsmod == true)
-	{
-	  if( wordsmoderation.some(word => wordsmessage.includes(word) )) {
-	  message.delete();
-	  message.reply("please, pay attention to your language.");
-	}
-}
 })
 
 /*
