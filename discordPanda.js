@@ -1147,7 +1147,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 				Calcul = Math.floor(Math.random() * (max - min + 1)) + min;
 
-				message.reply("Hmmm let me think, ..., between **" + min + "** and **" + max + "** I would choose **" + Calcul + "** !");
+				message.reply("Hmmm let me think, ..., between **" + min + "** and **" + max + "** I would choose **" + Calcul + "** !").then(function (msg) {
+					deleteMyMessage(msg, 60 * 1000)
+				});
 			} catch (error) {
 				console.log("Erreur #367: " + error)
 				message.reply("Tu t'es trompé dans quelque part... ex: " + prefix + "randomnumber 10 20");
@@ -1304,7 +1306,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//--------
 		case "user-info":
 			if (!args[1] || !message.mentions.members.first()) {
-				message.reply(EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg){
+				message.reply(EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg) {
 					deleteMyMessage(msg, 10 * 1000)
 				})
 				return;
@@ -1315,13 +1317,13 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var userjoining_date = moment(infomember.joinedTimestamp).format("DD-MM-YYYY HH:mm:ss");
 			var embeduser_info = new Discord.RichEmbed()
 				.setColor(infomember.displayHexColor)
-				.setAuthor(infomember.displayName+" informations", infouser.displayAvatarURL)
-				.setTitle("DiscordTag : " + infouser.tag + " | ID : " + infouser.id)
+				.setAuthor(infomember.displayName + " informations", infouser.displayAvatarURL)
+				.setTitle("DiscordTag: " + infouser.tag + " | ID: " + infouser.id)
 				.addBlankField()
-				.addField("**Account created : **", usercreated_date, true)
-				.addField("**Joining date : **", userjoining_date, true)
+				.addField("**Account created: **", usercreated_date, true)
+				.addField("**Joining date: **", userjoining_date, true)
 				.addBlankField()
-				.addField("**Avatar url :**", infouser.displayAvatarURL)
+				.addField("**Avatar url:**", infouser.displayAvatarURL)
 				.setFooter(AskedBy_EmbedFooter(message.author))
 				.setTimestamp();
 
