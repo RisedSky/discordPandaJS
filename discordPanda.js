@@ -694,11 +694,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 			return;
 		}
 		if (channelTopic.includes("<autopurge:")) {
-			/*if(message.content.startsWith(prefix)){
-				throw "exit";
-		}
-			if (message.content.startsWith(prefix)) return;
-			*/
 
 			var array_purge_sec = channelTopic.split("<autopurge:")[1];
 			var purge_sec = array_purge_sec.split(":>")[0];
@@ -1232,15 +1227,15 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 		//--------
 		case "kappa":
-			message.reply({ file: __dirname + "/images/Kappahd.png" }).then(function (msg) {
+			message.reply({ file: __dirname + "/images/Kappahd.png" })/*.then(function (msg) {
 				deleteMyMessage(msg, 600 * 1000);
-			})
+			})*/
 			break;
 		//-------
 		case "rekt":
 			if (!args[1]) {
 				message.reply(EmojiRedTickString + " There is nobody to rekt (@ a user to rekt him)").then(function (msg) {
-					deleteMyMessage(msg, 15 * 1000)
+					deleteMyMessage(msg, 10 * 1000)
 				})
 				return;
 			} else if (message.mentions.users.first() === message.author) {
@@ -1306,6 +1301,35 @@ bot.on('message', message => { //Quand une personne envoi un message
 				deleteMyMessage(msg, 300 * 1000)
 			})
 
+			break;
+		//--------
+		case "user-info":
+			if (!args[1] || !message.mentions.members.first()) {
+				message.reply(EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg){
+					deleteMyMessage(msg, 10 * 1000)
+				})
+				return;
+			}
+			var infomember = message.mentions.members.first();
+			var infouser = infomember.user;
+			var usercreated_date = moment(infouser.createdTimestamp).format("DD-MM-YYYY HH:mm:ss");
+			var userjoining_date = moment(infomember.joinedTimestamp).format("DD-MM-YYYY HH:mm:ss");
+			var embeduser_info = new Discord.RichEmbed()
+				.setColor(infomember.displayHexColor)
+				.setAuthor(infomember.displayName+" informations", infouser.displayAvatarURL)
+				.setTitle("DiscordTag : " + infouser.tag + " | ID : " + infouser.id)
+				.addBlankField()
+				.addField("**Account created : **", usercreated_date, true)
+				.addField("**Joining date : **", userjoining_date, true)
+				.addBlankField()
+				.addField("**Avatar url :**", infouser.displayAvatarURL)
+				.setFooter(AskedBy_EmbedFooter(message.author))
+				.setTimestamp();
+
+			Mess_Channel.send(embeduser_info).then(function (msg) {
+				deleteMyMessage(msg, 60 * 1000)
+			})
+			
 			break;
 		//--------
 		case "verif-perms":
@@ -1407,16 +1431,18 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
 				//prefix + "restart", "Redémarre le bot **(Expérimental**"
 				"#» " + prefix + "randomnumber [min_number] [max_number]\nGenerate a number between one and another" + "\n\n" +
-				"#» " + prefix + "poll [question | answer1 | answer2]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
+				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
 				"#» " + prefix + "kappa\nSend a kappa image" +
+				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" +
 				"```" +
 
 				"\n" +
 				"```md\n" +
 				"#» " + prefix + "bot-info\nSend you the information of the bot" + "\n\n" +
-				"#» " + prefix + "bot-server\nSend alot of information about the currently server" + "\n\n" +
-				"#» " + prefix + "verif-perms\nSend a message to the staff" + "\n\n" +
-				"#» " + prefix + "staff\nSend a message to the staff" + "\n\n" +
+				"#» " + prefix + "server-info\nSend a lot of information about the currently server" + "\n\n" +
+				"#» " + prefix + "user-info [@someone]\nGet secret informations about someone" + "\n\n" +
+				"#» " + prefix + "verif-perms\nTell you about the perms I have in this channel" + "\n\n" +
+				"#» " + prefix + "staff\nSend a message to my creators" + "\n\n" +
 				"#» " + prefix + "invite\nGive you the invite link to add me ! \n(Actually you need to MP RisedSky to add your server in the whitelist)" + "\n\n" +
 				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
 				"```" +
@@ -1451,7 +1477,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					msg.react("❓");
 					msg.react(EmojiThonkong);
 				}, 250);
-				deleteMyMessage(msg, 10 * 1000);
+				deleteMyMessage(msg, 5000);
 			})
 
 			break;
