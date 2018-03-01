@@ -1,15 +1,13 @@
-Title of the issue (like if you say to a friend):
+Description of the issue (more information, be as accurate as possible) :
 
 
-Description of the issue (more information) :
+---BUG ONLY--- (erase if it is not a bug)--------------------------
+How we can reproduce the bug (if it is):
 
+What should happend normally :
 
+What actually happen :
 
-How you did the issue:
+--------------------------------------------------------------------
 
-
-
-
-Server:
-
-Discord (with tag):
+Discordtag (with #, in order to be contacted easily) :
