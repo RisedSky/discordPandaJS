@@ -13,12 +13,12 @@ var DefaultGuildID = 412262889156771842;
 
 //#region Dev
 //--------Dev----------
-yt_api_key = "AIzaSyAFn0ZZ8XdbEyGQ9I2IXzL3CwvNZYlIJLc";
+yt_api_key = process.env.yt_api_key;
 
-var BOT_TOKEN = "NDA5Nzk3MTQ5NDc2Mzg4ODY2.DWHq5A.04e2RsfqKSxY6zEkgsKL7MrHzuo";
+var BOT_TOKEN = process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
 
-var prefix = "!";
+var prefix = "*";
 //--------Dev----------
 //#endregion
 
