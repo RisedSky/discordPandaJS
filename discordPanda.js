@@ -660,10 +660,10 @@ bot.on('message', message => { //Quand une personne envoi un message
 			if (!message.author.bot) {
 				console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
 				setTimeout(() => {
-					Mess.react(EmojiUpvote)
+					message.react(EmojiUpvote)
 				}, 400);
 				setTimeout(() => {
-					Mess.react(EmojiDownvote)
+					message.react(EmojiDownvote)
 				}, 1500);
 				//return;
 			}
