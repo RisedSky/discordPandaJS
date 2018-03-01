@@ -1374,6 +1374,10 @@ bot.on('message', message => { //Quand une personne envoi un message
 						"\n(via la commande `" + prefix + "staff`) \n```" + msgStaff + "```" +
 						"\n------------------------------------------------------------------------------------------"
 					);
+
+					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
+						deleteMyMessage(msg, 13 * 1000)
+					})
 					})
 
 			} catch (error) {
