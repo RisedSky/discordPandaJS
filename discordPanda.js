@@ -651,7 +651,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			playit: Boolean
 		}
 	}
-	
+
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
@@ -703,7 +703,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 	} catch (error) {
 		console.log("channeTopic problem: " + error);
 	}
-	
+
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix)) return;
 
@@ -1116,17 +1116,17 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 			if (isNaN(args[1]) == true) {
 				if (isNaN(args[2]) == true) {
-                           Mess.reply("Please, write a minimum and maximum value to generate a random number")
-                           return;
+					Mess.reply("Please, write a minimum and maximum value to generate a random number")
+					return;
 				} else {
-                           Mess.reply("Please, write a minimum value to generate a random number")
-                           return;
-                           }
-                        }
+					Mess.reply("Please, write a minimum value to generate a random number")
+					return;
+				}
+			}
 			if (isNaN(args[2]) == true) {
-                           Mess.reply("Please, write a minimum value to generate a random number")
-                           return;
-                        }
+				Mess.reply("Please, write a minimum value to generate a random number")
+				return;
+			}
 			args[1] = parseInt(args[1]);
 			args[2] = parseInt(args[2]);
 
@@ -1146,7 +1146,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				Calcul = Math.floor(Math.random() * (max - min + 1)) + min;
 
 				message.reply("Hmmm let me think, ..., between **" + min + "** and **" + max + "** I would choose **" + Calcul + "** !").then(function (msg) {
-					deleteMyMessage(msg, 60 * 1000)
+					deleteMyMessage(msg, 600 * 1000)
 				});
 			} catch (error) {
 				console.log("Erreur #367: " + error)
@@ -1158,7 +1158,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var nbMemb = message.guild.memberCount;
 			var memb_list = message.guild.members;
 			var rand_member = memb_list.random();
-			message.reply(rand_member + " has been chosen between the " + nbMemb + " members of the server !");
+			message.reply("\n" + rand_member + " has been chosen between the " + nbMemb + " members of the server !").then(function (msg) {
+				deleteMyMessage(msg, 600 * 1000)
+			});
 			break;
 		//--------
 		case "poll":
@@ -1328,7 +1330,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			Mess_Channel.send(embeduser_info).then(function (msg) {
 				deleteMyMessage(msg, 60 * 1000)
 			})
-			
+
 			break;
 		//--------
 		case "verif-perms":
@@ -1378,7 +1380,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
 						deleteMyMessage(msg, 13 * 1000)
 					})
-					})
+				})
 
 			} catch (error) {
 				console.log(error)
