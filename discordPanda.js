@@ -594,7 +594,7 @@ function play(connection, message) {
 
 
 		server.dispatcher = connection.playStream(
-			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus" })
+			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
 		);
 
 		server.dispatcher.setVolume(0.3);
