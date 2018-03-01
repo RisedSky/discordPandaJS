@@ -11,6 +11,9 @@ var BlackListUser = require("./blacklistUser.js");
 var StringBlackListUser = String(BlackListUser.BlackListUser);
 var DefaultGuildID = 412262889156771842;
 
+var wordsmod;
+const wordsmoderation = ["fuck", "fuck it", "fuck off", "shit", "motherfucker", "shithead", "shithead", "berk", "shitass"]; // Add some words later
+
 //#region Dev
 //--------Dev----------
 yt_api_key = process.env.yt_api_key;
@@ -42,7 +45,7 @@ var EmojiThonkongString = "<:thonkong:414071099517698059>"
 	, EmojiProhibitedString = "<:prohibited:416350020355489803>"
 	, EmojiTwitchLogoString = "<:twitchlogo:416350019780870146>"
 
-//Emoji 
+//Emoji
 var EmojiThonkong = "thonkong:414071099517698059"
 	, EmojiYouTube_Logo = "youtube-logo:413446051480076288"
 	, EmojiGreenTick = "greenTick:412663578009796619"
@@ -365,7 +368,7 @@ function add_to_queue(video, message) {
 
 				.addField("Views", YouTubeViews, true)
 				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-					
+
 				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
 
 
@@ -496,7 +499,7 @@ function get_Video_Info(link, message, playit) {
 
 				.addField("Views", YouTubeViews, true)
 				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-				
+
 				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
 
 
@@ -642,6 +645,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 	var channelTopic = String(message.channel.topic).toLowerCase();
 
+	var wordsmessage = message.content.toLowerCase();
+
 	//vérifie si le serveur est déjà dans la liste
 	if (!servers[message.guild.id]) {
 		servers[message.guild.id] = {
@@ -705,7 +710,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 	} catch (error) {
 		console.log("channeTopic problem: " + error);
 	}
-	
+
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix)) return;
 
@@ -741,6 +746,14 @@ bot.on('message', message => { //Quand une personne envoi un message
 	} catch (error) {
 		console.log("Can't delete this message: " + error)
 	}
+
+	if(wordsmod == true)
+	{
+		if( wordsmoderation.some(word => wordsmessage.includes(word) )) {
+		message.delete();
+		message.reply("please, pay attention to your language.");
+	}
+}
 
 	switch (args[0].toLowerCase()) {
 
@@ -1153,6 +1166,30 @@ bot.on('message', message => { //Quand une personne envoi un message
 				message.reply("Tu t'es trompé dans quelque part... ex: " + prefix + "randomnumber 10 20");
 			}
 			break;
+			case "wordsmoderation":
+			if(args[1].toLowerCase() == "on"){
+				if(wordsmod == true) {
+					Mess_Channel.send("Words moderation is already actived")
+					return;
+				} else {
+					wordsmod = true;
+					Mess_Channel.send("Words moderation has been actived")
+					return;
+				}
+			} else if(args[1].toLowerCase() == "off")
+			{
+				if(wordsmod == true){
+					wordsmod = false
+					Mess_Channel.send("Words moderation has been desactived")
+					return;
+				} else {
+					Mess_Channel.send("Words moderation is already desactived")
+					return;
+				}
+			} else {
+					Mess_Channel.send("You must precise ON or OFF")
+			}
+			break;
 		//--------
 		case "random-member":
 			var nbMemb = message.guild.memberCount;
@@ -1370,7 +1407,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 						"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
 						"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
 						"\n----------------------------------------------------------------------------------------------------------------------------------");
-					
+
 						bot.fetchUser("268813812281376769").then(function (user) {
 							user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
 								"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
