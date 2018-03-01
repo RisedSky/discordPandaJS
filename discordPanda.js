@@ -651,9 +651,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			playit: Boolean
 		}
 	}
-
-
-
+	
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
@@ -1367,23 +1365,17 @@ bot.on('message', message => { //Quand une personne envoi un message
 				}
 
 				var msgStaff = message.content.substr(6);
-				bot.fetchUser("145632403946209280").then(function (user) {
-					user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
-						"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
-						"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
-						"\n----------------------------------------------------------------------------------------------------------------------------------");
-					
-						bot.fetchUser("268813812281376769").then(function (user) {
-							user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
-								"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
-								"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
-							"\n----------------------------------------------------------------------------------------------------------------------------------");
+				bot.guilds.forEach(guild => {
+					const staff_commands_channels = guild.channels.find("id", "418847993182289926");
+					if (!staff_commands_channels) return;
+					staff_commands_channels.send(
+						"Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
+						"\nSur le serveur: `" + message.guild.name + "` - ID guild: `" + message.guild.id + "`" +
+						"\n(via la commande `" + prefix + "staff`) \n```" + msgStaff + "```" +
+						"\n------------------------------------------------------------------------------------------"
+					);
 					})
 
-					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
-						deleteMyMessage(msg, 9 * 1000)
-					})
-				})
 			} catch (error) {
 				console.log(error)
 			}
