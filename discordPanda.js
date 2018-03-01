@@ -680,6 +680,14 @@ bot.on('message', message => { //Quand une personne envoi un message
 			console.log("Waitsearch: " + waitsearch + " -- waitNumber: " + waitNumber + " -- waitnumber1: " + waitnumber1)
 			*/
 		}
+		if (channelTopic.includes("<autopurge:")) {
+
+			var array_purge_sec = channelTopic.split("<autopurge:")[1];
+			var purge_sec = array_purge_sec.split(":>")[0];
+			//DEBUG => console.log(purge_sec)
+			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
+			//return;
+		}
 		if (channelTopic.includes("<nocmds>")) {
 			if (!message.content.startsWith(prefix)) return;
 
@@ -692,14 +700,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 				deleteMyMessage(msg, 6500)
 			})
 			return;
-		}
-		if (channelTopic.includes("<autopurge:")) {
-
-			var array_purge_sec = channelTopic.split("<autopurge:")[1];
-			var purge_sec = array_purge_sec.split(":>")[0];
-			//DEBUG => console.log(purge_sec)
-			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
-			//return;
 		}
 
 	} catch (error) {
