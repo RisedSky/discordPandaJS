@@ -13,12 +13,12 @@ var DefaultGuildID = 412262889156771842;
 
 //#region Dev
 //--------Dev----------
-yt_api_key = process.env.yt_api_key;
+yt_api_key = "AIzaSyAFn0ZZ8XdbEyGQ9I2IXzL3CwvNZYlIJLc";
 
-var BOT_TOKEN = process.env.BOT_TOKEN;
+var BOT_TOKEN = "NDA5Nzk3MTQ5NDc2Mzg4ODY2.DWHq5A.04e2RsfqKSxY6zEkgsKL7MrHzuo";
 bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
 
-var prefix = "*";
+var prefix = "!";
 //--------Dev----------
 //#endregion
 
@@ -1147,19 +1147,18 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 				Calcul = Math.floor(Math.random() * (max - min + 1)) + min;
 
-				console.log(Math.floor(Math.random() * (max - min + 1)) + min)
-				console.log("Calcul : " + Calcul)
-				message.reply("Hmmm voyons voir, entre **" + min + "** et **" + max + "** je choisirais **" + Calcul + "** !");
+				message.reply("Hmmm let me think, ..., between **" + min + "** and **" + max + "** I would choose **" + Calcul + "** !");
 			} catch (error) {
 				console.log("Erreur #367: " + error)
 				message.reply("Tu t'es trompé dans quelque part... ex: " + prefix + "randomnumber 10 20");
 			}
 			break;
 		//--------
-		case "randomuser":
-			message.reply("This command is not available for now, `" + prefix + "randomuser" + "` is actually in work for now :wink:").then(function (msg) {
-				deleteMyMessage(msg, 10000);
-			})
+		case "random-member":
+			var nbMemb = message.guild.memberCount;
+			var memb_list = message.guild.members;
+			var rand_member = memb_list.random();
+			message.reply(rand_member + " has been chosen between the " + nbMemb + " members of the server !");
 			break;
 		//--------
 		case "poll":
