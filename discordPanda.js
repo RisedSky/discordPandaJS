@@ -650,8 +650,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 		}
 	}
 
-
-
 	try {
 
 		if (channelTopic.includes("<ideas>")) {
@@ -662,7 +660,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				}, 400);
 				setTimeout(() => {
 					message.react(EmojiDownvote)
-				}, 1500);
+				}, 1000);
 				//return;
 			}
 		}
@@ -703,7 +701,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 	} catch (error) {
 		console.log("channeTopic problem: " + error);
 	}
-	
+
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix)) return;
 
@@ -735,7 +733,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 	//#endregion
 
 	try {
-		message.delete(1000).catch(error => console.log("can't delete this message: " + error));
+		message.delete(1500).catch(error => console.log("can't delete this message: " + error));
 	} catch (error) {
 		console.log("Can't delete this message: " + error)
 	}
@@ -1116,17 +1114,17 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 			if (isNaN(args[1]) == true) {
 				if (isNaN(args[2]) == true) {
-                           Mess.reply("Please, write a minimum and maximum value to generate a random number")
-                           return;
+					Mess.reply("Please, write a minimum and maximum value to generate a random number")
+					return;
 				} else {
-                           Mess.reply("Please, write a minimum value to generate a random number")
-                           return;
-                           }
-                        }
+					Mess.reply("Please, write a minimum value to generate a random number")
+					return;
+				}
+			}
 			if (isNaN(args[2]) == true) {
-                           Mess.reply("Please, write a minimum value to generate a random number")
-                           return;
-                        }
+				Mess.reply("Please, write a minimum value to generate a random number")
+				return;
+			}
 			args[1] = parseInt(args[1]);
 			args[2] = parseInt(args[2]);
 
@@ -1145,7 +1143,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 				Calcul = Math.floor(Math.random() * (max - min + 1)) + min;
 
-				message.reply("Hmmm let me think, ..., between **" + min + "** and **" + max + "** I would choose **" + Calcul + "** !");
+				message.reply("Hmmm let me think, ..., between **" + min + "** and **" + max + "** I would choose **" + Calcul + "** !").then(function (msg) {
+					deleteMyMessage(msg, 600 * 1000)
+				});
 			} catch (error) {
 				console.log("Erreur #367: " + error)
 				message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
@@ -1156,7 +1156,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var nbMemb = message.guild.memberCount;
 			var memb_list = message.guild.members;
 			var rand_member = memb_list.random();
-			message.reply(rand_member + " has been chosen between the " + nbMemb + " members of the server !");
+			message.reply("\n" + rand_member + " has been chosen between the " + nbMemb + " members of the server !").then(function (msg) {
+				deleteMyMessage(msg, 600 * 1000)
+			});
 			break;
 		//--------
 		case "poll":
@@ -1302,7 +1304,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//--------
 		case "user-info":
 			if (!args[1] || !message.mentions.members.first()) {
-				message.reply(EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg){
+				message.reply(EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg) {
 					deleteMyMessage(msg, 10 * 1000)
 				})
 				return;
@@ -1313,20 +1315,20 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var userjoining_date = moment(infomember.joinedTimestamp).format("DD-MM-YYYY HH:mm:ss");
 			var embeduser_info = new Discord.RichEmbed()
 				.setColor(infomember.displayHexColor)
-				.setAuthor(infomember.displayName+" informations", infouser.displayAvatarURL)
-				.setTitle("DiscordTag : " + infouser.tag + " | ID : " + infouser.id)
+				.setAuthor(infomember.displayName + " informations", infouser.displayAvatarURL)
+				.setTitle("DiscordTag: " + infouser.tag + " | ID: " + infouser.id)
 				.addBlankField()
-				.addField("**Account created : **", usercreated_date, true)
-				.addField("**Joining date : **", userjoining_date, true)
+				.addField("**Account created: **", usercreated_date, true)
+				.addField("**Joining date: **", userjoining_date, true)
 				.addBlankField()
-				.addField("**Avatar url :**", infouser.displayAvatarURL)
+				.addField("**Avatar url:**", infouser.displayAvatarURL)
 				.setFooter(AskedBy_EmbedFooter(message.author))
 				.setTimestamp();
 
 			Mess_Channel.send(embeduser_info).then(function (msg) {
 				deleteMyMessage(msg, 60 * 1000)
 			})
-			
+
 			break;
 		//--------
 		case "verif-perms":
@@ -1363,23 +1365,21 @@ bot.on('message', message => { //Quand une personne envoi un message
 				}
 
 				var msgStaff = message.content.substr(6);
-				bot.fetchUser("145632403946209280").then(function (user) {
-					user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
-						"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
-						"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
-						"\n----------------------------------------------------------------------------------------------------------------------------------");
-					
-						bot.fetchUser("268813812281376769").then(function (user) {
-							user.send("Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
-								"\n`Sur le serveur: " + message.guild.name + " - ID guild: " + message.guild.id + "`" +
-								"\n(via la commande `" + prefix + "staff`) ```" + msgStaff + "```" +
-							"\n----------------------------------------------------------------------------------------------------------------------------------");
-					})
+				bot.guilds.forEach(guild => {
+					const staff_commands_channels = guild.channels.find("id", "418847993182289926");
+					if (!staff_commands_channels) return;
+					staff_commands_channels.send(
+						"Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
+						"\nSur le serveur: `" + message.guild.name + "` - ID guild: `" + message.guild.id + "`" +
+						"\n(via la commande `" + prefix + "staff`) \n```" + msgStaff + "```" +
+						"\n------------------------------------------------------------------------------------------"
+					);
 
 					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
-						deleteMyMessage(msg, 9 * 1000)
+						deleteMyMessage(msg, 13 * 1000)
 					})
 				})
+
 			} catch (error) {
 				console.log(error)
 			}
