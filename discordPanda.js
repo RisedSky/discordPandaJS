@@ -664,7 +664,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				}, 400);
 				setTimeout(() => {
 					message.react(EmojiDownvote)
-				}, 1500);
+				}, 1000);
 				//return;
 			}
 		}
