@@ -9,6 +9,8 @@
   "dependencies": {
     "discord.js": "11.3.0",
     "opusscript": "0.0.6",
+    "node-opus": "0.2.7",
+    "erlpack": "0.1.2",
     "ultron": "1.1.1",
     "ws": "4.0.0",
     "ytdl-core": "0.20.1",
