@@ -737,7 +737,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 	//#endregion
 
 	try {
-		message.delete(1000).catch(error => console.log("can't delete this message: " + error));
+		message.delete(1500).catch(error => console.log("can't delete this message: " + error));
 	} catch (error) {
 		console.log("Can't delete this message: " + error)
 	}
