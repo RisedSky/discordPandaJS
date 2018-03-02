@@ -16,7 +16,7 @@ var DefaultGuildID = 412262889156771842;
 yt_api_key = process.env.yt_api_key;
 
 var BOT_TOKEN = process.env.BOT_TOKEN;
-bot.login(BOT_TOKEN); //Le bot va désormais fonctionner 24h/24h
+bot.login(BOT_TOKEN);
 
 var prefix = "*";
 //--------Dev----------
@@ -126,7 +126,7 @@ function PermissionCheck(PermToCheck) {
 }
 
 
-bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
+bot.on('ready', () => { //When bot is ready
 	setInterval(datenow, 1000);
 	bot.user.setStatus("online")
 	console.log("------------------------------")
@@ -151,9 +151,9 @@ bot.on('ready', () => { //Quand le bot est prêt (chargé donc)
 })
 
 bot.on('guildMemberAdd', member => {
-	//Quand une personne rejoint un des serveurs discord du bot
+	//When someone join a server wher the bot is too
 
-	console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
+	//console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
 
 	if (member.guild.id == DefaultGuildID) {
 		try {
@@ -175,7 +175,7 @@ bot.on('guildMemberAdd', member => {
 
 })
 
-bot.on('guildCreate', Guild => {
+bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 
 	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
 
@@ -188,7 +188,6 @@ bot.on('guildCreate', Guild => {
 	}
 
 	if (StringallListServers.includes(Guild.id)) {
-		console.log("YES ! A trouvé whitelist =>" + Guild.name)
 		console.log("The server i joined is whitelisted" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
 
 		defaultChannel.send(EmojiGreenTickString + " This server is whitelisted").then(function (msg) {
@@ -197,10 +196,9 @@ bot.on('guildCreate', Guild => {
 	}
 
 	if (!StringallListServers.includes(Guild.id)) {
-		console.log("YES ! A trouvé NOTwhitelist =>" + Guild.name)
 		console.log("I just left the server bcs it's not whitelisted: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
 
-		defaultChannel.send(EmojiProhibitedString + " This server is not whitelisted ! \nDM my creator to be whitelisted !")
+		defaultChannel.send(EmojiProhibitedString + " This server is not whitelisted ! \nDM my creators to be whitelisted ! (or use *staff command where the bot is)")
 
 		setTimeout(() => {
 			Guild.leave();
@@ -656,7 +654,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 		if (channelTopic.includes("<ideas>")) {
 			if (!message.author.bot) {
-				console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
+				//console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
 				setTimeout(() => {
 					message.react(EmojiUpvote)
 				}, 400);
@@ -753,20 +751,20 @@ bot.on('message', message => { //Quand une personne envoi un message
 		case "play":
 			if (!args[1]) {
 				message.react("❌");
-				message.reply("Merci de spécifier un lien / un titre de musique").then(function (msg) {
+				message.reply("Please tell me something to play (a link or a title)").then(function (msg) {
 					deleteMyMessage(msg, 6000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel) {
 				message.react("❌");
-				message.reply("Tu dois être dans un salon vocal").then(function (msg) {
+				message.reply("You have to be connected to a vocal channel").then(function (msg) {
 					deleteMyMessage(msg, 6000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
 				message.react("❌");
-				message.reply("Tu ne dois pas être deafen.").then(function (msg) {
+				message.reply("You have to be listening (not deafen)").then(function (msg) {
 					deleteMyMessage(msg, 6000);
 				})
 				return;
@@ -796,7 +794,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 					} else if (parsed.host.match(/(www\.)?soundcloud.com/i)) {
 						console.log("C'est du soundcloud")
-						message.reply("Soundcloud n'est pas encore pris en compte soon :tm:").then(function (msg) {
+						message.reply("Soundcloud isn't actually supported. Soon :tm:").then(function (msg) {
 							deleteMyMessage(msg, 4500);
 						})
 						return;
@@ -1050,12 +1048,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var NumberToDelete = message.content.substr(7);
 
 			if (!BOT_MANAGE_MESSAGESPerm) {
-				message.reply("Malheureusement, je n'ai pas la permission **(MANAGE_MESSAGES)**.").then(function (msg) {
+				message.reply("Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
 					deleteMyMessage(msg, 15 * 1000)
 				});
 				return;
 			} else if (NumberToDelete < 0) {
-				message.reply("Merci de mettre un nombre de message à purger").then(function (msg) {
+				message.reply("Please put a number of message to purge").then(function (msg) {
 					deleteMyMessage(msg, 5000);
 				})
 				return;
@@ -1099,7 +1097,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//-----------
 		case "restart":
 			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
-				Mess_Channel.send("Redémarrage en cours ...");
+				Mess_Channel.send("Restarting ...");
 				bot.user.setStatus("invisible");
 				bot.disconnect;
 				console.log("Disconnected")
@@ -1155,7 +1153,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				});
 			} catch (error) {
 				console.log("Erreur #367: " + error)
-				message.reply("Tu t'es trompé dans quelque part... ex: " + prefix + "randomnumber 10 20");
+				message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
 			}
 			break;
 		//--------
@@ -1202,11 +1200,11 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			embed = new Discord.RichEmbed()
 				.setColor("DARK_PURPLE")
-				.setAuthor("Sondage de " + message.member.displayName, message.author.displayAvatarURL)
+				.setAuthor("Poll by " + message.member.displayName, message.author.displayAvatarURL)
 				.setTitle(question)
 				.addField(prop1, ":one:", true)
 				.addField(prop2, ":two:", true)
-				.setFooter("Poll by " + message.author.username)
+				.setFooter(AskedBy_EmbedFooter(message.author))
 				.setTimestamp();
 
 			if (prop3 != "") embed.addField(prop3, ":three:", true);
@@ -1435,6 +1433,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
 				//prefix + "restart", "Redémarre le bot **(Expérimental**"
 				"#» " + prefix + "randomnumber [min_number] [max_number]\nGenerate a number between one and another" + "\n\n" +
+				"#» " + prefix + "random-member\nRandomly choose one member of the server" + "\n\n" +
 				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
 				"#» " + prefix + "kappa\nSend a kappa image" +
 				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" +
@@ -1476,7 +1475,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//----------
 		default:
-			Mess_Channel.send("Commande non reconnue. " + EmojiThonkongString).then(function (msg) {
+			Mess_Channel.send("Unknown command. " + EmojiThonkongString).then(function (msg) {
 				setTimeout(() => {
 					msg.react("❓");
 					msg.react(EmojiThonkong);
