@@ -683,7 +683,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 			//DEBUG => console.log(purge_sec)
 			if (purge_sec <= 0) {
 				message.delete()
-				return;
 			} else {
 			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
 			}
