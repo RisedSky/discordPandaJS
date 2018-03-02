@@ -5,8 +5,6 @@ const request = require("request");
 const moment = require("moment");
 const bot = new Discord.Client({ autoReconnect: true });
 
-var whitelistedServer = require("./whitelistServer.js");
-var StringWhitelistServer = String(whitelistedServer.WhiteListServer);
 var BlackListUser = require("./blacklistUser.js");
 var StringBlackListUser = String(BlackListUser.BlackListUser);
 var DefaultGuildID = 412262889156771842;
@@ -138,15 +136,15 @@ bot.on('ready', () => { //When bot is ready
 	bot.user.setActivity(prefix + "help | Started and ready !");
 	setTimeout(ChangeState1, 20000);
 	console.log("The bot is now ready !")
-	if (bot.guilds.exists("fetchAuditLogs", "ban")) {
+	/*if (bot.guilds.exists("fetchAuditLogs", "ban")) {
 		console.log("Il y'a eu des bans");
 	} else {
 		console.log("Pas eu de ban");
-	}
+	}*/
 
-	for (var i in bot.guilds.array()) {
+	/*for (var i in bot.guilds.array()) {
 		console.log(i + " » '" + bot.guilds.array()[i] + "'")
-	}
+	}*/
 
 })
 
@@ -181,31 +179,6 @@ bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 
 	var StringallListServers = "";
 	var allListServers = bot.guilds.array();
-
-	for (var i in whitelistedServer.WhiteListServer) {
-		//Debug => console.log(whitelistedServer.WhiteListServer[i])
-		StringallListServers += whitelistedServer.WhiteListServer[i] + ","
-	}
-
-	if (StringallListServers.includes(Guild.id)) {
-		console.log("The server i joined is whitelisted" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
-
-		defaultChannel.send(EmojiGreenTickString + " This server is whitelisted").then(function (msg) {
-			deleteMyMessage(msg, 8 * 1000)
-		})
-	}
-
-	if (!StringallListServers.includes(Guild.id)) {
-		console.log("I just left the server bcs it's not whitelisted: '" + Guild.name + "' | ID: " + Guild.id + " - Name: " + Guild.name);
-
-		defaultChannel.send(EmojiProhibitedString + " This server is not whitelisted ! \nDM my creators to be whitelisted ! (or use *staff command where the bot is)")
-
-		setTimeout(() => {
-			Guild.leave();
-		}, 3000);
-
-		return;
-	}
 
 	msgToSend = [];
 	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
@@ -1445,7 +1418,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "user-info [@someone]\nGet secret informations about someone" + "\n\n" +
 				"#» " + prefix + "verif-perms\nTell you about the perms I have in this channel" + "\n\n" +
 				"#» " + prefix + "staff\nSend a message to my creators" + "\n\n" +
-				"#» " + prefix + "invite\nGive you the invite link to add me ! \n(Actually you need to MP RisedSky to add your server in the whitelist)" + "\n\n" +
+				"#» " + prefix + "invite\nGive you the invite link to add me !" + "\n\n" +
 				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
 				"```" +
 
