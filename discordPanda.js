@@ -681,7 +681,11 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var array_purge_sec = channelTopic.split("<autopurge:")[1];
 			var purge_sec = array_purge_sec.split(":>")[0];
 			//DEBUG => console.log(purge_sec)
+			if (purge_sec <= 0) {
+				message.delete()
+			} else {
 			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
+			}
 			//return;
 		}
 		if (channelTopic.includes("<nocmds>")) {
