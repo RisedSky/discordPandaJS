@@ -142,9 +142,10 @@ bot.on('ready', () => { //When bot is ready
 		console.log("Pas eu de ban");
 	}*/
 
-	/*for (var i in bot.guilds.array()) {
+	for (var i in bot.guilds.array()) {
 		console.log(i + " » '" + bot.guilds.array()[i] + "'")
-	}*/
+		//Récupere le nombre de serveur et nous les montre (a garder)
+	}
 
 })
 
