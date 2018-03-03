@@ -354,6 +354,7 @@ function add_to_queue(video, message) {
 		if (playit) {
 			if (!message.guild.voiceConnection) {
 				server.loopit = false;
+				server.disptacher_paused = false;
 				message.member.voiceChannel.join().then(function (connection) {
 					if (!message.guild.me.serverDeaf) { message.guild.me.setDeaf(true, "Save bot's bandwith") }
 
@@ -620,7 +621,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 			queue: [],
 			now_playing_data: {},
 			loopit: Boolean,
-			playit: Boolean
+			playit: Boolean,
+			disptacher_paused: Boolean
 		}
 	}
 
@@ -768,7 +770,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					} else if (parsed.host.match(/(www\.)?soundcloud.com/i)) {
 						console.log("C'est du soundcloud")
 						message.reply("Soundcloud isn't actually supported. Soon :tm:").then(function (msg) {
-							deleteMyMessage(msg, 4500);
+							deleteMyMessage(msg, 16 * 1000);
 						})
 						return;
 					}
@@ -946,12 +948,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//----------
 		case "status":
 			if (!server.queue[0]) {
-				message.reply(EmojiRedTickString + " There's not any music").then(function (msg) {
+				message.reply(EmojiRedTickString + " There's no music").then(function (msg) {
 					deleteMyMessage(msg, 15 * 1000)
 				})
 				return;
 			}
-			function tracklooped(thing) { if (thing) { return "Yes " + EmojiGreenTickString } else { return "No " + EmojiRedTickString } }
+			function CheckInfo_ToBooleanEmoji(thing) { if (thing) { return "Yes " + EmojiGreenTickString } else { return "No " + EmojiRedTickString } }
 			try {
 				embedStatus = new Discord.RichEmbed()
 					.setColor("#FFFF00")
@@ -962,7 +964,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 					.addField("The Current song: " + server.queue[0]["title"], " *(requested by " + server.queue[0]["user"] + ")*")
 					.addBlankField()
 
-					.addField("Is the track looped ?", tracklooped(server.loopit))
+					.addField("Is the track looped ?", CheckInfo_ToBooleanEmoji(server.loopit), true)
+					.addField("Is the track paused ?", CheckInfo_ToBooleanEmoji(server.disptacher_paused), true)
 
 					.addBlankField()
 
@@ -1014,6 +1017,31 @@ bot.on('message', message => { //Quand une personne envoi un message
 			});
 			break;
 		//----------
+		case "pause":
+
+			if (!server.dispatcher) {
+				console.log("No dispatcher")
+				message.reply(EmojiRedTickString + " There is no music actually playing !").then(msg => {
+					deleteMyMessage(msg, 15 * 1000)
+				});
+				return;
+
+			}
+			if (server.disptacher_paused) {
+				server.dispatcher.resume();
+				server.disptacher_paused = false;
+				message.reply("Successfully resumed :play_pause:, :headphones:").then(msg => {
+					deleteMyMessage(msg, 20 * 1000)
+				})
+			} else {
+				server.dispatcher.pause();
+				server.disptacher_paused = true;
+				message.reply("Successfully paused :stop_button:, :headphones:").then(msg => {
+					deleteMyMessage(msg, 20 * 1000)
+				})
+			}
+			break;
+		//--------
 		case "purge":
 			//Ajouter la possibilité de supprimer uniquement les messages du bot (genre *purge-bot 100)
 			//let can_manage_chans = message.channel.permissionsFor(message.member).hasPermission("MANAGE_MESSAGES");
