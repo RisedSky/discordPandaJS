@@ -639,8 +639,6 @@ function play(connection, message) {
 bot.on('message', message => { //Quand une personne envoi un message
 	if (!message.guild) return;
 
-	var channelTopic = String(message.channel.topic).toLowerCase();
-
 	//vérifie si le serveur est déjà dans la liste
 	if (!servers[message.guild.id]) {
 		servers[message.guild.id] = {
@@ -651,6 +649,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 			disptacher_paused: Boolean
 		}
 	}
+
+	var channelTopic = String(message.channel.topic).toLowerCase();
 
 	try {
 
