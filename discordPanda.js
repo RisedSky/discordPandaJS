@@ -1090,6 +1090,14 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			var NumberToDelete = message.content.substr(7);
 
+			if (!parseInt(NumberToDelete)) {
+				console.log("pas un int")
+				message.reply(EmojiRedTickString + " `" + NumberToDelete + "` isn't a number.").then(msg => {
+					deleteMyMessage(msg, 13 * 1000)
+				})
+				return;
+			}
+
 			if (!BOT_MANAGE_MESSAGESPerm) {
 				message.reply("Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
 					deleteMyMessage(msg, 15 * 1000)
