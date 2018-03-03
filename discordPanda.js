@@ -1108,29 +1108,31 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 				var nmbr = 0;
 				var nmbrdeleted = 0;
-				var allMsgs = message.channel.fetchMessages({ limit: NumberToDelete })
-					.then(messages => {
-						Mess_Channel.send("Deleting `" + NumberToDelete + "` message(s) :cloud_tornado: :cloud_tornado: :cloud_tornado: ").then(msgdeleted => {
-							messages.forEach(mess => {
-								nmbr++;
+				setTimeout(() => {
+					var allMsgs = message.channel.fetchMessages({ limit: NumberToDelete })
+						.then(messages => {
+							Mess_Channel.send("Deleting `" + NumberToDelete + "` message(s) :cloud_tornado: :cloud_tornado: :cloud_tornado: ").then(msgdeleted => {
+								messages.forEach(mess => {
+									nmbr++;
 
-								console.log(nmbr + " > " + mess.content)
-								if (mess.pinned) return;
-								if (!mess.deletable) return;
-								nmbrdeleted++;
-								msgdeleted.edit("Deleted `" + nmbrdeleted + "` message(s) ! :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
-								mess.delete().then(t => {
-									//console.log(t.content)
-									if (nmbrdeleted == NumberToDelete) {
-										console.log("1> fini !")
-										msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
-										deleteMyMessage(msgdeleted, 13 * 1000)
-									}
+									console.log(nmbr + " > " + mess.content)
+									if (mess.pinned) return;
+									if (!mess.deletable) return;
+									nmbrdeleted++;
+									msgdeleted.edit("Deleted `" + nmbrdeleted + "` message(s) ! :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
+									mess.delete().then(t => {
+										//console.log(t.content)
+										if (nmbrdeleted == NumberToDelete) {
+											console.log("1> fini !")
+											msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
+											deleteMyMessage(msgdeleted, 13 * 1000)
+										}
+									})
+
 								})
-
 							})
-						})
-					});
+						});
+				}, 2000);
 			} catch (error) {
 				console.log("Purge command problem: " + error)
 			}
