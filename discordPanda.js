@@ -186,7 +186,8 @@ bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
 	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
 	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-	msgToSend.push("Here is my discord server: " + Server_Link)
+  msgToSend.push("Here is my discord server: " + Server_Link)
+	msgToSend.push("Don't hesitate to join it in order to get the most recent informations about the bot ;-)")
 	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
 	defaultChannel.send(msgToSend);
@@ -680,16 +681,19 @@ bot.on('message', message => { //Quand une personne envoi un message
 		}
 		if (channelTopic.includes("<nocmds>")) {
 			if (!message.content.startsWith(prefix)) return;
+			var wlComs = ["purge"];
 
-			message.react(EmojiRedTick)
-			setTimeout(() => {
-				message.clearReactions();
-			}, 6 * 1000);
+			if (!wlComs.includes(message.content.substring(prefix.length).split(" ")[0])) {
+				message.react(EmojiRedTick)
+				setTimeout(() => {
+					message.clearReactions();
+				}, 6 * 1000);
 
-			/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
-				deleteMyMessage(msg, 6500)
-			})*/
-			return;
+				/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
+					deleteMyMessage(msg, 6500)
+				})*/
+				return;
+			}
 		}
 
 	} catch (error) {
