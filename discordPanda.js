@@ -28,6 +28,7 @@ function datenow() {
 	online_since++;
 }
 
+var Server_Link = "htto://discord.gg/52PcVRh";
 
 //---- ALL EMOJIS ------
 //Emoji string
@@ -185,7 +186,7 @@ bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
 	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
 	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-	msgToSend.push("Here is my discord server: https://discord.gg/t2DFzWx")
+	msgToSend.push("Here is my discord server: " + Server_Link)
 	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
 	defaultChannel.send(msgToSend);
@@ -611,9 +612,14 @@ function play(connection, message) {
 //#endregion
 
 bot.on('message', message => { //Quand une personne envoi un message
-	if (!message.guild) return;
-
-	var channelTopic = String(message.channel.topic).toLowerCase();
+	if (!message.guild) {
+		if (message.content.startsWith(prefix + "invite")) {
+			message.author.createDM();
+			message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
+			message.author.send("And here is the link of my official discord server: " + Server_Link)
+		}
+		return;
+	}
 
 	//vérifie si le serveur est déjà dans la liste
 	if (!servers[message.guild.id]) {
@@ -625,6 +631,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 			disptacher_paused: Boolean
 		}
 	}
+
+	var channelTopic = String(message.channel.topic).toLowerCase();
 
 	try {
 
@@ -657,12 +665,18 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var array_purge_sec = channelTopic.split("<autopurge:")[1];
 			var purge_sec = array_purge_sec.split(":>")[0];
 			//DEBUG => console.log(purge_sec)
+			if (!message.pinned) {
 			if (purge_sec <= 0) {
+					if (message.deletable) {
 				message.delete()
+					}
 			} else {
+					if (message.deletable) {
 			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
 			}
+				}
 			//return;
+		}
 		}
 		if (channelTopic.includes("<nocmds>")) {
 			if (!message.content.startsWith(prefix)) return;
@@ -672,9 +686,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 				message.clearReactions();
 			}, 6 * 1000);
 
-			message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
+			/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
 				deleteMyMessage(msg, 6500)
-			})
+			})*/
 			return;
 		}
 
@@ -713,7 +727,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 	//#endregion
 
 	try {
+		if (message.deletable) {
 		message.delete(1500).catch(error => console.log("can't delete this message: " + error));
+		}
 	} catch (error) {
 		console.log("Can't delete this message: " + error)
 	}
@@ -727,20 +743,20 @@ bot.on('message', message => { //Quand une personne envoi un message
 			if (!args[1]) {
 				message.react("❌");
 				message.reply("Please tell me something to play (a link or a title)").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel) {
 				message.react("❌");
 				message.reply("You have to be connected to a vocal channel").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
 				message.react("❌");
 				message.reply("You have to be listening (not deafen)").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 			}
@@ -800,7 +816,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			if (!args[1]) {
 				message.react("❌");
 				message.reply("Please, put a music's title").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 			}
@@ -821,24 +837,24 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			if (!Mess_Member.voiceChannel) {
 				message.reply("You should be in a vocal channel before asking me to skip some musics.").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
 				message.reply("You should not be deafen *(For saving some bandwidth of the bot)*").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
 				message.reply("You are not in the same vocal channel as me.")
 					.then(function (msg) {
-						deleteMyMessage(msg, 6000);
+						deleteMyMessage(msg, 12 * 1000);
 					})
 				return;
 			} else if (!server.queue[1]) {
 				message.reply("I didn't found any other music.").then(function (msg) {
-					deleteMyMessage(msg, 5000)
+					deleteMyMessage(msg, 10 * 1000)
 				})
 				return;
 			}
@@ -846,9 +862,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			console.log(server.dispatcher);
 
-			video_id = server.queue[1]["id"];
-			title = server.queue[1]["title"];
-			user = server.queue[1]["user"];
+			var video_id = server.queue[1]["id"];
+			var title = server.queue[1]["title"];
+			var user = server.queue[1]["user"];
 
 			/*if (currentlySong === null) {
 				message.reply("No music is actually playing.").then(function (msg) {
@@ -862,7 +878,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				msg.push("Successfuly skipped the song: `" + server.now_playing_data["title"] + "` *(requested by " + server.now_playing_data["user"] + ")* \n\n");
 				msg.push("Now playing: `" + title + "` *(requested by " + user + ")*")
 				message.reply(msg).then(function (msg) {
-					deleteMyMessage(msg, 45 * 1000);
+					deleteMyMessage(msg, 60 * 1000);
 				})
 				server.dispatcher.end();
 			}
@@ -879,8 +895,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 				for (var i = server.queue.length - 1; i >= 0; i--) {
 					server.queue.splice(i, 1);
 				}
-				Mess_Channel.send("Stopped all the music from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:").then(function (msg) {
-					deleteMyMessage(msg, 10000);
+				Mess_Channel.send("Stopped all the music from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
+					deleteMyMessage(msg, 20 * 1000);
 				})
 				message.guild.voiceConnection.disconnect();
 			}
@@ -901,7 +917,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 				if (!xQueue[0]) {
 					message.reply(EmojiRedTickString + " The queue is actually empty.").then(function (msg) {
-						deleteMyMessage(msg, 15000);
+						deleteMyMessage(msg, 20 * 1000);
 					})
 					return;
 				}
@@ -1047,6 +1063,14 @@ bot.on('message', message => { //Quand une personne envoi un message
 			//let can_manage_chans = message.channel.permissionsFor(message.member).hasPermission("MANAGE_MESSAGES");
 
 			var NumberToDelete = message.content.substr(7);
+
+			if (!parseInt(NumberToDelete)) {
+				console.log("pas un int")
+				message.reply(EmojiRedTickString + " `" + NumberToDelete + "` isn't a number.").then(msg => {
+					deleteMyMessage(msg, 13 * 1000)
+				})
+				return;
+			}
 
 			if (!BOT_MANAGE_MESSAGESPerm) {
 				message.reply("Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
@@ -1396,7 +1420,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			try {
 				message.author.createDM();
 				message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
-				message.author.send("And here is the link of my official discord server: https://discord.gg/t2DFzWx")
+				message.author.send("And here is the link of my official discord server: " + Server_Link)
 
 			} catch (error) {
 				message.reply("Your DM are closed. I can't DM you :worried: ").then(function (msg) {
