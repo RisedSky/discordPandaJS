@@ -30,6 +30,7 @@ function datenow() {
 	online_since++;
 }
 
+var Server_Link = "htto://discord.gg/52PcVRh";
 
 //---- ALL EMOJIS ------
 //Emoji string
@@ -211,7 +212,7 @@ bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
 	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
 	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-	msgToSend.push("Here is my discord server: https://discord.gg/t2DFzWx")
+	msgToSend.push("Here is my discord server: " + Server_Link)
 	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
 	defaultChannel.send(msgToSend);
@@ -1422,7 +1423,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			try {
 				message.author.createDM();
 				message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
-				message.author.send("And here is the link of my official discord server: https://discord.gg/t2DFzWx")
+				message.author.send("And here is the link of my official discord server: " + Server_Link)
 
 			} catch (error) {
 				message.reply("Your DM are closed. I can't DM you :worried: ").then(function (msg) {
