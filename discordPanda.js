@@ -888,9 +888,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			console.log(server.dispatcher);
 
-			video_id = server.queue[1]["id"];
-			title = server.queue[1]["title"];
-			user = server.queue[1]["user"];
+			var video_id = server.queue[1]["id"];
+			var title = server.queue[1]["title"];
+			var user = server.queue[1]["user"];
 
 			/*if (currentlySong === null) {
 				message.reply("No music is actually playing.").then(function (msg) {
