@@ -186,7 +186,7 @@ bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
 	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
 	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-  msgToSend.push("Here is my discord server: " + Server_Link)
+	msgToSend.push("Here is my discord server: " + Server_Link)
 	msgToSend.push("Don't hesitate to join it in order to get the most recent informations about the bot ;-)")
 	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
@@ -667,17 +667,17 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var purge_sec = array_purge_sec.split(":>")[0];
 			//DEBUG => console.log(purge_sec)
 			if (!message.pinned) {
-			if (purge_sec <= 0) {
+				if (purge_sec <= 0) {
 					if (message.deletable) {
-				message.delete()
+						message.delete()
 					}
-			} else {
+				} else {
 					if (message.deletable) {
-			message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
-			}
+						message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
+					}
 				}
-			//return;
-		}
+				//return;
+			}
 		}
 		if (channelTopic.includes("<nocmds>")) {
 			if (!message.content.startsWith(prefix)) return;
@@ -732,7 +732,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 	try {
 		if (message.deletable) {
-		message.delete(1500).catch(error => console.log("can't delete this message: " + error));
+			message.delete(1500).catch(error => console.log("can't delete this message: " + error));
 		}
 	} catch (error) {
 		console.log("Can't delete this message: " + error)
@@ -1063,67 +1063,79 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//--------
 		case "purge":
-			//Ajouter la possibilité de supprimer uniquement les messages du bot (genre *purge-bot 100)
-			//let can_manage_chans = message.channel.permissionsFor(message.member).hasPermission("MANAGE_MESSAGES");
-
-			var NumberToDelete = message.content.substr(7);
-
-			if (!parseInt(NumberToDelete)) {
-				console.log("pas un int")
-				message.reply(EmojiRedTickString + " `" + NumberToDelete + "` isn't a number.").then(msg => {
-					deleteMyMessage(msg, 13 * 1000)
-				})
-				return;
-			}
-
-			if (!BOT_MANAGE_MESSAGESPerm) {
-				message.reply("Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
-					deleteMyMessage(msg, 15 * 1000)
-				});
-				return;
-			} else if (NumberToDelete < 0) {
-				message.reply("Please put a number of message to purge").then(function (msg) {
-					deleteMyMessage(msg, 5000);
-				})
-				return;
-
-			} else if (NumberToDelete > 100) {
-				message.reply("Sadly, the bot can only delete 100 messages at a time.").then(function (msg) {
-					deleteMyMessage(msg, 6000);
-				})
-
-				return;
-			} else if (!member_has_MANAGE_MESSAGES) {
-				message.reply("Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
-					deleteMyMessage(msg, 7000);
-				})
-
-				return;
-			} else if (!args[1]) {
-				message.reply("You didn't put the number of message you want to clear.").then(function (msg) {
-					deleteMyMessage(msg, 6000);
-				})
-
-				return;
-			}
-
 			try {
-				setTimeout(function () {
-					message.channel.bulkDelete(NumberToDelete);
-					message.channel.send("Cleaning " + NumberToDelete + " messages... :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
-						.then(function (newMessage) {
-							setTimeout(() => {
-								newMessage.edit("The channel is now like a new one ! :wink: " + EmojiGreenTickString)
-								deleteMyMessage(newMessage, 1500);
-							}, 2500);
-						});
-				}, 1400)
 
+				var NumberToDelete = message.content.substr(7);
+
+				if (!parseInt(NumberToDelete)) {
+					console.log("pas un int")
+					message.reply(EmojiRedTickString + " `" + NumberToDelete + "` isn't a number.").then(msg => {
+						deleteMyMessage(msg, 9 * 1000)
+					})
+					return;
+				}
+
+				if (!BOT_MANAGE_MESSAGESPerm) {
+					message.reply("Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
+						deleteMyMessage(msg, 15 * 1000)
+					});
+					return;
+				} else if (NumberToDelete < 0) {
+					message.reply("Please put a number of message to purge").then(function (msg) {
+						deleteMyMessage(msg, 5000);
+					})
+					return;
+
+				} else if (NumberToDelete > 1000) {
+					message.reply("Sadly, the bot can only delete 100 messages at a time.").then(function (msg) {
+						deleteMyMessage(msg, 6000);
+					})
+
+					return;
+				} else if (!member_has_MANAGE_MESSAGES) {
+					message.reply("Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
+						deleteMyMessage(msg, 7000);
+					})
+
+					return;
+				} else if (!args[1]) {
+					message.reply("You didn't put the number of message you want to clear.").then(function (msg) {
+						deleteMyMessage(msg, 6000);
+					})
+
+					return;
+				}
+
+				var nmbr = 0;
+				var nmbrdeleted = 0;
+				var allMsgs = message.channel.fetchMessages({ limit: NumberToDelete })
+					.then(messages => {
+						Mess_Channel.send("Deleting `" + NumberToDelete + "` message(s) :cloud_tornado: :cloud_tornado: :cloud_tornado: ").then(msgdeleted => {
+							messages.forEach(mess => {
+								nmbr++;
+
+								console.log(nmbr + " > " + mess.content)
+								if (mess.pinned) return;
+								if (!mess.deletable) return;
+								nmbrdeleted++;
+								msgdeleted.edit("Deleted `" + nmbrdeleted + "` message(s) ! :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
+								mess.delete().then(t => {
+									//console.log(t.content)
+									if (nmbrdeleted == NumberToDelete) {
+										console.log("1> fini !")
+										msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
+										deleteMyMessage(msgdeleted, 13 * 1000)
+									}
+								})
+
+							})
+						})
+					});
 			} catch (error) {
-				console.log("Purge problem: " + error)
+				console.log("Purge command problem: " + error)
 			}
 			break;
-		//-----------
+		//----------
 		case "restart":
 			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
 				Mess_Channel.send("Restarting ...");
