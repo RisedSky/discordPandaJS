@@ -863,24 +863,24 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			if (!Mess_Member.voiceChannel) {
 				message.reply("You should be in a vocal channel before asking me to skip some musics.").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
 				message.reply("You should not be deafen *(For saving some bandwidth of the bot)*").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
 				message.reply("You are not in the same vocal channel as me.")
 					.then(function (msg) {
-						deleteMyMessage(msg, 6000);
+						deleteMyMessage(msg, 12 * 1000);
 					})
 				return;
 			} else if (!server.queue[1]) {
 				message.reply("I didn't found any other music.").then(function (msg) {
-					deleteMyMessage(msg, 5000)
+					deleteMyMessage(msg, 10 * 1000)
 				})
 				return;
 			}
