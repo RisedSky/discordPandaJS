@@ -712,9 +712,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 				message.clearReactions();
 			}, 6 * 1000);
 
-			message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
+			/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
 				deleteMyMessage(msg, 6500)
-			})
+			})*/
 			return;
 		}
 
@@ -767,20 +767,20 @@ bot.on('message', message => { //Quand une personne envoi un message
 			if (!args[1]) {
 				message.react("❌");
 				message.reply("Please tell me something to play (a link or a title)").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel) {
 				message.react("❌");
 				message.reply("You have to be connected to a vocal channel").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
 				message.react("❌");
 				message.reply("You have to be listening (not deafen)").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 			}
@@ -840,7 +840,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			if (!args[1]) {
 				message.react("❌");
 				message.reply("Please, put a music's title").then(function (msg) {
-					deleteMyMessage(msg, 6000);
+					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 			}
@@ -902,7 +902,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				msg.push("Successfuly skipped the song: `" + server.now_playing_data["title"] + "` *(requested by " + server.now_playing_data["user"] + ")* \n\n");
 				msg.push("Now playing: `" + title + "` *(requested by " + user + ")*")
 				message.reply(msg).then(function (msg) {
-					deleteMyMessage(msg, 45 * 1000);
+					deleteMyMessage(msg, 60 * 1000);
 				})
 				server.dispatcher.end();
 			}
@@ -919,8 +919,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 				for (var i = server.queue.length - 1; i >= 0; i--) {
 					server.queue.splice(i, 1);
 				}
-				Mess_Channel.send("Stopped all the music from channel: '" + message.guild.voiceConnection.channel.name + "' :wave:").then(function (msg) {
-					deleteMyMessage(msg, 10000);
+				Mess_Channel.send("Stopped all the music from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
+					deleteMyMessage(msg, 20 * 1000);
 				})
 				message.guild.voiceConnection.disconnect();
 			}
@@ -941,7 +941,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 				if (!xQueue[0]) {
 					message.reply(EmojiRedTickString + " The queue is actually empty.").then(function (msg) {
-						deleteMyMessage(msg, 15000);
+						deleteMyMessage(msg, 20 * 1000);
 					})
 					return;
 				}
