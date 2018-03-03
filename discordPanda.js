@@ -638,7 +638,14 @@ function play(connection, message) {
 //#endregion
 
 bot.on('message', message => { //Quand une personne envoi un message
-	if (!message.guild) return;
+	if (!message.guild) {
+		if (message.content.startsWith(prefix + "invite")) {
+			message.author.createDM();
+			message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
+			message.author.send("And here is the link of my official discord server: " + Server_Link)
+		}
+		return;
+	}
 
 	//vérifie si le serveur est déjà dans la liste
 	if (!servers[message.guild.id]) {
