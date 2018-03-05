@@ -1434,7 +1434,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 		case "servers":
 			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
 				for (var i in bot.guilds.array()) {
-					console.log(i + " » '" + bot.guilds.array()[i] + "'")
+					message.author.send(i + " » '" + bot.guilds.array()[i] + "'")
 				}
 			}
 
