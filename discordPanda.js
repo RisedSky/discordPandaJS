@@ -1437,6 +1437,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					message.author.send(i + " » '" + bot.guilds.array()[i] + "'")
 				}
 			}
+			break;
 
 		//-------
 		case "invite":
