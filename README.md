@@ -1,7 +1,6 @@
 ## discordPandaJS
 
-A big thanks to the bêta-tester :
-Skelever, Sloper39, NizZ_FR
+A big thanks to the bêta-testers, the list is on our discord server.
 
 ## If you want to contribute to the project
 
