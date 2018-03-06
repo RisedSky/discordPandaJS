@@ -1257,7 +1257,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 			break;
 		//-------
-		case "randomnumber":
+		case "random-number":
 			if (!args[1]) {
 				Mess.reply("You need to add a number (first should be the minimum)")
 				return;
@@ -1284,7 +1284,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			try {
 
-				var argsQueue = message.content.substring(12).split(" ");
+				var argsQueue = message.content.substring(13).split(" ");
 				var argMini = args[1];
 				var argMaxi = args[2];
 
@@ -1587,7 +1587,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
 				//prefix + "restart", "Redémarre le bot **(Expérimental**"
-				"#» " + prefix + "randomnumber [min_number] [max_number]\nGenerate a number between one and another" + "\n\n" +
+				"#» " + prefix + "random-number [min_number] [max_number]\nGenerate a number between one and an another" + "\n\n" +
 				"#» " + prefix + "random-member\nRandomly choose one member of the server" + "\n\n" +
 				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
 				"#» " + prefix + "kappa\nSend a kappa image" +
