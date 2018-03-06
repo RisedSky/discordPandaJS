@@ -1144,7 +1144,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				});
 				return;
 
-			}else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
+			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
 				message.reply("You are not in the same vocal channel as me.")
 					.then(function (msg) {
 						deleteMyMessage(msg, 12 * 1000);
@@ -1265,6 +1265,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				Mess.reply("You need to add a number (second should be the maximum)")
 				return;
 			}
+
 			if (isNaN(args[1]) == true) {
 				if (isNaN(args[2]) == true) {
 					Mess.reply("Please, write a minimum and maximum value to generate a random number")
@@ -1301,7 +1302,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				});
 			} catch (error) {
 				console.log("Erreur #367: " + error)
-				message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
+				//message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
 			}
 			break;
 		//--------
