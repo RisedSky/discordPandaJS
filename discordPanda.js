@@ -257,20 +257,20 @@ function add_to_queue(video, message) {
 
 		if (playit) {
 			if (server.annonce_it) {
-			embed = new Discord.RichEmbed()
-				.setColor("#00FF00")
+				embed = new Discord.RichEmbed()
+					.setColor("#00FF00")
 
-				.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
+					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
 
-				//petit logo à gauche du titre
-				.setTitle("Added to the queue in position [" + server.queue.length + "]")
+					//petit logo à gauche du titre
+					.setTitle("Added to the queue in position [" + server.queue.length + "]")
 
-				.addField("Added " + YouTubeTitle, "*requested by " + message.author.username + "*")
-				.setFooter(AskedBy_EmbedFooter(message.author))
-			message.channel.send(embed).then(function (msg) {
-				deleteMyMessage(msg, (YouTubeTimeSec * 1000) - 10);
-			})
-		}
+					.addField("Added " + YouTubeTitle, "*requested by " + message.author.username + "*")
+					.setFooter(AskedBy_EmbedFooter(message.author))
+				message.channel.send(embed).then(function (msg) {
+					deleteMyMessage(msg, (YouTubeTimeSec * 1000) - 10);
+				})
+			}
 		}
 
 		if (!playit) {
@@ -1028,7 +1028,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 					if (embedQueue.fields.length <= 22) {
 						xQueue_AddedFields++;
-					embedQueue.addField("[" + i + "] » " + xQueue[i]['title'], "*requested by " + xQueue[i]['user'] + "*")
+						embedQueue.addField("[" + i + "] » " + xQueue[i]['title'], "*requested by " + xQueue[i]['user'] + "*")
 					} else {
 						var RemainingNumber = xQueue.length - xQueue_AddedFields
 						embedQueue.addField("And " + RemainingNumber + " more...", "It's the end of the text")
@@ -1122,7 +1122,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			if (member_has_MANAGE_MESSAGES) {
 				Mess_Channel.send(SayMessage);
 			} else {
-				message.reply("Vous n'avez pas la permission. **(MANAGE_MESSAGES)**").then(function (msg) {
+				message.reply("You need the permission **(MANAGE_MESSAGES)** to do that (*say)").then(function (msg) {
 					deleteMyMessage(msg, 10000);
 				})
 			}
@@ -1151,7 +1151,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					})
 				return;
 			}
-			
+
 			if (server.disptacher_paused) {
 				server.dispatcher.resume();
 				server.dispatcher_paused = false;
@@ -1346,7 +1346,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			prop9 = cont.substr(b9 + 3);
 
 			if (question == "" || prop1 == "" || prop2 == "") {
-				message.reply(EmojiRedTickString + " Sorry, you didn't put any question/answer1/answer2 in your poll.\n(just follow this exemple: `"+ prefix+"poll Question | Answer1 | Answer2`)").then(msg => {
+				message.reply(EmojiRedTickString + " Sorry, you didn't put any question/answer1/answer2 in your poll.\n(just follow this exemple: `" + prefix + "poll Question | Answer1 | Answer2`)").then(msg => {
 					deleteMyMessage(msg, 13 * 1000)
 				})
 				break;
@@ -1553,7 +1553,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					ServerListString += `${i} » Server Name: ${ServerListArray[i].name} - Server ID: ${ServerListArray[i].id}\n| Containing: ${ServerListArray[i].memberCount} members\n| Server Owner: ${ServerListArray[i].owner} - Owner ID: ${ServerListArray[i].ownerID}\n\n`
 
 				}
-				message.author.send(ServerListString).then(msg => {
+				message.author.send(ServerListString, { split: true }).then(msg => {
 					deleteMyMessage(msg, 600 * 1000);
 					ServerListString.length = 0;
 					ServerListString = "";
@@ -1649,13 +1649,13 @@ bot.on('message', message => { //Quand une personne envoi un message
 		default:
 			try {
 				setTimeout(() => {
-				message.react("❓");
-				message.react(EmojiRedTick)
-				message.react(EmojiThonkong);
+					message.react("❓");
+					message.react(EmojiRedTick)
+					message.react(EmojiThonkong);
 				}, 250);
-			setTimeout(() => {
-				message.clearReactions()
-			}, 2000);
+				setTimeout(() => {
+					message.clearReactions()
+				}, 2000);
 			} catch (error) {
 				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
 			}
