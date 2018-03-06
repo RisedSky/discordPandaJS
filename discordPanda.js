@@ -256,6 +256,7 @@ function add_to_queue(video, message) {
 			, YouTubeTime = result
 
 		if (playit) {
+			if (server.annonce_it) {
 			embed = new Discord.RichEmbed()
 				.setColor("#00FF00")
 
@@ -269,6 +270,7 @@ function add_to_queue(video, message) {
 			message.channel.send(embed).then(function (msg) {
 				deleteMyMessage(msg, (YouTubeTimeSec * 1000) - 10);
 			})
+		}
 		}
 
 		if (!playit) {
@@ -382,6 +384,44 @@ function add_to_queue(video, message) {
 		};
 	})
 }
+
+function queue_playlist(playlistId, message, pageToken = '') {
+	var Number_Added = 0;
+	var server = servers[message.guild.id];
+
+
+	request("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playlistId + "&key=" + yt_api_key + "&pageToken=" + pageToken, (error, response, body) => {
+		var json = JSON.parse(body);
+
+		if ("error" in json) {
+			message.reply("An error has occurred: " + json.error.errors[0].message + " - " + json.error.errors[0].reason).then(msg => {
+				deleteMyMessage(msg, 15 * 1000)
+			});
+		} else if (json.items.length === 0) {
+			message.reply("No videos found within playlist.").then(msg => {
+				deleteMyMessage(msg, 15 * 1000)
+			});
+		} else {
+			for (var i = 0; i < json.items.length; i++) {
+				server.annonce_it = false;
+				add_to_queue(json.items[i].snippet.resourceId.videoId, message)
+				Number_Added++;
+			}
+
+			if (json.nextPageToken == null) {
+				message.channel.send("I added a total of " + Number_Added + " musics.").then(msg => {
+					deleteMyMessage(msg, 20 * 1000)
+				})
+
+				Number_Added = 0;
+				return;
+			}
+
+			queue_playlist(playlistId, message, json.nextPageToken)
+		}
+	});
+}
+
 
 function get_video_id(string) {
 	try {
@@ -554,19 +594,8 @@ function play(connection, message) {
 
 
 		message.channel.send(embed).then(function (msg) {
-			/*
-			if (playit) {
-			//Si on doit jouer la musique alors
-			*/
 			deleteMyMessage(msg, server.queue[0]["YouTubeTimeSec"] * 1000);
-			/*
-		} else {
-			deleteMyMessage(msg, 600 * 1000)
-		}
-		*/
 		})
-
-
 
 		server.dispatcher = connection.playStream(
 			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
@@ -595,8 +624,8 @@ function play(connection, message) {
 			} else {
 				//connection.disconnect;
 				if (message.guild.voiceConnection) {
-					message.channel.send("Finished the queue from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
-						deleteMyMessage(msg, 15 * 1000);
+					message.channel.send(EmojiGreenTickString + " Finished the queue from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
+						deleteMyMessage(msg, 13 * 1000);
 					});
 
 					message.guild.voiceConnection.disconnect();
@@ -629,7 +658,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 			now_playing_data: {},
 			loopit: Boolean,
 			playit: Boolean,
-			dispatcher_paused: Boolean
+			disptacher_paused: Boolean,
+			annonce_it: Boolean
 		}
 	}
 
@@ -743,6 +773,52 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 		//#region Musique
 		// - - Musique
+		case "play-list":
+			if (!args[1]) {
+				message.react("❌");
+				message.reply("Please tell me something to play (the playlist link)").then(function (msg) {
+					deleteMyMessage(msg, 16 * 1000);
+				})
+				return;
+
+			} else if (!Mess_Member.voiceChannel) {
+				message.react("❌");
+				message.reply("You have to be connected to a vocal channel").then(function (msg) {
+					deleteMyMessage(msg, 16 * 1000);
+				})
+				return;
+			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
+				message.react("❌");
+				message.reply("You have to be listening (not deafen)").then(function (msg) {
+					deleteMyMessage(msg, 16 * 1000);
+				})
+				return;
+			}
+
+			server.playit = true;
+
+			var parsed = URL.parse(args[1]);
+			if (parsed && parsed.host) {
+				// YouTube URL
+				var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+				var match = args[1].match(regExp);
+
+				if (match && match[2]) {
+					server.annonce_it = false;
+					queue_playlist(match[2], message);
+					return;
+				} else {
+					message.reply(EmojiRedTickString + " It's not a playlist.").then(msg => {
+						deleteMyMessage(msg, 14 * 1000)
+					})
+				}
+			} else {
+				message.reply(EmojiRedTickString + " Hmm sorry but... it's not a link :/").then(msg => {
+					deleteMyMessage(msg, 14 * 1000)
+				})
+			}
+			break;
+		//------
 		case "play":
 			if (!args[1]) {
 				message.react("❌");
@@ -771,6 +847,19 @@ bot.on('message', message => { //Quand une personne envoi un message
 				var parsed = URL.parse(args[1]);
 				if (parsed && parsed.host) {
 					// YouTube URL
+
+					//var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+					/*
+					var match = args[1].match(regExp);
+
+					if (match && match[2]) {
+						server.annonce_it = false;
+						queue_playlist(match[2], message);
+						return;
+					}
+					*/
+
+					server.annonce_it = true;
 					if (parsed.host.match(/(www\.)?youtube.com|(www\.)?youtu.be/i)) {
 						console.log("C'est un lien youtube")
 						console.log(args[1]);
@@ -781,7 +870,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 							console.log("ça donnerait => " + args[1].split("&t="));
 							q = args[1].split("&t=").shift();
 						}
-
 
 						search_video(message, q);
 
@@ -892,14 +980,13 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//-------
 		case "stop":
-
 			//var server = servers[message.guild.id];
 
 			if (message.guild.voiceConnection) {
 				for (var i = server.queue.length - 1; i >= 0; i--) {
 					server.queue.splice(i, 1);
 				}
-				Mess_Channel.send("Stopped all the music from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
+				Mess_Channel.send(EmojiGreenTickString + " Stopped all the music from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
 					deleteMyMessage(msg, 20 * 1000);
 				})
 				message.guild.voiceConnection.disconnect();
@@ -925,16 +1012,27 @@ bot.on('message', message => { //Quand une personne envoi un message
 					})
 					return;
 				}
-
-				embedQueue = new Discord.RichEmbed()
+				//console.log("Queue length: " + xQueue.length) //show us how many musics there is 
+				let embedQueue = new Discord.RichEmbed()
 					.setColor("#ffa500")
 					.setAuthor("Queue list", bot.user.avatarURL)
 					.setDescription("*Here is your queue list*")
 					.setFooter("Queue list requested by " + message.author.username + " • ID: " + message.author.id)
 					.addBlankField();
 
+				var xQueue_AddedFields = 0;
+
 				for (var i in xQueue) {
+					//console.log(embedQueue.fields.length)
+					if (embedQueue.fields.includes("It's the end of the text")) return;
+
+					if (embedQueue.fields.length <= 22) {
+						xQueue_AddedFields++;
 					embedQueue.addField("[" + i + "] » " + xQueue[i]['title'], "*requested by " + xQueue[i]['user'] + "*")
+					} else {
+						var RemainingNumber = xQueue.length - xQueue_AddedFields
+						embedQueue.addField("And " + RemainingNumber + " more...", "It's the end of the text")
+					}
 				}
 
 				embedQueue.addBlankField();
@@ -942,6 +1040,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				message.channel.send(embedQueue).then(function (msg) {
 					deleteMyMessage(msg, 180 * 1000);
 				})
+
 			} catch (error) {
 				console.log("Queue command problem: " + error)
 			}
@@ -1038,7 +1137,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//----------
 		case "pause":
-
 			if (!server.dispatcher) {
 				console.log("No dispatcher")
 				message.reply(EmojiRedTickString + " There is no music actually playing !").then(msg => {
@@ -1046,8 +1144,15 @@ bot.on('message', message => { //Quand une personne envoi un message
 				});
 				return;
 
+			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
+				message.reply("You are not in the same vocal channel as me.")
+					.then(function (msg) {
+						deleteMyMessage(msg, 12 * 1000);
+					})
+				return;
 			}
-			if (server.dispatcher_paused) {
+			
+			if (server.disptacher_paused) {
 				server.dispatcher.resume();
 				server.dispatcher_paused = false;
 				message.reply("Successfully resumed :play_pause:, :headphones:").then(msg => {
@@ -1152,7 +1257,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 			break;
 		//-------
-		case "randomnumber":
+		case "random-number":
 			if (!args[1]) {
 				Mess.reply("You need to add a number (first should be the minimum)")
 				return;
@@ -1160,6 +1265,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				Mess.reply("You need to add a number (second should be the maximum)")
 				return;
 			}
+
 			if (isNaN(args[1]) == true) {
 				if (isNaN(args[2]) == true) {
 					Mess.reply("Please, write a minimum and maximum value to generate a random number")
@@ -1178,7 +1284,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			try {
 
-				var argsQueue = message.content.substring(12).split(" ");
+				var argsQueue = message.content.substring(13).split(" ");
 				var argMini = args[1];
 				var argMaxi = args[2];
 
@@ -1196,7 +1302,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				});
 			} catch (error) {
 				console.log("Erreur #367: " + error)
-				message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
+				//message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
 			}
 			break;
 		//--------
@@ -1239,7 +1345,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 			prop8 = cont.substr(b8 + 3, b9 - b8 - 3);
 			prop9 = cont.substr(b9 + 3);
 
-			if (question == "" || prop1 == "" || prop2 == "") break;
+			if (question == "" || prop1 == "" || prop2 == "") {
+				message.reply(EmojiRedTickString + " Sorry, you didn't put any question/answer1/answer2 in your poll.\n(just follow this exemple: `"+ prefix+"poll Question | Answer1 | Answer2`)").then(msg => {
+					deleteMyMessage(msg, 13 * 1000)
+				})
+				break;
+			}
 
 			embed = new Discord.RichEmbed()
 				.setColor("DARK_PURPLE")
@@ -1435,9 +1546,18 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 		case "servers":
 			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
-				for (var i in bot.guilds.array()) {
-					message.author.send(i + " » '" + bot.guilds.array()[i] + "'")
+				var ServerListArray = bot.guilds.array();
+				var ServerListString = "";
+				ServerListString = "I am on " + bot.guilds.size + " servers\n\n"
+				for (var i in ServerListArray) {
+					ServerListString += `${i} » Server Name: ${ServerListArray[i].name} - Server ID: ${ServerListArray[i].id}\n| Containing: ${ServerListArray[i].memberCount} members\n| Server Owner: ${ServerListArray[i].owner} - Owner ID: ${ServerListArray[i].ownerID}\n\n`
+
 				}
+				message.author.send(ServerListString).then(msg => {
+					deleteMyMessage(msg, 600 * 1000);
+					ServerListString.length = 0;
+					ServerListString = "";
+				})
 			}
 			break;
 
@@ -1468,6 +1588,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"```md\n" +
 				"<» Music Commands>\n\n" +
 				"#» " + prefix + "play [title / music's link]\nThe bot will join your channel and will play your music" + "\n\n" +
+				"#» " + prefix + "play-list [playlist link]\nThe bot will join your channel and will play the playlist" + "\n\n" +
 				"#» " + prefix + "search [title]\nSearch a music link (with embed info like " + prefix + "play)" + "\n\n" +
 				"#» " + prefix + "skip\nThe bot will skip the current music" + "\n\n" +
 				"#» " + prefix + "stop\nClear the queue and stop the music" + "\n\n" +
@@ -1483,7 +1604,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
 				//prefix + "restart", "Redémarre le bot **(Expérimental**"
-				"#» " + prefix + "randomnumber [min_number] [max_number]\nGenerate a number between one and another" + "\n\n" +
+				"#» " + prefix + "random-number [min_number] [max_number]\nGenerate a number between one and an another" + "\n\n" +
 				"#» " + prefix + "random-member\nRandomly choose one member of the server" + "\n\n" +
 				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
 				"#» " + prefix + "kappa\nSend a kappa image" +
@@ -1526,14 +1647,18 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//----------
 		default:
-			Mess_Channel.send("Unknown command. " + EmojiThonkongString).then(function (msg) {
+			try {
 				setTimeout(() => {
-					msg.react("❓");
-					msg.react(EmojiThonkong);
+				message.react("❓");
+				message.react(EmojiRedTick)
+				message.react(EmojiThonkong);
 				}, 250);
-				deleteMyMessage(msg, 5000);
-			})
-
+			setTimeout(() => {
+				message.clearReactions()
+			}, 2000);
+			} catch (error) {
+				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
+			}
 			break;
 	}
 })
