@@ -1038,7 +1038,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//----------
 		case "pause":
-
 			if (!server.dispatcher) {
 				console.log("No dispatcher")
 				message.reply(EmojiRedTickString + " There is no music actually playing !").then(msg => {
@@ -1046,7 +1045,14 @@ bot.on('message', message => { //Quand une personne envoi un message
 				});
 				return;
 
+			}else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
+				message.reply("You are not in the same vocal channel as me.")
+					.then(function (msg) {
+						deleteMyMessage(msg, 12 * 1000);
+					})
+				return;
 			}
+			
 			if (server.disptacher_paused) {
 				server.dispatcher.resume();
 				server.disptacher_paused = false;
