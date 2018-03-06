@@ -28,7 +28,7 @@ function datenow() {
 	online_since++;
 }
 
-var Server_Link = "htto://discord.gg/52PcVRh";
+var Server_Link = "http://discord.gg/52PcVRh";
 
 //---- ALL EMOJIS ------
 //Emoji string
