@@ -356,7 +356,7 @@ function add_to_queue(video, message) {
 		if (playit) {
 			if (!message.guild.voiceConnection) {
 				server.loopit = false;
-				server.disptacher_paused = false;
+				server.dispatcher_paused = false;
 				message.member.voiceChannel.join().then(function (connection) {
 					if (!message.guild.me.serverDeaf) { message.guild.me.setDeaf(true, "Save bot's bandwith") }
 
@@ -629,7 +629,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			now_playing_data: {},
 			loopit: Boolean,
 			playit: Boolean,
-			disptacher_paused: Boolean
+			dispatcher_paused: Boolean
 		}
 	}
 
@@ -985,7 +985,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					.addBlankField()
 
 					.addField("Is the track looped ?", CheckInfo_ToBooleanEmoji(server.loopit), true)
-					.addField("Is the track paused ?", CheckInfo_ToBooleanEmoji(server.disptacher_paused), true)
+					.addField("Is the track paused ?", CheckInfo_ToBooleanEmoji(server.dispatcher_paused), true)
 
 					.addBlankField()
 
@@ -1047,15 +1047,15 @@ bot.on('message', message => { //Quand une personne envoi un message
 				return;
 
 			}
-			if (server.disptacher_paused) {
+			if (server.dispatcher_paused) {
 				server.dispatcher.resume();
-				server.disptacher_paused = false;
+				server.dispatcher_paused = false;
 				message.reply("Successfully resumed :play_pause:, :headphones:").then(msg => {
 					deleteMyMessage(msg, 20 * 1000)
 				})
 			} else {
 				server.dispatcher.pause();
-				server.disptacher_paused = true;
+				server.dispatcher_paused = true;
 				message.reply("Successfully paused :stop_button:, :headphones:").then(msg => {
 					deleteMyMessage(msg, 20 * 1000)
 				})
