@@ -1544,6 +1544,23 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 			break;
 
+		case "servers":
+			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
+				var ServerListArray = bot.guilds.array();
+				var ServerListString = "";
+				ServerListString = "I am on " + bot.guilds.size + " servers\n\n"
+				for (var i in ServerListArray) {
+					ServerListString += `${i} » Server Name: ${ServerListArray[i].name} - Server ID: ${ServerListArray[i].id}\n| Containing: ${ServerListArray[i].memberCount} members\n| Server Owner: ${ServerListArray[i].owner} - Owner ID: ${ServerListArray[i].ownerID}\n\n`
+
+				}
+				message.author.send(ServerListString).then(msg => {
+					deleteMyMessage(msg, 600 * 1000);
+					ServerListString.length = 0;
+					ServerListString = "";
+				})
+			}
+			break;
+
 		//-------
 		case "invite":
 			try {
