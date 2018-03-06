@@ -1647,14 +1647,18 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//----------
 		default:
-			Mess_Channel.send("Unknown command. " + EmojiThonkongString).then(function (msg) {
+			try {
 				setTimeout(() => {
-					msg.react("❓");
-					msg.react(EmojiThonkong);
+				message.react("❓");
+				message.react(EmojiRedTick)
+				message.react(EmojiThonkong);
 				}, 250);
-				deleteMyMessage(msg, 5000);
-			})
-
+			setTimeout(() => {
+				message.clearReactions()
+			}, 2000);
+			} catch (error) {
+				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
+			}
 			break;
 	}
 })
