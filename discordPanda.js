@@ -1345,7 +1345,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 			prop8 = cont.substr(b8 + 3, b9 - b8 - 3);
 			prop9 = cont.substr(b9 + 3);
 
-			if (question == "" || prop1 == "" || prop2 == "") break;
+			if (question == "" || prop1 == "" || prop2 == "") {
+				message.reply(EmojiRedTickString + " Sorry, you didn't put any question/answer1/answer2 in your poll.\n(just follow this exemple: `"+ prefix+"poll Question | Answer1 | Answer2`)").then(msg => {
+					deleteMyMessage(msg, 13 * 1000)
+				})
+				break;
+			}
 
 			embed = new Discord.RichEmbed()
 				.setColor("DARK_PURPLE")
