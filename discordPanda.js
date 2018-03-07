@@ -658,7 +658,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			now_playing_data: {},
 			loopit: Boolean,
 			playit: Boolean,
-			disptacher_paused: Boolean,
+			dispatcher_paused: Boolean,
 			annonce_it: Boolean
 		}
 	}
@@ -1152,7 +1152,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				return;
 			}
 
-			if (server.disptacher_paused) {
+			if (server.dispatcher_paused) {
 				server.dispatcher.resume();
 				server.dispatcher_paused = false;
 				message.reply("Successfully resumed :play_pause:, :headphones:").then(msg => {
