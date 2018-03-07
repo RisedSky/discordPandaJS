@@ -1589,6 +1589,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"<» Music Commands>\n\n" +
 				"#» " + prefix + "play [title / music's link]\nThe bot will join your channel and will play your music" + "\n\n" +
 				"#» " + prefix + "play-list [playlist link]\nThe bot will join your channel and will play the playlist" + "\n\n" +
+				"#» " + prefix + "pause\nThe bot pause the music (resume & pause included in)" + "\n\n" +
 				"#» " + prefix + "search [title]\nSearch a music link (with embed info like " + prefix + "play)" + "\n\n" +
 				"#» " + prefix + "skip\nThe bot will skip the current music" + "\n\n" +
 				"#» " + prefix + "stop\nClear the queue and stop the music" + "\n\n" +
