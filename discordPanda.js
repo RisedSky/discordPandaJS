@@ -1174,7 +1174,13 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 				var NumberToDelete = message.content.substr(7);
 
-				if (!parseInt(NumberToDelete)) {
+				if (!args[1]) {
+					message.reply("You didn't put the number of message you want to clear.").then(function (msg) {
+						deleteMyMessage(msg, 6000);
+					})
+
+					return;
+				} else if (!parseInt(NumberToDelete)) {
 					console.log("pas un int")
 					message.reply(EmojiRedTickString + " `" + NumberToDelete + "` isn't a number.").then(msg => {
 						deleteMyMessage(msg, 9 * 1000)
