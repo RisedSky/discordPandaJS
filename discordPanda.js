@@ -760,12 +760,14 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 	//#endregion
 
-	try {
+	//Auto-Delete Function
+	var deleteUserMsg = setInterval(DeleteUserMessage, 1000);
+	function DeleteUserMessage(deleteit = true) {
+		if (!deleteit) return;
 		if (message.deletable) {
 			message.delete(1500).catch(error => console.log("can't delete this message: " + error));
 		}
-	} catch (error) {
-		console.log("Can't delete this message: " + error)
+		clearInterval(deleteUserMsg);
 	}
 
 	switch (args[0].toLowerCase()) {
@@ -1638,30 +1640,38 @@ bot.on('message', message => { //Quand une personne envoi un message
 			*/
 			try {
 				message.author.createDM();
-				message.author.send(help_msgToSend).then(function (msg) {
-					deleteMyMessage(msg, 180 * 1000);
+				message.author.send(help_msgToSend, { split: true })
+					.then(function (msg) {
+						deleteMyMessage(msg, 300 * 1000);
+					})
+					.catch(() => {
+						message.reply(EmojiRedTickString + " Sorry but i can't DM you.").then(msg => {
+							deleteMyMessage(msg, 8 * 1000)
+						})
 				});
 			} catch (error) {
-				console.log(error);
+				console.log("Help error: " + error);
 			}
 
 			break;
 		//----------
 		default:
+
+			clearInterval(deleteUserMsg);
 			try {
 				setTimeout(() => {
 					message.react("❓");
-					message.react(EmojiRedTick)
 					message.react(EmojiThonkong);
 				}, 250);
 				setTimeout(() => {
 					message.clearReactions()
-				}, 2000);
+				}, 5 * 1000);
 			} catch (error) {
 				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
 			}
 			break;
 	}
+
 })
 
 /*
