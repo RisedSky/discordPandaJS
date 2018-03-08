@@ -1580,7 +1580,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//-------
 		case "help":
-
 			help_msgToSend = ("```fix\n" +
 				"# » Created by RisedSky & PLfightX" + "\n" +
 				"# » And obviously helped by the bêta - testers.```" + "\n" +
@@ -1602,7 +1601,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"\n" +
 				"```md\n" +
 				"<» Other Commands>\n\n\n" +
-				//prefix + "google", "Donne le lien de votre recherche"
 				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
@@ -1628,9 +1626,10 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"\n\n\n" +
 				"```md\n" +
 				"<» Channel Tags>\n\n\n" +
-				"#» <nocmds>\nAvoid the use of commands in this channel \n\n" +
-				"#» <ideas>\nWith this tag, the bot will add for or against reactions on every message \n \n" +
-				"#» <autopurge:TIME:>\nDelete every message in this channel after TIME seconds" +
+				"#» To use channel tags, just add the tags in a channel topic, it will be detected instantly\n\n" +
+				"#» <nocmds>\nAvoid the use of commands in the channel \n\n" +
+				"#» <ideas>\nWith this tag, the bot will add a upvote / downvote reaction to every message \n \n" +
+				"#» <autopurge:TIME:>\nDelete every message in the channel after TIME seconds" +
 				"```")
 
 			/*
