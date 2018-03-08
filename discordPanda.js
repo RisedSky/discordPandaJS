@@ -703,7 +703,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 					}
 				} else {
 					if (message.deletable) {
-						message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
+						message.delete(purge_sec * 1000)
+							.catch(e => {
+								if (e.name === "DiscordAPIError") return;
+								console.log("autopurge prblm : " + e)
+
+							});
 					}
 				}
 				//return;
