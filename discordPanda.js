@@ -30,7 +30,7 @@ function datenow() {
 
 var Server_Link = "https://discord.gg/52PcVRh";
 
-//---- ALL EMOJIS ------
+//#region ---- ALL EMOJIS ------
 //Emoji string
 var EmojiThonkongString = "<:thonkong:414071099517698059>"
 	, EmojiGreenTickString = "<:greenTick:412663578009796619>"
@@ -63,6 +63,7 @@ var Thonkong_ID = "414071099517698059"
 
 var PermissionYes = EmojiGreenTickString;
 var PermissionNo = EmojiRedTickString;
+//#endregion
 //---- ALL EMOJIS ------
 
 
@@ -73,56 +74,6 @@ var YouTubeThumbnail //Défini la miniature
 	, YouTubeLink; //Défini le lien de la vidéo
 
 //var CommandList = ["restart", "leave", "join", "", ""];
-
-function ChangeState1() {
-	bot.user.setActivity(prefix + "help | By RisedSky & PLfightX");
-	setTimeout(ChangeState2, 30000);
-}
-
-function ChangeState2() {
-	bot.user.setActivity(prefix + "help | GitHub : https://goo.gl/Q7JtrS");
-	setTimeout(ChangeState3, 30000);
-}
-
-function ChangeState3() {
-	bot.user.setActivity(prefix + "help | On " + bot.guilds.size + " servers with " + bot.users.size + " members");
-	setTimeout(ChangeState1, 30000);
-}
-
-function AskedBy_EmbedFooter(author) {
-	return `Asked by ${author.username} • ID: ${author.id}`;
-	//.setFooter("Asked by " + message.member. + " • ID: " + message.author.id);
-}
-
-function deleteMyMessage(message, time) {
-	try {
-		if (time === null) {
-			time = 750;
-			//console.log("time changed to 750 bcs it's null")
-		}
-
-		if (!message.author.name === bot.user.name) {
-			//console.log("Not my message")
-			return;
-		}
-		//console.log("deleted: " + message)
-		message.delete(time).catch(error => (console.log("deleteMyMessage prblm : " + error)));
-	} catch (error) {
-		console.log("Problem on deleteMyMessage function: " + error)
-	}
-}
-
-function NotifyUser(ID) {
-	return `<@${ID}>`
-}
-
-function PermissionCheck(PermToCheck) {
-	if (PermToCheck === true) {
-		return PermissionYes;
-	} else {
-		return PermissionNo;
-	}
-}
 
 
 bot.on('ready', () => { //When bot is ready
@@ -195,452 +146,6 @@ bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 })
 
 
-//#region "Functions pour la musique"
-
-function search_video(message, query) {
-	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=" + encodeURIComponent(query) + "&key=" + yt_api_key, (error, response, body) => {
-
-		var json = JSON.parse(body);
-
-		if ("error" in json) {
-			message.reply("Notify RisedSky with a screen to this error: ```\n An error has occurred: " + json.error.errors[0].message + " - " + json.error.errors[0].reason + "```")
-				.then(function (msg) {
-					deleteMyMessage(msg, 10000);
-				})
-		} else if (json.items.length === 0) {
-			message.reply("No videos found with your criteria: ```" + query + "```")
-				.then(function (msg) {
-					deleteMyMessage(msg, 20 * 1000);
-				})
-		} else {
-			add_to_queue(json.items[0].id.videoId, message);
-
-			/*
-			console.log(json.items[0].id);
-			console.log(json.items[0].id.videoId);
-			console.log(message.content + "\n");
-			*/
-		}
-	})
-}
-
-function add_to_queue(video, message) {
-	var server = servers[message.guild.id];
-
-	//console.log("Add to queue | Video: " + video)
-	var video_id = video;
-	//console.log("Add to queue | video_id: " + video_id)
-
-	var playit = server.playit;
-
-	YTDL.getInfo("https://www.youtube.com/watch?v=" + video, (error, info) => {
-		if (error) {
-			message.reply("The requested video (" + video + ") does not exist or cannot be played.").then(function (msg) {
-				deleteMyMessage(msg, 15000);
-			})
-			console.log("Error (" + video + "): " + error);
-			return;
-		}
-
-
-		var date = new Date(null); //défini comme null la date
-		date.setSeconds(info.length_seconds); //défini la date avec des secondes
-		var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
-
-		var YouTubeTimeSec = info.length_seconds //défini en secondes
-			, YouTubeViews = info.view_count //défini le nombre de vues de la vidéo
-			, YouTubeUploader = info.author.name //récupere le nom du YTBeur
-			, YouTubeTitle = info.title //récupere le titre
-			, YouTubeThumbnail = info.thumbnail_url //récupere la minia
-			, YouTubeLink = info.video_url //récupere le lien de la vidéo
-			, YouTubeTime = result
-
-		if (playit) {
-			if (server.annonce_it) {
-				embed = new Discord.RichEmbed()
-					.setColor("#00FF00")
-
-					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
-
-					//petit logo à gauche du titre
-					.setTitle("Added to the queue in position [" + server.queue.length + "]")
-
-					.addField("Added " + YouTubeTitle, "*requested by " + message.author.username + "*")
-					.setFooter(AskedBy_EmbedFooter(message.author))
-				message.channel.send(embed).then(function (msg) {
-					deleteMyMessage(msg, (YouTubeTimeSec * 1000) - 10);
-				})
-			}
-		}
-
-		if (!playit) {
-			//Si on NE doit PAS jouer la musique alors
-			EmbedAuthorName = "Song searched via YouTube";
-			EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
-
-			search_embed = new Discord.RichEmbed()
-				.setColor("#00FF00")
-
-
-				.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
-
-				//petit logo à gauche du titre
-				.setAuthor(EmbedAuthorName, EmbedAuthorIcon)
-				.setTitle(YouTubeTitle)
-
-				.addField("Your request is", "```" + message.content + "```")
-
-				.addBlankField()
-
-				.addField("Uploaded by", YouTubeUploader, true)
-				.addField("Duration", "**" + YouTubeTime + "**", true) //temps
-
-				.addBlankField()
-
-				.addField("Views", YouTubeViews, true)
-				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-
-				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
-
-
-			message.channel.send(search_embed).then(function (msg) {
-
-				deleteMyMessage(msg, 600 * 1000)
-			})
-		}
-
-		/*
-			if (playit) {
-				//Si on doit jouer la musique alors
-				EmbedAuthorName = "Song added via YouTube";
-				EmbedAuthorIcon = "https://cdn.iconscout.com/public/images/icon/premium/png-512/volume-high-song-sound-35c8ba26d38fbd69-512x512.png";
-			} else {
-				//Si on NE doit PAS jouer la musique alors
-				EmbedAuthorName = "Song searched via YouTube";
-				EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
-			}
-
-			embed = new Discord.RichEmbed()
-				.setColor("#00FF00")
-
-
-				.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
-
-				//petit logo à gauche du titre
-				.setAuthor(EmbedAuthorName, EmbedAuthorIcon)
-				.setTitle(YouTubeTitle)
-
-				.addField("Your request is", "```" + message.content + "```")
-
-				.addBlankField()
-
-				.addField("Uploaded by", YouTubeUploader, true)
-				.addField("Duration", "**" + YouTubeTime + "**", true) //temps
-
-				.addBlankField()
-
-				.addField("Views", YouTubeViews, true)
-				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-					
-				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
-
-
-			message.channel.send(embed).then(function (msg) {
-				if (playit) {
-					//Si on doit jouer la musique alors
-					deleteMyMessage(msg, YouTubeTimeSec * 1000);
-				} else {
-					deleteMyMessage(msg, 600 * 1000)
-				}
-			})
-		*/
-
-		if (playit) {
-			if (!message.guild.voiceConnection) {
-				server.loopit = false;
-				server.dispatcher_paused = false;
-				message.member.voiceChannel.join().then(function (connection) {
-					if (!message.guild.me.serverDeaf) { message.guild.me.setDeaf(true, "Save bot's bandwith") }
-
-					play(connection, message);
-				})
-			};
-
-			server.queue.push(
-				{
-					title: info["title"],
-					id: video_id,
-					user: message.author.username,
-					YouTubeTimeSec: YouTubeTimeSec,
-					YouTubeViews: YouTubeViews,
-					YouTubeUploader: YouTubeUploader,
-					YouTubeTitle: YouTubeTitle,
-					YouTubeThumbnail: YouTubeThumbnail,
-					YouTubeLink: YouTubeLink,
-					YouTubeTime: YouTubeTime,
-					MessContent: message.content
-				}
-			);
-		};
-	})
-}
-
-function queue_playlist(playlistId, message, pageToken = '') {
-	var Number_Added = 0;
-	var server = servers[message.guild.id];
-
-
-	request("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playlistId + "&key=" + yt_api_key + "&pageToken=" + pageToken, (error, response, body) => {
-		var json = JSON.parse(body);
-
-		if ("error" in json) {
-			message.reply("An error has occurred: " + json.error.errors[0].message + " - " + json.error.errors[0].reason).then(msg => {
-				deleteMyMessage(msg, 15 * 1000)
-			});
-		} else if (json.items.length === 0) {
-			message.reply("No videos found within playlist.").then(msg => {
-				deleteMyMessage(msg, 15 * 1000)
-			});
-		} else {
-			for (var i = 0; i < json.items.length; i++) {
-				server.annonce_it = false;
-				add_to_queue(json.items[i].snippet.resourceId.videoId, message)
-				Number_Added++;
-			}
-
-			if (json.nextPageToken == null) {
-				message.channel.send("I added a total of " + Number_Added + " musics.").then(msg => {
-					deleteMyMessage(msg, 20 * 1000)
-				})
-
-				Number_Added = 0;
-				return;
-			}
-
-			queue_playlist(playlistId, message, json.nextPageToken)
-		}
-	});
-}
-
-
-function get_video_id(string) {
-	try {
-		var regex = /(?:\?v=|&v=|youtu\.be\/)(.*?)(?:\?|&|$)/;
-		console.log("String: " + string)
-		var matches = String(string.match(regex));
-		console.log("Matches: " + matches)
-
-		if (matches) {
-			return matches[1];
-		} else {
-			return string;
-		}
-
-	} catch (error) {
-		console.log("get_video_id problem => " + error)
-	}
-}
-
-/*
-//THIS SHOULD NOT BE USED NOW
-function get_Video_Info(link, message, playit) {
-
-
-	try {
-		var parsed = URL.parse(link);
-
-		if (parsed && parsed.host) {
-			// YouTube URL
-			if (parsed.host.match(/(www\.)?youtube.com|(www\.)?youtu.be/i)) {
-				var video_id = get_video_id(link)
-			}
-		} else {
-			var video_id = link;
-		}
-
-		//console.log("video_id => " + video_id)
-
-
-		YTDL.getInfo(video_id, function (err, info) {
-
-			YouTubeTimeSec = info.length_seconds; //défini en secondes
-			YouTubeViews = info.view_count; //défini le nombre de vues de la vidéo
-			YouTubeUploader = info.author.name; //récupere le nom du YTBeur
-			YouTubeTitle = info.title; //récupere le titre
-			YouTubeThumbnail = info.thumbnail_url; //récupere la minia
-			YouTubeLink = info.video_url; //récupere le lien de la vidéo
-
-			var date = new Date(null); //défini comme null la date
-			date.setSeconds(YouTubeTimeSec); //défini la date avec des secondes
-			var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
-
-			YouTubeTime = result;
-
-			//console.log("get_video_info => " + YouTubeTimeSec, YouTubeViews, YouTubeUploader, YouTubeTitle, YouTubeThumbnail, YouTubeLink, YouTubeTime);
-			//return YouTubeTimeSec, YouTubeViews, YouTubeUploader, YouTubeTitle, YouTubeThumbnail, YouTubeLink, YouTubeTime;setTimeout(() => {
-			//get_Video_Info(String("https://www.youtube.com/watch?v=JOfqoq3_mEE"));
-
-			if (server.playit) {
-				//Si on doit jouer la musique alors
-				EmbedAuthorName = "Song added via YouTube";
-				EmbedAuthorIcon = "https://cdn.iconscout.com/public/images/icon/premium/png-512/volume-high-song-sound-35c8ba26d38fbd69-512x512.png";
-			} else {
-				//Si on NE doit PAS jouer la musique alors
-				EmbedAuthorName = "Song searched via YouTube";
-				EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
-			}
-
-			embed = new Discord.RichEmbed()
-				.setColor("#00FF00")
-
-
-				.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
-
-				//petit logo à gauche du titre
-				.setAuthor(EmbedAuthorName, EmbedAuthorIcon)
-				.setTitle(YouTubeTitle)
-
-				.addField("Your request is", "```" + message.content + "```")
-
-				.addBlankField()
-
-				.addField("Uploaded by", YouTubeUploader, true)
-				.addField("Duration", "**" + YouTubeTime + "**", true) //temps
-
-				.addBlankField()
-
-				.addField("Views", YouTubeViews, true)
-				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
-				
-				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
-
-
-			message.channel.send(embed).then(function (msg) {
-				if (playit) { //Si on doit jouer la musique alors
-					deleteMyMessage(msg, YouTubeTimeSec * 1000);
-				} else {
-					deleteMyMessage(msg, 600 * 1000)
-				}
-			})
-		}, 1000);
-
-	} catch (error) {
-		console.log("get_Video_Info problem => " + error)
-	}
-}
-*/
-
-function play(connection, message) {
-
-	try {
-		var server = servers[message.guild.id];
-
-		var video_id = server.queue[0]["id"];
-		var title = server.queue[0]["title"];
-		var user = server.queue[0]["user"];
-
-		server.now_playing_data["title"] = title;
-		server.now_playing_data["user"] = user;
-
-		//console.log("Le play => " + message)
-		//console.log("[play] serveur queue [0] => " + server.queue[0])
-		//console.log("[play] message.content => " + message.content)
-
-		var playit = server.playit;
-
-		/*
-		var date = new Date(null); //défini comme null la date
-		date.setSeconds(server.queue[0]["YouTubeTimeSec"]); //défini la date avec des secondes
-		var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
-		*/
-
-		/*
-				if (playit) {
-					//Si on doit jouer la musique alors
-					EmbedAuthorName = "Song added via YouTube";
-					EmbedAuthorIcon = "https://cdn.iconscout.com/public/images/icon/premium/png-512/volume-high-song-sound-35c8ba26d38fbd69-512x512.png";
-				} else {
-					//Si on NE doit PAS jouer la musique alors
-					EmbedAuthorName = "Song searched via YouTube";
-					EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
-				}
-		*/
-
-		embed = new Discord.RichEmbed()
-			.setColor("#00FF00")
-
-
-			.setThumbnail(server.queue[0]["YouTubeThumbnail"]).setURL(server.queue[0]["YouTubeLink"]) //miniature + lien vers la vidéo en cliquant sur la minia
-
-			//petit logo à gauche du titre
-			.setAuthor("Now playing", "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1")
-			.setTitle(server.queue[0]["YouTubeTitle"])
-
-			.addField("Your request is", "```" + server.queue[0]["MessContent"] + "```")
-
-			.addBlankField()
-
-			.addField("Uploaded by", server.queue[0]["YouTubeUploader"], true)
-			.addField("Duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
-
-			.addBlankField()
-
-			.addField("Views", server.queue[0]["YouTubeViews"], true)
-			.addField("Link", "[Click here](" + server.queue[0]["YouTubeLink"] + ")", true)
-			/*.setAuthor(YouTubeTitle, message.author.avatarURL)
-			Code qui permet de définir le titre et le logo du demandeur
-			*/
-			.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
-
-
-		message.channel.send(embed).then(function (msg) {
-			deleteMyMessage(msg, server.queue[0]["YouTubeTimeSec"] * 1000);
-		})
-
-		server.dispatcher = connection.playStream(
-			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
-		);
-
-		server.dispatcher.setVolume(0.3);
-
-		/*
-		message.channel.send(`Now playing: '${title}' requested by '${user}'`).then(function (msg) {
-			deleteMyMessage(msg, server.queue[0]["YouTubeTimeSec"] * 1000)
-		})
-		*/
-
-		//console.log(currentlySong)
-
-		server.dispatcher.on("end", function () {
-
-			if (!server.loopit) {
-				server.queue.splice(0, 1);
-			}
-
-			if (server.queue[0]) {
-				setTimeout(() => {
-					play(connection, message);
-				}, 1000);
-			} else {
-				//connection.disconnect;
-				if (message.guild.voiceConnection) {
-					message.channel.send(EmojiGreenTickString + " Finished the queue from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
-						deleteMyMessage(msg, 13 * 1000);
-					});
-
-					message.guild.voiceConnection.disconnect();
-				}
-			}
-
-		})
-
-	} catch (error) {
-		console.log("[play] Function play: " + error)
-	}
-}
-
-//#endregion
-
 bot.on('message', message => { //Quand une personne envoi un message
 	if (!message.guild) {
 		if (message.content.startsWith(prefix + "invite")) {
@@ -703,7 +208,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 					}
 				} else {
 					if (message.deletable) {
-						message.delete(purge_sec * 1000).catch(error => (console.log("autopurge prblm : " + error)));
+						message.delete(purge_sec * 1000)
+							.catch(e => {
+								if (e.name === "DiscordAPIError") return;
+								console.log("autopurge prblm : " + e)
+
+							});
 					}
 				}
 				//return;
@@ -760,18 +270,23 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 	//#endregion
 
-	try {
+	//Auto-Delete Function
+	var deleteUserMsg = setInterval(DeleteUserMessage, 1000);
+	function DeleteUserMessage(deleteit = true) {
+		if (!deleteit) return;
 		if (message.deletable) {
-			message.delete(1500).catch(error => console.log("can't delete this message: " + error));
+			message.delete(1500).catch(e => {
+				if (e.name === "DiscordAPIError") return;
+				console.log("can't delete this message: " + e)
+			});
 		}
-	} catch (error) {
-		console.log("Can't delete this message: " + error)
+		clearInterval(deleteUserMsg);
 	}
 
 	switch (args[0].toLowerCase()) {
 
-
-		//#region Musique
+		//Music Commands
+		//#region 
 		// - - Musique
 		case "play-list":
 			if (!args[1]) {
@@ -869,6 +384,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 						if (args[1].includes("&t=")) {
 							console.log("ça donnerait => " + args[1].split("&t="));
 							q = args[1].split("&t=").shift();
+						} else if (args[1].includes("&feature=youtu.be")) {
+							q = args[1].replace("&feature=youtu.be", "")
 						}
 
 						search_video(message, q);
@@ -902,6 +419,38 @@ bot.on('message', message => { //Quand une personne envoi un message
 				console.log("Erreur dans le play, quelque chose ne va pas: " + error)
 			}
 
+			break;
+
+		//----------
+		case "pause":
+			if (!server.dispatcher) {
+				console.log("No dispatcher")
+				message.reply(EmojiRedTickString + " There is no music actually playing !").then(msg => {
+					deleteMyMessage(msg, 15 * 1000)
+				});
+				return;
+
+			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
+				message.reply("You are not in the same vocal channel as me.")
+					.then(function (msg) {
+						deleteMyMessage(msg, 12 * 1000);
+					})
+				return;
+			}
+
+			if (server.dispatcher_paused) {
+				server.dispatcher.resume();
+				server.dispatcher_paused = false;
+				message.reply("Successfully resumed :play_pause:, :headphones:").then(msg => {
+					deleteMyMessage(msg, 20 * 1000)
+				})
+			} else {
+				server.dispatcher.pause();
+				server.dispatcher_paused = true;
+				message.reply("Successfully paused :stop_button:, :headphones:").then(msg => {
+					deleteMyMessage(msg, 20 * 1000)
+				})
+			}
 			break;
 		//-------
 		case "search":
@@ -1110,12 +659,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//--------
 		//#endregion
 
-		/*
-		case "google":
-
-		break;
-		*/
-		//----------
+		//Other Commands
+		//#region 
 		case "say":
 			const SayMessage = message.content.substr(4);
 
@@ -1135,44 +680,19 @@ bot.on('message', message => { //Quand une personne envoi un message
 				deleteMyMessage(newMessage, 14 * 1000);
 			});
 			break;
-		//----------
-		case "pause":
-			if (!server.dispatcher) {
-				console.log("No dispatcher")
-				message.reply(EmojiRedTickString + " There is no music actually playing !").then(msg => {
-					deleteMyMessage(msg, 15 * 1000)
-				});
-				return;
-
-			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
-				message.reply("You are not in the same vocal channel as me.")
-					.then(function (msg) {
-						deleteMyMessage(msg, 12 * 1000);
-					})
-				return;
-			}
-
-			if (server.dispatcher_paused) {
-				server.dispatcher.resume();
-				server.dispatcher_paused = false;
-				message.reply("Successfully resumed :play_pause:, :headphones:").then(msg => {
-					deleteMyMessage(msg, 20 * 1000)
-				})
-			} else {
-				server.dispatcher.pause();
-				server.dispatcher_paused = true;
-				message.reply("Successfully paused :stop_button:, :headphones:").then(msg => {
-					deleteMyMessage(msg, 20 * 1000)
-				})
-			}
-			break;
 		//--------
 		case "purge":
 			try {
 
 				var NumberToDelete = message.content.substr(7);
 
-				if (!parseInt(NumberToDelete)) {
+				if (!args[1]) {
+					message.reply("You didn't put the number of message you want to clear.").then(function (msg) {
+						deleteMyMessage(msg, 6000);
+					})
+
+					return;
+				} else if (!parseInt(NumberToDelete)) {
 					console.log("pas un int")
 					message.reply(EmojiRedTickString + " `" + NumberToDelete + "` isn't a number.").then(msg => {
 						deleteMyMessage(msg, 9 * 1000)
@@ -1200,12 +720,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 				} else if (!member_has_MANAGE_MESSAGES) {
 					message.reply("Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
 						deleteMyMessage(msg, 7000);
-					})
-
-					return;
-				} else if (!args[1]) {
-					message.reply("You didn't put the number of message you want to clear.").then(function (msg) {
-						deleteMyMessage(msg, 6000);
 					})
 
 					return;
@@ -1405,7 +919,11 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			Mess_Channel.send("Wow, " + message.mentions.users.first() + " you got rekt by " + NotifyUser(message.member.id) + "\n\nhttps://www.tenor.co/wv88.gif")
 			break;
-		//-------
+
+		//#endregion
+
+		//Encore d'autres commandes
+		//#region 
 		case "bot-info":
 			var d = new Date(null);
 			d.setSeconds(online_since);
@@ -1544,6 +1062,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 			break;
 
+		//--------
 		case "servers":
 			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
 				var ServerListArray = bot.guilds.array();
@@ -1578,7 +1097,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//-------
 		case "help":
-
 			help_msgToSend = ("```fix\n" +
 				"# » Created by RisedSky & PLfightX" + "\n" +
 				"# » And obviously helped by the bêta - testers.```" + "\n" +
@@ -1589,6 +1107,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"<» Music Commands>\n\n" +
 				"#» " + prefix + "play [title / music's link]\nThe bot will join your channel and will play your music" + "\n\n" +
 				"#» " + prefix + "play-list [playlist link]\nThe bot will join your channel and will play the playlist" + "\n\n" +
+				"#» " + prefix + "pause\nThe bot pause the music (resume & pause included in)" + "\n\n" +
 				"#» " + prefix + "search [title]\nSearch a music link (with embed info like " + prefix + "play)" + "\n\n" +
 				"#» " + prefix + "skip\nThe bot will skip the current music" + "\n\n" +
 				"#» " + prefix + "stop\nClear the queue and stop the music" + "\n\n" +
@@ -1599,7 +1118,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"\n" +
 				"```md\n" +
 				"<» Other Commands>\n\n\n" +
-				//prefix + "google", "Donne le lien de votre recherche"
 				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
@@ -1625,9 +1143,10 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"\n\n\n" +
 				"```md\n" +
 				"<» Channel Tags>\n\n\n" +
-				"#» <nocmds>\nAvoid the use of commands in this channel \n\n" +
-				"#» <ideas>\nWith this tag, the bot will add for or against reactions on every message \n \n" +
-				"#» <autopurge:TIME:>\nDelete every message in this channel after TIME seconds" +
+				"#» To use channel tags, just add the tags in a channel topic, it will be detected instantly\n\n" +
+				"#» <nocmds>\nAvoid the use of commands in the channel \n\n" +
+				"#» <ideas>\nWith this tag, the bot will add a upvote / downvote reaction to every message \n \n" +
+				"#» <autopurge:TIME:>\nDelete every message in the channel after TIME seconds" +
 				"```")
 
 			/*
@@ -1637,30 +1156,41 @@ bot.on('message', message => { //Quand une personne envoi un message
 			*/
 			try {
 				message.author.createDM();
-				message.author.send(help_msgToSend).then(function (msg) {
-					deleteMyMessage(msg, 180 * 1000);
-				});
+				message.author.send(help_msgToSend, { split: true })
+					.then(function (msg) {
+						deleteMyMessage(msg, 300 * 1000);
+					})
+					.catch(() => {
+						message.reply(EmojiRedTickString + " Sorry but i can't DM you.").then(msg => {
+							deleteMyMessage(msg, 8 * 1000)
+						})
+					});
 			} catch (error) {
-				console.log(error);
+				console.log("Help error: " + error);
 			}
 
 			break;
 		//----------
 		default:
+
+			clearInterval(deleteUserMsg);
 			try {
 				setTimeout(() => {
 					message.react("❓");
-					message.react(EmojiRedTick)
 					message.react(EmojiThonkong);
 				}, 250);
 				setTimeout(() => {
 					message.clearReactions()
-				}, 2000);
+				}, 5 * 1000);
 			} catch (error) {
 				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
 			}
 			break;
+
+		//#endregion
+
 	}
+
 })
 
 /*
@@ -1708,3 +1238,351 @@ bot.on('disconnect', () => {
 bot.on('resume', () => {
 	console.log("resumed!");
 })
+
+
+
+//#region Functions
+
+//#region Important functions
+function ChangeState1() {
+	bot.user.setActivity(prefix + "help | By RisedSky & PLfightX");
+	setTimeout(ChangeState2, 30000);
+}
+
+function ChangeState2() {
+	bot.user.setActivity(prefix + "help | GitHub : https://goo.gl/Q7JtrS");
+	setTimeout(ChangeState3, 30000);
+}
+
+function ChangeState3() {
+	bot.user.setActivity(prefix + "help | On " + bot.guilds.size + " servers with " + bot.users.size + " members");
+	setTimeout(ChangeState1, 30000);
+}
+
+function AskedBy_EmbedFooter(author) {
+	return `Asked by ${author.username} • ID: ${author.id}`;
+	//.setFooter("Asked by " + message.member. + " • ID: " + message.author.id);
+}
+
+function deleteMyMessage(message, time) {
+	try {
+		if (time === null) {
+			time = 750;
+			//console.log("time changed to 750 bcs it's null")
+		}
+
+		if (!message.author.name === bot.user.name) {
+			//console.log("Not my message")
+			return;
+		}
+		//console.log("deleted: " + message)
+		message.delete(time).catch(error => (console.log("deleteMyMessage prblm : " + error)));
+	} catch (error) {
+		console.log("Problem on deleteMyMessage function: " + error)
+	}
+}
+
+function NotifyUser(ID) {
+	return `<@${ID}>`
+}
+
+function PermissionCheck(PermToCheck) {
+	if (PermToCheck === true) {
+		return PermissionYes;
+	} else {
+		return PermissionNo;
+	}
+}
+//#endregion
+
+
+
+//#region "Functions pour la musique"
+
+function search_video(message, query) {
+	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=" + encodeURIComponent(query) + "&key=" + yt_api_key, (error, response, body) => {
+
+		var json = JSON.parse(body);
+
+		if ("error" in json) {
+			message.reply("Notify RisedSky with a screen to this error: ```\n An error has occurred: " + json.error.errors[0].message + " - " + json.error.errors[0].reason + "```")
+				.then(function (msg) {
+					deleteMyMessage(msg, 10000);
+				})
+		} else if (json.items.length === 0) {
+			message.reply("No videos found with your criteria: ```" + query + "```")
+				.then(function (msg) {
+					deleteMyMessage(msg, 20 * 1000);
+				})
+		} else {
+			add_to_queue(json.items[0].id.videoId, message);
+
+			/*
+			console.log(json.items[0].id);
+			console.log(json.items[0].id.videoId);
+			console.log(message.content + "\n");
+			*/
+		}
+	})
+}
+
+function add_to_queue(video, message) {
+	var server = servers[message.guild.id];
+
+	//console.log("Add to queue | Video: " + video)
+	var video_id = video;
+	//console.log("Add to queue | video_id: " + video_id)
+
+	var playit = server.playit;
+
+	YTDL.getInfo("https://www.youtube.com/watch?v=" + video, (error, info) => {
+		if (error) {
+			message.reply("The requested video (" + video + ") does not exist or cannot be played.").then(function (msg) {
+				deleteMyMessage(msg, 15000);
+			})
+			console.log("Error (" + video + "): " + error);
+			return;
+		}
+
+
+		var date = new Date(null); //défini comme null la date
+		date.setSeconds(info.length_seconds); //défini la date avec des secondes
+		var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+
+		var YouTubeTimeSec = info.length_seconds //défini en secondes
+			, YouTubeViews = info.view_count //défini le nombre de vues de la vidéo
+			, YouTubeUploader = info.author.name //récupere le nom du YTBeur
+			, YouTubeTitle = info.title //récupere le titre
+			, YouTubeThumbnail = info.thumbnail_url //récupere la minia
+			, YouTubeLink = info.video_url //récupere le lien de la vidéo
+			, YouTubeTime = result
+
+		if (playit) {
+			if (server.annonce_it) {
+				embed = new Discord.RichEmbed()
+					.setColor("#00FF00")
+
+					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
+
+					//petit logo à gauche du titre
+					.setTitle("Added to the queue in position [" + server.queue.length + "]")
+
+					.addField("Added " + YouTubeTitle, "*requested by " + message.author.username + "*")
+					.setFooter(AskedBy_EmbedFooter(message.author))
+				message.channel.send(embed).then(function (msg) {
+					deleteMyMessage(msg, (YouTubeTimeSec * 1000) - 10);
+				})
+			}
+		}
+
+		if (!playit) {
+			//Si on NE doit PAS jouer la musique alors
+			EmbedAuthorName = "Song searched via YouTube";
+			EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
+
+			search_embed = new Discord.RichEmbed()
+				.setColor("#00FF00")
+
+
+				.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
+
+				//petit logo à gauche du titre
+				.setAuthor(EmbedAuthorName, EmbedAuthorIcon)
+				.setTitle(YouTubeTitle)
+
+				.addField("Your request is", "```" + message.content + "```")
+
+				.addBlankField()
+
+				.addField("Uploaded by", YouTubeUploader, true)
+				.addField("Duration", "**" + YouTubeTime + "**", true) //temps
+
+				.addBlankField()
+
+				.addField("Views", YouTubeViews, true)
+				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
+
+				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
+
+
+			message.channel.send(search_embed).then(function (msg) {
+
+				deleteMyMessage(msg, 600 * 1000)
+			})
+		}
+
+		if (playit) {
+			if (!message.guild.voiceConnection) {
+				server.loopit = false;
+				server.dispatcher_paused = false;
+				message.member.voiceChannel.join().then(function (connection) {
+					if (!message.guild.me.serverDeaf) { message.guild.me.setDeaf(true, "Save bot's bandwith") }
+
+					play(connection, message);
+				})
+			};
+
+			server.queue.push(
+				{
+					title: info["title"],
+					id: video_id,
+					user: message.author.username,
+					YouTubeTimeSec: YouTubeTimeSec,
+					YouTubeViews: YouTubeViews,
+					YouTubeUploader: YouTubeUploader,
+					YouTubeTitle: YouTubeTitle,
+					YouTubeThumbnail: YouTubeThumbnail,
+					YouTubeLink: YouTubeLink,
+					YouTubeTime: YouTubeTime,
+					MessContent: message.content
+				}
+			);
+		};
+	})
+}
+
+function queue_playlist(playlistId, message, pageToken = '') {
+	var Number_Added = 0;
+	var server = servers[message.guild.id];
+
+
+	request("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playlistId + "&key=" + yt_api_key + "&pageToken=" + pageToken, (error, response, body) => {
+		var json = JSON.parse(body);
+
+		if ("error" in json) {
+			message.reply("An error has occurred: " + json.error.errors[0].message + " - " + json.error.errors[0].reason).then(msg => {
+				deleteMyMessage(msg, 15 * 1000)
+			});
+		} else if (json.items.length === 0) {
+			message.reply("No videos found within playlist.").then(msg => {
+				deleteMyMessage(msg, 15 * 1000)
+			});
+		} else {
+			for (var i = 0; i < json.items.length; i++) {
+				server.annonce_it = false;
+				add_to_queue(json.items[i].snippet.resourceId.videoId, message)
+				Number_Added++;
+			}
+
+			if (json.nextPageToken == null) {
+				message.channel.send("I added a total of " + Number_Added + " musics.").then(msg => {
+					deleteMyMessage(msg, 20 * 1000)
+				})
+
+				Number_Added = 0;
+				return;
+			}
+
+			queue_playlist(playlistId, message, json.nextPageToken)
+		}
+	});
+}
+
+
+function get_video_id(string) {
+	try {
+		var regex = /(?:\?v=|&v=|youtu\.be\/)(.*?)(?:\?|&|$)/;
+		console.log("String: " + string)
+		var matches = String(string.match(regex));
+		console.log("Matches: " + matches)
+
+		if (matches) {
+			return matches[1];
+		} else {
+			return string;
+		}
+
+	} catch (error) {
+		console.log("get_video_id problem => " + error)
+	}
+}
+
+function play(connection, message) {
+
+	try {
+		var server = servers[message.guild.id];
+
+		var video_id = server.queue[0]["id"];
+		var title = server.queue[0]["title"];
+		var user = server.queue[0]["user"];
+
+		server.now_playing_data["title"] = title;
+		server.now_playing_data["user"] = user;
+
+		var playit = server.playit;
+
+		embed = new Discord.RichEmbed()
+			.setColor("#00FF00")
+
+
+			.setThumbnail(server.queue[0]["YouTubeThumbnail"]).setURL(server.queue[0]["YouTubeLink"]) //miniature + lien vers la vidéo en cliquant sur la minia
+
+			//petit logo à gauche du titre
+			.setAuthor("Now playing", "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1")
+			.setTitle(server.queue[0]["YouTubeTitle"])
+
+			.addField("Your request is", "```" + server.queue[0]["MessContent"] + "```")
+
+			.addBlankField()
+
+			.addField("Uploaded by", server.queue[0]["YouTubeUploader"], true)
+			.addField("Duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
+
+			.addBlankField()
+
+			.addField("Views", server.queue[0]["YouTubeViews"], true)
+			.addField("Link", "[Click here](" + server.queue[0]["YouTubeLink"] + ")", true)
+			/*.setAuthor(YouTubeTitle, message.author.avatarURL)
+			Code qui permet de définir le titre et le logo du demandeur
+			*/
+			.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
+
+
+		message.channel.send(embed).then(function (msg) {
+			deleteMyMessage(msg, server.queue[0]["YouTubeTimeSec"] * 1000);
+		})
+
+		server.dispatcher = connection.playStream(
+			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
+		);
+
+		server.dispatcher.setVolume(0.3);
+
+		/*
+		message.channel.send(`Now playing: '${title}' requested by '${user}'`).then(function (msg) {
+			deleteMyMessage(msg, server.queue[0]["YouTubeTimeSec"] * 1000)
+		})
+		*/
+
+		//console.log(currentlySong)
+
+		server.dispatcher.on("end", function () {
+
+			if (!server.loopit) {
+				server.queue.splice(0, 1);
+			}
+
+			if (server.queue[0]) {
+				setTimeout(() => {
+					play(connection, message);
+				}, 1000);
+			} else {
+				//connection.disconnect;
+				if (message.guild.voiceConnection) {
+					message.channel.send(EmojiGreenTickString + " Finished the queue from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
+						deleteMyMessage(msg, 13 * 1000);
+					});
+
+					message.guild.voiceConnection.disconnect();
+				}
+			}
+
+		})
+
+	} catch (error) {
+		console.log("[play] Function play: " + error)
+	}
+}
+//#endregion
+
+//#endregion
