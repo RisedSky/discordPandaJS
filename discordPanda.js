@@ -1578,14 +1578,16 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//-------
 		case "help":
-
-			help_msgToSend = ("```fix\n" +
+			var help_msgToSend1 = ("```fix\n" +
 				"# » Created by RisedSky & PLfightX" + "\n" +
 				"# » And obviously helped by the bêta - testers.```" + "\n" +
 				"```dsconfig\n" +
 				"The prefix for the server " + message.guild.name + " is '" + prefix + "'\n" +
-				"```\n" +
-				"```md\n" +
+				"```"
+			)
+
+			var help_msgToSend2 = (
+				"```md\n\n" +
 				"<» Music Commands>\n\n" +
 				"#» " + prefix + "play [title / music's link]\nThe bot will join your channel and will play your music" + "\n\n" +
 				"#» " + prefix + "play-list [playlist link]\nThe bot will join your channel and will play the playlist" + "\n\n" +
@@ -1595,12 +1597,11 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "stop\nClear the queue and stop the music" + "\n\n" +
 				"#» " + prefix + "queue\nShow the queue list" + "\n\n" +
 				"#» " + prefix + "loop\nWill loop the currently song forever" + "\n\n" +
-				"#» " + prefix + "status\nShow the status of the current song !" +
+				"#» " + prefix + "status\nShow the status of the current song !" + "\n" +
 				"```\n" +
-				"\n" +
-				"```md\n" +
+
+				"```md\n\n" +
 				"<» Other Commands>\n\n\n" +
-				//prefix + "google", "Donne le lien de votre recherche"
 				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
@@ -1608,8 +1609,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "random-number [min_number] [max_number]\nGenerate a number between one and an another" + "\n\n" +
 				"#» " + prefix + "random-member\nRandomly choose one member of the server" + "\n\n" +
 				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
-				"#» " + prefix + "kappa\nSend a kappa image" +
-				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" +
+				"#» " + prefix + "kappa\nSend a kappa image" + "\n\n" +
+				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" + "\n\n" +
 				"```" +
 
 				"\n" +
@@ -1620,30 +1621,45 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "verif-perms\nTell you about the perms I have in this channel" + "\n\n" +
 				"#» " + prefix + "staff\nSend a message to my creators" + "\n\n" +
 				"#» " + prefix + "invite\nGive you the invite link to add me !" + "\n\n" +
-				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
+				"#» " + prefix + "help\nShow all the bot commands (This message ;)  )! \n" +
 				"```" +
 
-				"\n\n\n" +
+				"\n\n" +
 				"```md\n" +
 				"<» Channel Tags>\n\n\n" +
-				"#» <nocmds>\nAvoid the use of commands in this channel \n\n" +
-				"#» <ideas>\nWith this tag, the bot will add for or against reactions on every message \n \n" +
-				"#» <autopurge:TIME:>\nDelete every message in this channel after TIME seconds" +
-				"```")
+				"#» To use channel tags, just add the tags in a channel topic, it will be detected instantly\n\n" +
+				"#» <nocmds>\nAvoid the use of commands in the channel \n\n" +
+				"#» <ideas>\nWith this tag, the bot will add a upvote / downvote reaction to every message \n \n" +
+				"#» <autopurge:TIME:>\nDelete every message in the channel after TIME seconds" +
+				"```"
+			)
+
+
+			sendUserMessage(true, message, 300, help_msgToSend1)
+			sendUserMessage(true, message, 300, help_msgToSend2)
+
+			function sendUserMessage(deleteit, message, deletetime, messageToSend) {
+				try {
+					message.author.createDM();
+					message.author.send(messageToSend)
+						.then(function (msg) {
+							if (deleteit) deleteMyMessage(msg, deletetime * 1000);
+						})
+						.catch(() => {
+							message.reply(EmojiRedTickString + " Sorry but i can't DM you.").then(msg => {
+								deleteMyMessage(msg, 8 * 1000)
+							})
+						});
+				} catch (error) {
+					console.log("Help error: " + error);
+				}
+			}
 
 			/*
 			Mess_Channel.send(help_msgToSend).then(function (msg) {
 				deleteMyMessage(msg, 120 * 1000);
 			})
 			*/
-			try {
-				message.author.createDM();
-				message.author.send(help_msgToSend).then(function (msg) {
-					deleteMyMessage(msg, 180 * 1000);
-				});
-			} catch (error) {
-				console.log(error);
-			}
 
 			break;
 		//----------
