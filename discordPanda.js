@@ -760,12 +760,17 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 	//#endregion
 
-	try {
+	//Auto-Delete Function
+	var deleteUserMsg = setTimeout(() => {DeleteUserMessage}, 1000)
+
+	function DeleteUserMessage(deleteit = true) {
+		if (!deleteit) return;
 		if (message.deletable) {
-			message.delete(1500).catch(error => console.log("can't delete this message: " + error));
+			message.delete(1500).catch(e => {
+				if (e.name === "DiscordAPIError") return;
+				console.log("can't delete this message: " + e)
+			});
 		}
-	} catch (error) {
-		console.log("Can't delete this message: " + error)
 	}
 
 	switch (args[0].toLowerCase()) {
@@ -1664,20 +1669,24 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//----------
 		default:
+
 			try {
 				setTimeout(() => {
 					message.react("❓");
-					message.react(EmojiRedTick)
 					message.react(EmojiThonkong);
 				}, 250);
 				setTimeout(() => {
 					message.clearReactions()
-				}, 2000);
+				}, 6 * 1000);
 			} catch (error) {
 				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
 			}
 			break;
+
+		//#endregion
+
 	}
+
 })
 
 /*
