@@ -923,10 +923,22 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//Encore d'autres commandes
 		//#region 
 		case "bot-info":
-			var d = new Date(null);
-			d.setSeconds(online_since);
-			var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
-			console.log(bot_online_since_time)
+			//var d = new Date(null);
+			//d.setSeconds(online_since);
+
+			var uptime_s = moment.duration(online_since, "seconds");
+			var bot_online_since_time;
+
+			if (uptime_s.get("days") < 1) {
+				bot_online_since_time = uptime_s.get("hours") + " hours -" + uptime_s.get("minutes") + " min -" + uptime_s.get("seconds") + " sec"
+			} else if (uptime_s.get("hours") < 1) {
+				bot_online_since_time = uptime_s.get("minutes") + " min -" + uptime_s.get("seconds") + " sec"
+			} else if (uptime_s.get("minutes") < 1) {
+				bot_online_since_time = uptime_s.get("seconds") + " sec"
+			}
+			
+			//var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+			//console.log(bot_online_since_time)
 			//var bot_online_since_time = moment(d).format("HH:mm:ss DD-MM-YYYY")
 			var bot_date_created = moment(bot.user.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
 
