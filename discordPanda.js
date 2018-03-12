@@ -384,6 +384,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 						if (args[1].includes("&t=")) {
 							console.log("ça donnerait => " + args[1].split("&t="));
 							q = args[1].split("&t=").shift();
+						} else if (args[1].includes("&feature=youtu.be")) {
+							q = args[1].replace("&feature=youtu.be", "")
 						}
 
 						search_video(message, q);
@@ -1244,20 +1246,6 @@ bot.on('messageDelete', message => {
 
 bot.on('error', console => {
 	console.log(Error)
-})
-
-bot.on('reconnecting', () => {
-	console.log("reconnection");
-})
-
-bot.on('disconnect', () => {
-	bot.user.setStatus("invisible");
-	console.log("Je suis invisible")
-})
-
-bot.on('resume', () => {
-	console.log("resumed!");
-})
 })
 
 bot.on('reconnecting', () => {
