@@ -673,6 +673,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 
 			break;
+		//----------
 		case "github":
 			sendDMToUser(message, "My GitHub project : https://github.com/RisedSky/discordPandaJS")
 			
