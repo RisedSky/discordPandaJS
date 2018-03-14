@@ -623,6 +623,17 @@ bot.on('message', message => { //Quand une personne envoi un message
 				return;
 			}
 			function CheckInfo_ToBooleanEmoji(thing) { if (thing) { return "Yes " + EmojiGreenTickString } else { return "No " + EmojiRedTickString } }
+			var disp_time = moment.duration(server.dispatcher.time, "milliseconds")
+			var time_remainingSec = (server.queue[0]["YouTubeTimeSec"] - disp_time.get("seconds"))
+			console.log(server.queue[0]["YouTubeTimeSec"])
+			console.log(disp_time.get("seconds"))
+			console.log(time_remainingSec);
+
+
+			var de = new Date(null);
+			de.setSeconds(time_remainingSec);
+			var TimeRemaining = de.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+
 			try {
 				embedStatus = new Discord.RichEmbed()
 					.setColor("#FFFF00")
@@ -639,7 +650,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 					.addBlankField()
 
 					.addField("Uploaded by", server.queue[0]["YouTubeUploader"], true)
-					.addField("Duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
+					.addField("Song duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
+					.addBlankField(true)
+					.addField("Time remaining", "**" + TimeRemaining + "**", true)
 
 					.addBlankField()
 
