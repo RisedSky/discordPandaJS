@@ -382,8 +382,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 						q = args[1]
 
 						if (args[1].includes("&t=")) {
-							console.log("ça donnerait => " + args[1].split("&t="));
+							//console.log("ça donnerait => " + args[1].split("&t="));
 							q = args[1].split("&t=").shift();
+
 						} else if (args[1].includes("&feature=youtu.be")) {
 							q = args[1].replace("&feature=youtu.be", "")
 						}
@@ -431,7 +432,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				return;
 
 			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
-				message.reply("You are not in the same vocal channel as me.")
+				message.reply(EmojiRedTickString + " You are not in the same vocal channel as me.")
 					.then(function (msg) {
 						deleteMyMessage(msg, 12 * 1000);
 					})
@@ -644,7 +645,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 					.addField("Views", server.queue[0]["YouTubeViews"], true)
 					.addField("Link", "[Click here](" + server.queue[0]["YouTubeLink"] + ")", true)
-
 
 					.setFooter("Status requested by " + message.author.username + " • ID: " + message.author.id)
 
