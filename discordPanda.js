@@ -673,6 +673,10 @@ bot.on('message', message => { //Quand une personne envoi un message
 			}
 
 			break;
+		case "github":
+			sendDMToUser(message, "My GitHub project : https://github.com/RisedSky/discordPandaJS")
+			
+			break;
 		//----------
 		case "ping":
 			Mess_Channel.send(":ping_pong: My ping is: ?").then(function (newMessage) {
@@ -1119,6 +1123,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"```md\n" +
 				"<» Other Commands>\n\n\n" +
 				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
+				"#» " + prefix + "github\nSend you my GitHub project in your DMs" + "\n\n" +
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
 				//prefix + "restart", "Redémarre le bot **(Expérimental**"
