@@ -176,10 +176,16 @@ bot.on('message', message => { //Quand une personne envoi un message
 			if (!message.author.bot) {
 				//console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
 				setTimeout(() => {
-					message.react(EmojiUpvote)
+					message.react(EmojiUpvote).catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error ideas tag > " + e);
+					})
 				}, 400);
 				setTimeout(() => {
-					message.react(EmojiDownvote)
+					message.react(EmojiDownvote).catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error ideas tag > " + e);
+					})
 				}, 1000);
 				//return;
 			}
@@ -224,9 +230,15 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var wlComs = ["purge"];
 
 			if (!wlComs.includes(message.content.substring(prefix.length).split(" ")[0])) {
-				message.react(EmojiRedTick)
+				message.react(EmojiRedTick).catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error nocmds tag > " + e);
+				})
 				setTimeout(() => {
-					message.clearReactions();
+					message.clearReactions().catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error nocmds tag > " + e);
+					})
 				}, 6 * 1000);
 
 				/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
@@ -290,20 +302,29 @@ bot.on('message', message => { //Quand une personne envoi un message
 		// - - Musique
 		case "play-list":
 			if (!args[1]) {
-				message.react("❌");
+				message.react("❌").catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error play-list > " + e);
+				})
 				message.reply("Please tell me something to play (the playlist link)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel) {
-				message.react("❌");
+				message.react("❌").catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error play-list > " + e);
+				})
 				message.reply("You have to be connected to a vocal channel").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
-				message.react("❌");
+				message.react("❌").catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error play-list > " + e);
+				})
 				message.reply("You have to be listening (not deafen)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
@@ -336,20 +357,29 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//------
 		case "play":
 			if (!args[1]) {
-				message.react("❌");
+				message.react("❌").catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error play > " + e);
+				})
 				message.reply("Please tell me something to play (a link or a title)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel) {
-				message.react("❌");
+				message.react("❌").catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error play > " + e);
+				})
 				message.reply("You have to be connected to a vocal channel").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
-				message.react("❌");
+				message.react("❌").catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error play > " + e);
+				})
 				message.reply("You have to be listening (not deafen)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
@@ -456,7 +486,10 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//-------
 		case "search":
 			if (!args[1]) {
-				message.react("❌");
+				message.react("❌").catch(e => {
+					if (e.name === "DiscordAPIError") return;
+					console.log("Error search > " + e);
+				})
 				message.reply("Please, put a music's title").then(function (msg) {
 					deleteMyMessage(msg, 12 * 1000);
 				})
@@ -1205,11 +1238,20 @@ bot.on('message', message => { //Quand une personne envoi un message
 			clearInterval(deleteUserMsg);
 			try {
 				setTimeout(() => {
-					message.react("❓");
-					message.react(EmojiThonkong);
+					message.react("❓").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error default > " + e);
+					})
+					message.react(EmojiThonkong).catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error default > " + e);
+					})
 				}, 250);
 				setTimeout(() => {
-					message.clearReactions()
+					message.clearReactions().catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error default > " + e);
+					})
 				}, 5 * 1000);
 			} catch (error) {
 				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
