@@ -273,6 +273,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 	//Auto-Delete Function
 	var deleteUserMsg = setInterval(DeleteUserMessage, 1000);
 	function DeleteUserMessage(deleteit = true) {
+		clearInterval(deleteUserMsg);
 		if (!deleteit) return;
 		if (message.deletable) {
 			message.delete(1500).catch(e => {
@@ -280,7 +281,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 				console.log("can't delete this message: " + e)
 			});
 		}
-		clearInterval(deleteUserMsg);
 	}
 
 	switch (args[0].toLowerCase()) {
@@ -382,8 +382,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 						q = args[1]
 
 						if (args[1].includes("&t=")) {
-							console.log("ça donnerait => " + args[1].split("&t="));
+							//console.log("ça donnerait => " + args[1].split("&t="));
 							q = args[1].split("&t=").shift();
+
 						} else if (args[1].includes("&feature=youtu.be")) {
 							q = args[1].replace("&feature=youtu.be", "")
 						}
@@ -431,7 +432,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				return;
 
 			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
-				message.reply("You are not in the same vocal channel as me.")
+				message.reply(EmojiRedTickString + " You are not in the same vocal channel as me.")
 					.then(function (msg) {
 						deleteMyMessage(msg, 12 * 1000);
 					})
@@ -622,6 +623,17 @@ bot.on('message', message => { //Quand une personne envoi un message
 				return;
 			}
 			function CheckInfo_ToBooleanEmoji(thing) { if (thing) { return "Yes " + EmojiGreenTickString } else { return "No " + EmojiRedTickString } }
+			var disp_time = moment.duration(server.dispatcher.time, "milliseconds")
+			var time_remainingSec = (server.queue[0]["YouTubeTimeSec"] - disp_time.get("seconds"))
+			console.log(server.queue[0]["YouTubeTimeSec"])
+			console.log(disp_time.get("seconds"))
+			console.log(time_remainingSec);
+
+
+			var de = new Date(null);
+			de.setSeconds(time_remainingSec);
+			var TimeRemaining = de.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+
 			try {
 				embedStatus = new Discord.RichEmbed()
 					.setColor("#FFFF00")
@@ -638,13 +650,14 @@ bot.on('message', message => { //Quand une personne envoi un message
 					.addBlankField()
 
 					.addField("Uploaded by", server.queue[0]["YouTubeUploader"], true)
-					.addField("Duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
+					.addField("Song duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
+					.addBlankField(true)
+					.addField("Time remaining", "**" + TimeRemaining + "**", true)
 
 					.addBlankField()
 
 					.addField("Views", server.queue[0]["YouTubeViews"], true)
 					.addField("Link", "[Click here](" + server.queue[0]["YouTubeLink"] + ")", true)
-
 
 					.setFooter("Status requested by " + message.author.username + " • ID: " + message.author.id)
 
@@ -672,6 +685,11 @@ bot.on('message', message => { //Quand une personne envoi un message
 				})
 			}
 
+			break;
+		//----------
+		case "github":
+			sendDMToUser(message, "My GitHub project : https://github.com/RisedSky/discordPandaJS")
+			
 			break;
 		//----------
 		case "ping":
@@ -1097,12 +1115,15 @@ bot.on('message', message => { //Quand une personne envoi un message
 			break;
 		//-------
 		case "help":
-			help_msgToSend = ("```fix\n" +
+
+			var help_msgToSend_summary = ("```fix\n" +
 				"# » Created by RisedSky & PLfightX" + "\n" +
 				"# » And obviously helped by the bêta - testers.```" + "\n" +
 				"```dsconfig\n" +
 				"The prefix for the server " + message.guild.name + " is '" + prefix + "'\n" +
-				"```\n" +
+				"```\n")
+
+			var help_msgToSend_cmds = (
 				"```md\n" +
 				"<» Music Commands>\n\n" +
 				"#» " + prefix + "play [title / music's link]\nThe bot will join your channel and will play your music" + "\n\n" +
@@ -1114,20 +1135,20 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "queue\nShow the queue list" + "\n\n" +
 				"#» " + prefix + "loop\nWill loop the currently song forever" + "\n\n" +
 				"#» " + prefix + "status\nShow the status of the current song !" +
-				"```\n" +
-				"\n" +
-				"```md\n" +
+				"```" +
+				"\n\n" + "```md\n" +
 				"<» Other Commands>\n\n\n" +
 				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
+				"#» " + prefix + "github\nSend you my GitHub project in your DMs" + "\n\n" +
 				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
 				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
 				//prefix + "restart", "Redémarre le bot **(Expérimental**"
 				"#» " + prefix + "random-number [min_number] [max_number]\nGenerate a number between one and an another" + "\n\n" +
 				"#» " + prefix + "random-member\nRandomly choose one member of the server" + "\n\n" +
 				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
-				"#» " + prefix + "kappa\nSend a kappa image" +
+				"#» " + prefix + "kappa\nSend a kappa image" + "\n\n" +
 				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" +
-				"```" +
+				"\n" + "```" +
 
 				"\n" +
 				"```md\n" +
@@ -1138,9 +1159,11 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "staff\nSend a message to my creators" + "\n\n" +
 				"#» " + prefix + "invite\nGive you the invite link to add me !" + "\n\n" +
 				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
-				"```" +
+				"\n" +
+				"```" + "\n\n\n")
 
-				"\n\n\n" +
+			var help_msgToSend_channelTags = (
+
 				"```md\n" +
 				"<» Channel Tags>\n\n\n" +
 				"#» To use channel tags, just add the tags in a channel topic, it will be detected instantly\n\n" +
@@ -1154,6 +1177,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 				deleteMyMessage(msg, 120 * 1000);
 			})
 			*/
+
+			sendDMToUser(message, help_msgToSend_summary)
+			sendDMToUser(message, help_msgToSend_cmds)
+			sendDMToUser(message, help_msgToSend_channelTags)
+
+			/*
 			try {
 				message.author.createDM();
 				message.author.send(help_msgToSend, { split: true })
@@ -1167,7 +1196,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					});
 			} catch (error) {
 				console.log("Help error: " + error);
-			}
+			}*/
 
 			break;
 		//----------
@@ -1216,6 +1245,7 @@ bot.on('messageReactionAdd', MessageReaction => {
 })
 */
 
+
 bot.on('messageDelete', message => {
 	//verifier si la personne qui supprime est le bot
 	//si c'est le cas on doit vérifier si le message est pinned
@@ -1244,6 +1274,26 @@ bot.on('resume', () => {
 //#region Functions
 
 //#region Important functions
+function sendDMToUser(message, msgToSend) {
+	message.author.createDM().catch(e => {
+		if (e.name === "DiscordAPIError") {
+			message.reply("Sorry but i can't DM you, open them please.")
+			return;
+		}
+	})
+
+	message.author.send(msgToSend)
+		.then(msg => {
+			deleteMyMessage(msg, 600 * 1000)
+		})
+		.catch(e => {
+			if (e.name === "DiscordAPIError") {
+				message.reply("Sorry but i can't DM you, open them please.")
+				return;
+			}
+		})
+}
+
 function ChangeState1() {
 	bot.user.setActivity(prefix + "help | By RisedSky & PLfightX");
 	setTimeout(ChangeState2, 30000);
@@ -1271,7 +1321,7 @@ function deleteMyMessage(message, time) {
 			//console.log("time changed to 750 bcs it's null")
 		}
 
-		if (!message.author.name === bot.user.name) {
+		if (!message.author.name === bot.user.name || !message.author.name === bot.user.username) {
 			//console.log("Not my message")
 			return;
 		}
@@ -1511,7 +1561,7 @@ function play(connection, message) {
 
 		var playit = server.playit;
 
-		embed = new Discord.RichEmbed()
+		var embed = new Discord.RichEmbed()
 			.setColor("#00FF00")
 
 
