@@ -273,6 +273,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 	//Auto-Delete Function
 	var deleteUserMsg = setInterval(DeleteUserMessage, 1000);
 	function DeleteUserMessage(deleteit = true) {
+		clearInterval(deleteUserMsg);
 		if (!deleteit) return;
 		if (message.deletable) {
 			message.delete(1500).catch(e => {
@@ -280,7 +281,6 @@ bot.on('message', message => { //Quand une personne envoi un message
 				console.log("can't delete this message: " + e)
 			});
 		}
-		clearInterval(deleteUserMsg);
 	}
 
 	switch (args[0].toLowerCase()) {
