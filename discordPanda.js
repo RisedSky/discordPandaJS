@@ -969,8 +969,12 @@ bot.on('message', message => { //Quand une personne envoi un message
 				})
 				return;
 			}
-
-			Mess_Channel.send("Wow, " + message.mentions.users.first() + " you got rekt by " + NotifyUser(message.member.id) + "\n\nhttps://www.tenor.co/wv88.gif")
+			embed = new Discord.RichEmbed()
+				.setColor("RED")
+				.setAuthor("Rekt command by " + message.author.username, message.author.avatarURL)
+				.setDescription("Wow, " + message.mentions.users.first() + " you got rekt by " + NotifyUser(message.member.id))
+				.setImage("https://media1.tenor.com/images/f0515e416fd1ba95974412c18fd90d46/tenor.gif?itemid=5327720")
+			message.channel.send(embed)
 			break;
 
 		//#endregion
