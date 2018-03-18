@@ -875,9 +875,11 @@ bot.on('message', message => { //Quand une personne envoi un message
 			var nbMemb = message.guild.memberCount;
 			var memb_list = message.guild.members;
 			var rand_member = memb_list.random();
-			message.reply("\n" + rand_member + " has been chosen between the " + nbMemb + " members of the server !").then(function (msg) {
-				deleteMyMessage(msg, 600 * 1000)
-			});
+			embed = new Discord.RichEmbed()
+				.setColor("RED")
+				.setAuthor("Random-Member by " + message.author.username, message.author.avatarURL)
+				.setDescription(rand_member + " has been chosen between the " + nbMemb + " members of the server !")
+			message.channel.send(embed)
 			break;
 		//--------
 		case "poll":
