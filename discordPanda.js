@@ -1,3 +1,5 @@
+//import { default as config } from "./config.js";
+const config = require("./config.js").config;
 const Discord = require("discord.js");
 const YTDL = require("ytdl-core");
 const URL = require('url');
@@ -5,19 +7,43 @@ const request = require("request");
 const moment = require("moment");
 const bot = new Discord.Client({ autoReconnect: true });
 
+//Discord Bot List Stats
+const DBL = require("dblapi.js");
+const dbl = new DBL(config.dbl_token);
+
 var BlackListUser = require("./blacklistUser.js");
 var StringBlackListUser = String(BlackListUser.BlackListUser);
-var DefaultGuildID = 412262889156771842;
 
 //#region Dev
-//--------Dev----------
-yt_api_key = process.env.yt_api_key;
+var DefaultGuildID = config.DefaultGuildID;
+var yt_api_key = config.yt_api_key; //process.env.yt_api_key;
 
-var BOT_TOKEN = process.env.BOT_TOKEN;
+var BOT_TOKEN = config.BOT_TOKEN;//process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN);
 
-var prefix = "*";
-//--------Dev----------
+var prefix = config.prefix;
+
+//#region MySQL
+var DB_Model = config.MySQL_DB_Model //Model qu'on utilise pour récup les infos
+
+const mysql = require('mysql2');
+
+const con = mysql.createConnection({
+	host: config.MySQL_host,
+	user: config.MySQL_user,
+	database: config.MySQL_database,
+	password: config.MySQL_password,
+	reconnect: true
+});
+
+con.connect(err => {
+	console.log("Connecting to the database...");
+	if (err) throw err.message;
+	console.log("Connected to the database: " + con.config.database);
+})
+
+//#endregion
+
 //#endregion
 
 var prefixLog = "[!] ";
@@ -75,8 +101,18 @@ var YouTubeThumbnail //Défini la miniature
 
 //var CommandList = ["restart", "leave", "join", "", ""];
 
-
 bot.on('ready', () => { //When bot is ready
+	setInterval(() => {
+		try {
+			dbl.postStats(bot.guilds.size);
+			console.log("postStats is Done");
+		} catch (error) {
+			console.log("postStats error: " + error);
+		}
+
+	}, 1800000); //30 min
+
+
 	setInterval(datenow, 1000);
 	bot.user.setStatus("online")
 	console.log("------------------------------")
@@ -101,12 +137,63 @@ bot.on('ready', () => { //When bot is ready
 
 })
 
-bot.on('guildMemberAdd', member => {
+bot.on('guildMemberAdd', async member => {
 	//When someone join a server wher the bot is too
 
 	//console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
+	let SQL_GetResult = function (callback) {
+		con.query(`SELECT * FROM ${DB_Model} WHERE serverid = '${member.guild.id}'`, (err, results) => {
+			if (err) return callback(err)
 
-	if (member.guild.id == DefaultGuildID) {
+			callback(null, results[0])
+		})
+	}
+
+	await SQL_GetResult(function (err, result) {
+		if (err) console.log("Database error!");
+		else {
+			console.log(result);
+
+			if (result == undefined) {
+				SQL_Insert_NewServer(member)
+				return;
+			}
+
+			if (!result.welcome_status) return;
+			//console.log(result);
+			//console.log(result.welcome_channel);
+
+			var t = String(result.welcome_channel).substr(2, 18)
+			let welcome_channel = member.guild.channels.find("id", t);
+			//console.log("le welcome_channel: " + t);
+
+			let welcome_message = String(result.welcome_message)
+
+			if (welcome_message.includes("{user}")) {
+
+				var welcome_msg_new = welcome_message.replace("{user}", "<@" + member.id + ">")
+				welcome_channel.send(welcome_msg_new)
+			} else {
+				welcome_channel.send(welcome_message)
+			}
+
+
+            /*if (result.length < 1) {
+                show_welcome_channel = "`Not defined`"
+                console.log("No results");
+            } else {
+                console.log(result)
+                show_welcome_channel = result.welcome_channel;
+                console.log(show_welcome_channel);
+    
+                show_welcome_message = result.welcome_message;
+                console.log(show_welcome_message);
+            }*/
+
+		}
+	});
+
+	/*if (member.guild.id == DefaultGuildID) {
 		try {
 			const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES") && c.type === 'text');
 
@@ -122,11 +209,11 @@ bot.on('guildMemberAdd', member => {
 		}
 	} else {
 		return;
-	}
+	}*/
 
 })
 
-bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
+bot.on('guildCreate', async Guild => { //Quand le bot est ajouté sur un serveur
 
 	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
 
@@ -146,7 +233,7 @@ bot.on('guildCreate', Guild => { //Quand le bot est ajouté sur un serveur
 })
 
 
-bot.on('message', message => { //Quand une personne envoi un message
+bot.on('message', async message => { //Quand une personne envoi un message
 	if (!message.guild) {
 		if (message.content.startsWith(prefix + "invite")) {
 			message.author.createDM();
@@ -255,9 +342,27 @@ bot.on('message', message => { //Quand une personne envoi un message
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix)) return;
 
+	let SQL_GetResult = function (callback) {
+		/*console.log(
+			"callback = " + callback + "\n" +
+			"msg dans getresult = " + message
+		);*/
+
+		con.query(`SELECT * FROM ${DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
+			if (err) return callback(err);
+
+			if (results == undefined) {
+				SQL_Insert_NewServer(member)
+			}
+
+			callback(null, results[0])
+		})
+	}
+
 	//Declaring variable
 	var MessageID = message.id;
-	var args = message.content.substring(prefix.length).split(" ");
+	const args = message.content.slice(prefix.length).trim().split(/ +/g);
+	const args_next = args.join(" ").trim();
 	var Mess = message;
 	var Mess_Channel = message.channel;
 	var Mess_Member = message.member;
@@ -277,7 +382,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 	//#region Permission de la personne
 	const member_Has_BAN_MEMBERS = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("BAN_MEMBERS") && message.channel.type === 'text'
-
+	const member_Has_MANAGE_GUILD = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_GUILD") && message.channel.type === 'text'
 	const member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 
 	//#endregion
@@ -306,7 +411,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					if (e.name === "DiscordAPIError") return;
 					console.log("Error play-list > " + e);
 				})
-				message.reply("Please tell me something to play (the playlist link)").then(function (msg) {
+				message.reply(EmojiRedTickString + " Please tell me something to play (the playlist link)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
@@ -316,7 +421,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					if (e.name === "DiscordAPIError") return;
 					console.log("Error play-list > " + e);
 				})
-				message.reply("You have to be connected to a vocal channel").then(function (msg) {
+				message.reply(EmojiRedTickString + " You have to be connected to a vocal channel").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
@@ -325,7 +430,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					if (e.name === "DiscordAPIError") return;
 					console.log("Error play-list > " + e);
 				})
-				message.reply("You have to be listening (not deafen)").then(function (msg) {
+				message.reply(EmojiRedTickString + " You have to be listening (not deafen)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
@@ -361,7 +466,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					if (e.name === "DiscordAPIError") return;
 					console.log("Error play > " + e);
 				})
-				message.reply("Please tell me something to play (a link or a title)").then(function (msg) {
+				message.reply(EmojiRedTickString + " Please tell me something to play (a link or a title)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
@@ -371,7 +476,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					if (e.name === "DiscordAPIError") return;
 					console.log("Error play > " + e);
 				})
-				message.reply("You have to be connected to a vocal channel").then(function (msg) {
+				message.reply(EmojiRedTickString + " You have to be connected to a vocal channel").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
@@ -380,7 +485,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 					if (e.name === "DiscordAPIError") return;
 					console.log("Error play > " + e);
 				})
-				message.reply("You have to be listening (not deafen)").then(function (msg) {
+				message.reply(EmojiRedTickString + " You have to be listening (not deafen)").then(function (msg) {
 					deleteMyMessage(msg, 16 * 1000);
 				})
 				return;
@@ -511,24 +616,24 @@ bot.on('message', message => { //Quand une personne envoi un message
 		case "skip":
 
 			if (!Mess_Member.voiceChannel) {
-				message.reply("You should be in a vocal channel before asking me to skip some musics.").then(function (msg) {
+				message.reply(EmojiRedTickString + " You should be in a vocal channel before asking me to skip some musics.").then(function (msg) {
 					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
-				message.reply("You should not be deafen *(For saving some bandwidth of the bot)*").then(function (msg) {
+				message.reply(EmojiRedTickString + " You should not be deafen *(For saving some bandwidth of the bot)*").then(function (msg) {
 					deleteMyMessage(msg, 12 * 1000);
 				})
 				return;
 
 			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
-				message.reply("You are not in the same vocal channel as me.")
+				message.reply(EmojiRedTickString + " You are not in the same vocal channel as me.")
 					.then(function (msg) {
 						deleteMyMessage(msg, 12 * 1000);
 					})
 				return;
 			} else if (!server.queue[1]) {
-				message.reply("I didn't found any other music.").then(function (msg) {
+				message.reply(EmojiRedTickString + " I didn't found any other music.").then(function (msg) {
 					deleteMyMessage(msg, 10 * 1000)
 				})
 				return;
@@ -550,7 +655,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 
 			if (server.dispatcher) {
 				var msg = [];
-				msg.push("Successfuly skipped the song: `" + server.now_playing_data["title"] + "` *(requested by " + server.now_playing_data["user"] + ")* \n\n");
+				msg.push("Successfuly skipped the song: \n`" + server.now_playing_data["title"] + "` *(requested by " + server.now_playing_data["user"] + ")* \n\n");
 				msg.push("Now playing: `" + title + "` *(requested by " + user + ")*")
 				message.reply(msg).then(function (msg) {
 					deleteMyMessage(msg, 60 * 1000);
@@ -706,7 +811,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//#endregion
 
 		//Other Commands
-		//#region 
+		//#region Other commands
+
 		case "say":
 			const SayMessage = message.content.substr(4);
 
@@ -722,7 +828,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 		//----------
 		case "github":
 			sendDMToUser(message, "My GitHub project : https://github.com/RisedSky/discordPandaJS")
-			
+
 			break;
 		//----------
 		case "ping":
@@ -752,24 +858,24 @@ bot.on('message', message => { //Quand une personne envoi un message
 				}
 
 				if (!BOT_MANAGE_MESSAGESPerm) {
-					message.reply("Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
+					message.reply(EmojiProhibitedString + " Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
 						deleteMyMessage(msg, 15 * 1000)
 					});
 					return;
-				} else if (NumberToDelete < 0) {
+				} else if (NumberToDelete <= 0) {
 					message.reply("Please put a number of message to purge").then(function (msg) {
 						deleteMyMessage(msg, 5000);
 					})
 					return;
 
-				} else if (NumberToDelete > 1000) {
-					message.reply("Sadly, the bot can only delete 100 messages at a time.").then(function (msg) {
+				} else if (NumberToDelete > 100) {
+					message.reply(EmojiProhibitedString + " Sadly, the bot can only delete 100 messages at a time.").then(function (msg) {
 						deleteMyMessage(msg, 6000);
 					})
 
 					return;
 				} else if (!member_has_MANAGE_MESSAGES) {
-					message.reply("Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
+					message.reply(EmojiProhibitedString + " Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
 						deleteMyMessage(msg, 7000);
 					})
 
@@ -781,6 +887,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 				setTimeout(() => {
 					var allMsgs = message.channel.fetchMessages({ limit: NumberToDelete })
 						.then(messages => {
+							NumberToDelete = messages.size;
 							Mess_Channel.send("Deleting `" + NumberToDelete + "` message(s) :cloud_tornado: :cloud_tornado: :cloud_tornado: ").then(msgdeleted => {
 								messages.forEach(mess => {
 									nmbr++;
@@ -795,6 +902,8 @@ bot.on('message', message => { //Quand une personne envoi un message
 										if (nmbrdeleted == NumberToDelete) {
 											console.log("1> fini !")
 											msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
+											nmbrdeleted = 0;
+											NumberToDelete = 0;
 											deleteMyMessage(msgdeleted, 13 * 1000)
 										}
 									})
@@ -802,7 +911,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 								})
 							})
 						});
-				}, 2000);
+				}, 3500);
 			} catch (error) {
 				console.log("Purge command problem: " + error)
 			}
@@ -977,6 +1086,144 @@ bot.on('message', message => { //Quand une personne envoi un message
 			message.channel.send(embed)
 			break;
 
+		//-------
+		case "welcome":
+			argsCMD = "`" + "help, on, off, set, show, delete" + "`"
+
+			if (!member_Has_MANAGE_GUILD) {
+				message.reply(EmojiRedTickString + " You don't have the permission to do that ! (**MANAGE_SERVER** is needed)")
+				return;
+			}
+
+			if (args[1] === "on") {
+				let activated;
+				await SQL_GetResult(function (err, result) {
+					if (err) console.log("Database error!");
+					else {
+						activated = result.welcome_status;
+						console.log(result.welcome_status);
+
+						if (activated === 1) {
+							console.log("Already activated");
+							message.reply(EmojiRedTickString + " The welcome message is already enabled.")
+							return false;
+						} else {
+							console.log("Now Activated");
+							con.query(`UPDATE ${DB_Model} SET welcome_status = true WHERE serverid = '${message.guild.id}'`, (err, results) => {
+								if (err) throw err;
+
+								console.log("welcome_status activated!");
+								message.reply(EmojiGreenTickString + " The welcome message is now activated.")
+								console.log(result)
+							});
+						}
+					}
+				});
+
+			} else if (args[1] === "off") {
+				let activated;
+				await SQL_GetResult(function (err, result) {
+					if (err) console.log("Database error!");
+					else {
+						activated = result.welcome_status;
+						console.log(result.welcome_status);
+
+						if (activated === 0) {
+							console.log("Already deactivated");
+							message.reply(EmojiRedTickString + " The welcome message is already deactivated.")
+							return;
+						} else {
+							console.log("Now Activated");
+							con.query(`UPDATE ${DB_Model} SET welcome_status = false WHERE serverid = '${message.guild.id}'`, (err, results) => {
+								if (err) throw err;
+
+								console.log("welcome_status deactivated !");
+								message.reply(EmojiGreenTickString + " The welcome message is now deactivated !")
+								console.log(results[0])
+							});
+						}
+					}
+				});
+
+			} else if (args[1] === "set") {
+				let channel = message.mentions.channels.first();
+				if (!channel) { message.reply("You didn't put any channel in your message (Exemple: `" + prefix + "welcome set #channel Your message`"); return; }
+
+				console.log(args)
+				console.log(args_next)
+				const channelMsg = args_next.substr(args[0].length + 1 + args[1].length + 1 + ("<#" + channel.id + ">").length + 1)
+				console.log("channelmsg: '" + channelMsg + "'")
+
+				if (channelMsg.length === 0) {
+					message.reply("You didn't put a welcome message.")
+					return;
+				}
+
+				message.reply("Setting up your welcome message for: " + channel + "\n```\n" + channelMsg + "```")
+
+				try {
+					//const srv = await ${DB_Model}_DB.findOne({ where: { serverid: message.guild.id } })
+					//const welcome_server = await ${DB_Model}_DB.update({ welcome_message: channelMsg, welcome_channel: channel }, { where: { serverid: message.guild.id } })
+
+					//console.log("SQL_GetResult pour le welcome set" + SQL_GetResult(message).welcome_message)
+					SQL_UpdateChannelMessage(message, channel);
+					SQL_UpdateWelcomeMessage(message, channelMsg)
+					return message.channel.send(`Welcome message in the channel: ${channel} successfully changed.`);
+				}
+				catch (e) {
+					return message.reply("Something went wrong when setting the welcome_message: " + e);
+				}
+
+				//console.log(args[2].split(" ").join(" "))
+
+			} else if (args[1] === "show") {
+				var msgToSend = [];
+				var show_welcome_channel = "";
+				var show_welcome_message = "";
+
+				await SQL_GetResult(function (err, result) {
+					if (err) console.log("Database error!");
+					else {
+						if (err) throw err;
+
+						if (result == undefined) {
+							SQL_Insert_NewServer(message.member)
+							return;
+						}
+
+						if (result.length < 1) {
+							show_welcome_channel = "`Not defined`"
+							console.log("No results");
+						} else {
+							console.log(result)
+							show_welcome_channel = result.welcome_channel;
+							console.log(show_welcome_channel);
+
+							show_welcome_message = result.welcome_message;
+							console.log(show_welcome_message);
+						}
+
+						msgToSend.push("Welcome channel: " + show_welcome_channel + " \n")
+						msgToSend.push("Welcome message: `" + show_welcome_message + "`")
+						message.channel.send(msgToSend)
+						msgToSend = [];
+					}
+				});
+
+			} else if (args[1] === "help") {
+				message.reply(
+					"To configure the welcomer you need to do theres steps:\n\n" +
+					":one: Personalize it with the command: `" + prefix + "welcome set #channel Your message`\n" +
+					":two: Enable the welcomer via the command: `" + prefix + "welcome on`\n" +
+					"\nThat's it ! you finally did it ! (easy uh ? :wink:)"
+				)
+				return;
+			} else {
+				message.reply("Use their following arguments: " + argsCMD)
+				argsCMD = "";
+			}
+			break;
+
 		//#endregion
 
 		//Encore d'autres commandes
@@ -1006,7 +1253,7 @@ bot.on('message', message => { //Quand une personne envoi un message
 			//.addField("")
 			//liste des bêta-testers
 			Mess_Channel.send(embedbot_info).then(function (msg) {
-				deleteMyMessage(msg, 60 * 1000)
+				deleteMyMessage(msg, 120 * 1000)
 			})
 
 			break;
@@ -1186,7 +1433,9 @@ bot.on('message', message => { //Quand une personne envoi un message
 				"#» " + prefix + "random-member\nRandomly choose one member of the server" + "\n\n" +
 				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
 				"#» " + prefix + "kappa\nSend a kappa image" + "\n\n" +
-				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" +
+				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" + "\n\n" +
+				"#» [NEW COMMAND!!] " + prefix + "welcome\nSet a welcome message to your incredible server !" +
+
 				"\n" + "```" +
 
 				"\n" +
@@ -1305,7 +1554,7 @@ bot.on('error', console => {
 })
 
 bot.on('reconnecting', () => {
-	console.log("reconnection");
+	console.log("reconnecting");
 })
 
 bot.on('disconnect', () => {
@@ -1320,6 +1569,38 @@ bot.on('resume', () => {
 
 
 //#region Functions
+
+//#region SQL
+
+async function SQL_Insert_NewServer(member) {
+	con.query(`INSERT INTO ${DB_Model} (servername, serverid, prefix, welcome_status) VALUES (?, ?, ?, ?)`, [member.guild.name, member.guild.id, prefix, false], (err, results) => {
+		if (err) throw err;
+		console.log("Inserted the new server !");
+	});
+}
+
+async function SQL_UpdateWelcomeMessage(message, welcome_msg) {
+	con.query(`UPDATE ${DB_Model} SET welcome_message = '${welcome_msg}' WHERE serverid = '${message.guild.id}'`, (err, results, fields) => {
+		if (err) throw err;
+
+		console.log("Changed successfully the welcome message to " + welcome_msg); // results contains rows returned by server
+		//console.log(fields); // fields contains extra meta data about results, if available
+		console.log(results[0])
+		return results[0];
+	});
+}
+
+async function SQL_UpdateChannelMessage(message, channel) {
+	con.query(`UPDATE ${DB_Model} SET welcome_channel = '${channel}' WHERE serverid = '${message.guild.id}'`, (err, results, fields) => {
+		if (err) throw err;
+
+		console.log("Changed successfully the channel to " + channel); // results contains rows returned by server
+		//console.log(fields); // fields contains extra meta data about results, if available
+		console.log(results[0])
+		return results[0];
+	});
+}
+//#endregion
 
 //#region Important functions
 function sendDMToUser(message, msgToSend) {
