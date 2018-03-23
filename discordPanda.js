@@ -1580,24 +1580,18 @@ async function SQL_Insert_NewServer(member) {
 }
 
 async function SQL_UpdateWelcomeMessage(message, welcome_msg) {
-	con.query(`UPDATE ${DB_Model} SET welcome_message = '${welcome_msg}' WHERE serverid = '${message.guild.id}'`, (err, results, fields) => {
+	con.query(`UPDATE ${DB_Model} SET welcome_message = '$welcome_msg' WHERE serverid = ${message.guild.id}`, (err, results) => {
 		if (err) throw err;
 
 		console.log("Changed successfully the welcome message to " + welcome_msg); // results contains rows returned by server
-		//console.log(fields); // fields contains extra meta data about results, if available
-		console.log(results[0])
-		return results[0];
 	});
 }
 
 async function SQL_UpdateChannelMessage(message, channel) {
-	con.query(`UPDATE ${DB_Model} SET welcome_channel = '${channel}' WHERE serverid = '${message.guild.id}'`, (err, results, fields) => {
+	con.query(`UPDATE ${DB_Model} SET welcome_channel = '$channel' WHERE serverid = '${message.guild.id}'`, (err, results) => {
 		if (err) throw err;
 
 		console.log("Changed successfully the channel to " + channel); // results contains rows returned by server
-		//console.log(fields); // fields contains extra meta data about results, if available
-		console.log(results[0])
-		return results[0];
 	});
 }
 //#endregion
