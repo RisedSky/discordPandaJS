@@ -902,8 +902,13 @@ bot.on('message', async message => { //Quand une personne envoi un message
 										if (nmbrdeleted == NumberToDelete) {
 											console.log("1> fini !")
 											msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
-											nmbrdeleted = 0;
-											NumberToDelete = 0;
+
+											setTimeout(() => {
+												nmbrdeleted = 0;
+												NumberToDelete = 0;
+												nmbr = 0;
+												messages.clear();
+											}, 6000);
 											deleteMyMessage(msgdeleted, 13 * 1000)
 										}
 									})
@@ -1580,7 +1585,7 @@ async function SQL_Insert_NewServer(member) {
 }
 
 async function SQL_UpdateWelcomeMessage(message, welcome_msg) {
-	con.query(`UPDATE ${DB_Model} SET welcome_message = '$welcome_msg' WHERE serverid = ${message.guild.id}`, (err, results) => {
+	con.query(`UPDATE ${DB_Model} SET welcome_message = ? WHERE serverid = ${message.guild.id}`, [welcome_msg], (err, results) => {
 		if (err) throw err;
 
 		console.log("Changed successfully the welcome message to " + welcome_msg); // results contains rows returned by server
@@ -1588,7 +1593,7 @@ async function SQL_UpdateWelcomeMessage(message, welcome_msg) {
 }
 
 async function SQL_UpdateChannelMessage(message, channel) {
-	con.query(`UPDATE ${DB_Model} SET welcome_channel = '$channel' WHERE serverid = '${message.guild.id}'`, (err, results) => {
+	con.query(`UPDATE ${DB_Model} SET welcome_channel = ? WHERE serverid = '${message.guild.id}'`, [channel], (err, results) => {
 		if (err) throw err;
 
 		console.log("Changed successfully the channel to " + channel); // results contains rows returned by server
