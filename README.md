@@ -1,3 +1,7 @@
+[![Discord Bots](https://discordbots.org/api/widget/status/408697648216932372.svg)](https://discordbots.org/bot/408697648216932372)
+[![Discord Bots](https://discordbots.org/api/widget/servers/408697648216932372.svg)](https://discordbots.org/bot/408697648216932372)
+
+
 ## discordPandaJS
 
 A big thanks to the bêta-testers, the list is on our discord server.
