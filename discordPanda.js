@@ -353,6 +353,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 
 			if (results == undefined) {
 				SQL_Insert_NewServer(member)
+				return;
 			}
 
 			callback(null, results[0])
@@ -1105,8 +1106,21 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				await SQL_GetResult(function (err, result) {
 					if (err) console.log("Database error!");
 					else {
+						if (result == undefined) {
+							SQL_Insert_NewServer(message.member)
+							message.reply(":warning: Creating the server in my DB... (redo the command plz)").then(msg => {
+								deleteMyMessage(msg, 12 * 1000)
+							})
+							return;
+						}
+
 						activated = result.welcome_status;
 						console.log(result.welcome_status);
+
+						if (activated == undefined) {
+							SQL_Insert_NewServer(message.member)
+							return false;
+						}
 
 						if (activated === 1) {
 							console.log("Already activated");
@@ -1130,6 +1144,14 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				await SQL_GetResult(function (err, result) {
 					if (err) console.log("Database error!");
 					else {
+						if (result == undefined) {
+							SQL_Insert_NewServer(message.member)
+							message.reply(":warning: Creating the server in my DB... (redo the command plz)").then(msg => {
+								deleteMyMessage(msg, 12 * 1000)
+							})
+							return;
+						}
+
 						activated = result.welcome_status;
 						console.log(result.welcome_status);
 
@@ -1185,6 +1207,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				var msgToSend = [];
 				var show_welcome_channel = "";
 				var show_welcome_message = "";
+				var show_welcome_status;
 
 				await SQL_GetResult(function (err, result) {
 					if (err) console.log("Database error!");
@@ -1193,23 +1216,30 @@ bot.on('message', async message => { //Quand une personne envoi un message
 
 						if (result == undefined) {
 							SQL_Insert_NewServer(message.member)
+							message.reply(":warning: Creating the server in my DB... (redo the command plz)").then(msg => {
+								deleteMyMessage(msg, 12 * 1000)
+							})
 							return;
 						}
 
-						if (result.length < 1) {
-							show_welcome_channel = "`Not defined`"
-							console.log("No results");
-						} else {
-							console.log(result)
-							show_welcome_channel = result.welcome_channel;
-							console.log(show_welcome_channel);
+						show_welcome_channel = result.welcome_channel;
 
-							show_welcome_message = result.welcome_message;
-							console.log(show_welcome_message);
+						show_welcome_message = result.welcome_message;
+
+						show_welcome_status = CheckInfo_ToBooleanEmoji(result.welcome_status)
+
+						if (result.welcome_channel == null) {
+							show_welcome_channel = "`Not defined`"
+						}
+						if (result.welcome_message == null) {
+							show_welcome_message = "`Not defined`"
 						}
 
+
 						msgToSend.push("Welcome channel: " + show_welcome_channel + " \n")
-						msgToSend.push("Welcome message: `" + show_welcome_message + "`")
+						msgToSend.push("Welcome message: `" + show_welcome_message + "`\n")
+						msgToSend.push("Welcome is activated: " + show_welcome_status)
+
 						message.channel.send(msgToSend)
 						msgToSend = [];
 					}
