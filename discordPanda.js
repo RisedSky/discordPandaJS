@@ -1579,22 +1579,22 @@ bot.on('resume', () => {
 
 async function SQL_Insert_NewServer(member) {
 	con.query(`INSERT INTO ${DB_Model} (servername, serverid, prefix, welcome_status) VALUES (?, ?, ?, ?)`, [member.guild.name, member.guild.id, prefix, false], (err, results) => {
-		if (err) throw err;
+		if (err) console.log(err);
 		console.log("Inserted the new server !");
 	});
 }
 
 async function SQL_UpdateWelcomeMessage(message, welcome_msg) {
-	con.query(`UPDATE ${DB_Model} SET welcome_message = ? WHERE serverid = ${message.guild.id}`, [welcome_msg], (err, results) => {
-		if (err) throw err;
+	con.query(`UPDATE ${DB_Model} SET welcome_message = "?" WHERE serverid = ${message.guild.id}`, [welcome_msg], (err, results) => {
+		if (err) console.log(err);
 
 		console.log("Changed successfully the welcome message to " + welcome_msg); // results contains rows returned by server
 	});
 }
 
 async function SQL_UpdateChannelMessage(message, channel) {
-	con.query(`UPDATE ${DB_Model} SET welcome_channel = ? WHERE serverid = '${message.guild.id}'`, [channel], (err, results) => {
-		if (err) throw err;
+	con.query(`UPDATE ${DB_Model} SET welcome_channel = "?" WHERE serverid = '${message.guild.id}'`, [channel], (err, results) => {
+		if (err) console.log(err);
 
 		console.log("Changed successfully the channel to " + channel); // results contains rows returned by server
 	});
