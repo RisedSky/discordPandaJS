@@ -815,10 +815,18 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		//#region Other commands
 
 		case "say":
-			const SayMessage = message.content.substr(4);
+			const SayMessage = message.content.substr(prefix.length + 3);
 
 			if (member_has_MANAGE_MESSAGES) {
-				Mess_Channel.send(SayMessage);
+				Mess_Channel.send(SayMessage).catch(error => {
+					//console.log(error + " -- " + error.name);
+
+					if (error.name == "DiscordAPIError") {
+						return message.reply("Your message is empty.").then(function (msg) {
+							deleteMyMessage(msg, 9 * 1000)
+						})
+					}
+				});
 			} else {
 				message.reply("You need the permission **(MANAGE_MESSAGES)** to do that (*say)").then(function (msg) {
 					deleteMyMessage(msg, 10000);
