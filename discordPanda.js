@@ -1275,8 +1275,29 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			var d = new Date(null);
 			d.setSeconds(online_since);
 			var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+
+			var time = moment.duration(bot.uptime, "milliseconds");
+			console.log(bot.uptime);
+
+			var time_string;
+			if (time.get("days") > 1) {
+				time_string = time.get("days") + " days, " + time.get("hours") + " hours, " + time.get("minutes") + " minutes, " + time.get("s") + " seconds."
+
+			} else if (time.get("hours") > 1) {
+				time_string = time.get("hours") + " hours, " + time.get("minutes") + " minutes, " + time.get("s") + " seconds."
+
+			} else if (time.get("minutes") > 1) {
+				time_string = time.get("minutes") + " minutes, " + time.get("s") + " seconds."
+
+			} else if (time.get("seconds") > 1) {
+				time_string = time.get("s") + " seconds."
+
+			}
+
+
 			console.log(bot_online_since_time)
 			//var bot_online_since_time = moment(d).format("HH:mm:ss DD-MM-YYYY")
+			var bot_online_since_time = time_string
 			var bot_date_created = moment(bot.user.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
 
 			var embedbot_info = new Discord.RichEmbed()
