@@ -1256,8 +1256,9 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			} else if (args[1] === "help") {
 				message.reply(
 					"To configure the welcomer you need to do theres steps:\n\n" +
-					":one: Personalize it with the command: `" + prefix + "welcome set #channel Your message`\n" +
-					":two: Enable the welcomer via the command: `" + prefix + "welcome on`\n" +
+					":one: Enable the welcomer via the command: `" + prefix + "welcome on`\n" +
+					":two: Personalize it with the command: `" + prefix + "welcome set #channel Your message`\n" +
+					":notepad_spiral: You can tag the new user in the welcome message when setting up the message : `{user}`\n" +
 					"\nThat's it ! you finally did it ! (easy uh ? :wink:)"
 				)
 				return;
