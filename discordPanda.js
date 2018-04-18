@@ -21,7 +21,7 @@ var yt_api_key = config.yt_api_key; //process.env.yt_api_key;
 var BOT_TOKEN = config.BOT_TOKEN;//process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN);
 
-let prefix// = config.prefix;
+let prefix = config.prefix;
 let bot_version = config.bot_version;
 
 //#region MySQL
