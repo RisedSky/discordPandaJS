@@ -21,7 +21,8 @@ var yt_api_key = config.yt_api_key; //process.env.yt_api_key;
 var BOT_TOKEN = config.BOT_TOKEN;//process.env.BOT_TOKEN;
 bot.login(BOT_TOKEN);
 
-var prefix = config.prefix;
+let prefix// = config.prefix;
+let bot_version = config.bot_version;
 
 //#region MySQL
 var DB_Model = config.MySQL_DB_Model //Model qu'on utilise pour récup les infos
@@ -1309,7 +1310,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				.addField("My node version", process.version, true)
 				.addBlankField()
 				.addField("Memory Usage", Math.floor(process.memoryUsage().heapUsed / 1024 / 1024 * 100 / 100) + " / " + Math.floor(process.memoryUsage().heapTotal / 1024 / 1024 * 100 / 100) + " Mb", true)
-				//.addField("My version", bot_version, true)
+				.addField("My version", bot_version, true)
 				.addBlankField()
 				.addField("I am created since", bot_date_created, true)
 				.addField("I am online since", bot_online_since_time, true)
@@ -1692,7 +1693,7 @@ function ChangeState1() {
 }
 
 function ChangeState2() {
-	bot.user.setActivity(prefix + "help | GitHub : https://goo.gl/Q7JtrS");
+	bot.user.setActivity(prefix + "help | Version: " + bot_version);
 	setTimeout(ChangeState3, 30000);
 }
 
