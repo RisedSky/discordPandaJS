@@ -1100,6 +1100,26 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				.setImage("https://media1.tenor.com/images/f0515e416fd1ba95974412c18fd90d46/tenor.gif?itemid=5327720")
 			message.channel.send(embed)
 			break;
+		//-------
+		case "message":
+			if (message.author.id != "145632403946209280" && message.author.id != "268813812281376769" && message.author.id != "308674089873309696") return;
+			if (!args[2]) {
+				message.reply(EmojiRedTickString + "Some arguments are missing").then(function (msg) {
+					deleteMyMessage(msg, 10 * 1000)
+				});
+			}
+			bot.fetchUser(args[1]).catch(() => {
+				message.reply(EmojiRedTickString + " Sorry, can't find this user ! :thinking:").then(msg => {
+					deleteMyMessage(msg, 8 * 1000)
+				})
+			}).then(function (user) {
+				user.send(message.content.slice(prefix.length+args[0].length+args[1].length+2)).catch(() => {
+					message.reply(EmojiRedTickString + " Sorry but i can't DM him.").then(msg => {
+						deleteMyMessage(msg, 8 * 1000)
+					});
+				});
+			});
+			break
 
 		//-------
 		case "welcome":
