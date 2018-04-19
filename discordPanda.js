@@ -1639,8 +1639,8 @@ bot.on('messageDelete', message => {
 	//si c'est le cas alors on ne le SUPPRIME PAS
 })
 
-bot.on('error', console => {
-	console.log(Error)
+bot.on('error', err => {
+	console.log(err)
 })
 
 bot.on('reconnecting', () => {
