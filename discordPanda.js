@@ -879,13 +879,13 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					return;
 
 				} else if (NumberToDelete > 100) {
-					message.reply(EmojiProhibitedString + " Sadly, the bot can only delete 100 messages at a time.").then(function (msg) {
+					message.reply(EmojiRedTickString + " Sadly, the bot can only delete 100 messages at a time.").then(function (msg) {
 						deleteMyMessage(msg, 6000);
 					})
 
 					return;
 				} else if (!member_has_MANAGE_MESSAGES) {
-					message.reply(EmojiProhibitedString + " Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
+					message.reply(EmojiRedTickString + " Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
 						deleteMyMessage(msg, 7000);
 					})
 
@@ -1113,7 +1113,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					deleteMyMessage(msg, 8 * 1000)
 				})
 			}).then(function (user) {
-				user.send(message.content.slice(prefix.length+args[0].length+args[1].length+2)).catch(() => {
+				user.send(message.content.slice(prefix.length + args[0].length + args[1].length + 2)).catch(() => {
 					message.reply(EmojiRedTickString + " Sorry but i can't DM him.").then(msg => {
 						deleteMyMessage(msg, 8 * 1000)
 					});
