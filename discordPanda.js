@@ -166,6 +166,7 @@ bot.on('guildMemberAdd', async member => {
 
 			var t = String(result.welcome_channel).substr(2, 18)
 			let welcome_channel = member.guild.channels.find("id", t);
+			if (welcome_channel == undefined) return;
 			//console.log("le welcome_channel: " + t);
 
 			let welcome_message = String(result.welcome_message)
