@@ -154,7 +154,7 @@ bot.on('guildMemberAdd', async member => {
 	await SQL_GetResult(function (err, result) {
 		if (err) console.log("Database error!");
 		else {
-			console.log(result);
+			//console.log(result);
 
 			if (result == undefined) {
 				SQL_Insert_NewServer(member)
