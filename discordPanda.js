@@ -7,9 +7,10 @@ const request = require("request");
 const moment = require("moment");
 const bot = new Discord.Client({ autoReconnect: true });
 
-//Discord Bot List Stats
+//#region Discord Bot List Stats
 const DBL = require("dblapi.js");
 const dbl = new DBL(config.dbl_token);
+//#endregion
 
 var BlackListUser = require("./blacklistUser.js");
 var StringBlackListUser = String(BlackListUser.BlackListUser);
@@ -1113,11 +1114,13 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					deleteMyMessage(msg, 8 * 1000)
 				})
 			}).then(function (user) {
-				user.send(message.content.slice(prefix.length + args[0].length + args[1].length + 2)).catch(() => {
+				user.send(message.content.slice(prefix.length + args[0].length + args[1].length + 2))
+					.catch(() => {
 					message.reply(EmojiRedTickString + " Sorry but i can't DM him.").then(msg => {
 						deleteMyMessage(msg, 8 * 1000)
 					});
 				});
+
 			});
 			break
 
