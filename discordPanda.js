@@ -172,8 +172,8 @@ bot.on('guildMemberAdd', async member => {
 			let welcome_message = String(result.welcome_message)
 
 			if (welcome_message.includes("{user}")) {
+				let welcome_msg_new = ReplaceThing(welcome_message, "{user}", "<@" + member.id + ">")
 
-				var welcome_msg_new = welcome_message.replace("{user}", "<@" + member.id + ">")
 				welcome_channel.send(welcome_msg_new)
 			} else {
 				welcome_channel.send(welcome_message)
@@ -1750,6 +1750,22 @@ function deleteMyMessage(message, time) {
 
 function NotifyUser(ID) {
 	return `<@${ID}>`
+}
+
+function ReplaceThing(text, ThingToReplace, ReplaceTo) {
+	let new_text = String(text)
+	let new_ThingToReplace = String(ThingToReplace)
+	let new_ReplaceTo = String(ReplaceTo)
+
+	if (new_text.includes(new_ThingToReplace)) {
+		//var re = /`${new_ThingToReplace}`/gi
+		var re = new RegExp(new_ThingToReplace, "gi")
+
+		var result = new_text.replace(re, new_ReplaceTo)
+		console.log(result);
+
+		return result;
+	} else return new_text;
 }
 
 function PermissionCheck(PermToCheck) {
