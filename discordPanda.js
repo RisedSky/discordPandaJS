@@ -7,9 +7,20 @@ const request = require("request");
 const moment = require("moment");
 const bot = new Discord.Client({ autoReconnect: true });
 
-//Discord Bot List Stats
+//#region Language config
+let lang = this.lang;
+//let current_lang = require(`./lang/${lang}.js`).lang;
+let current_lang;
+
+const lang_english = require("./lang/english.js").lang;
+const lang_french = require("./lang/french.js").lang;
+const lang_russian = require("./lang/russian.js").lang;
+//#endregion
+
+//#region Discord Bot List Stats
 const DBL = require("dblapi.js");
 const dbl = new DBL(config.dbl_token);
+//#endregion
 
 var BlackListUser = require("./blacklistUser.js");
 var StringBlackListUser = String(BlackListUser.BlackListUser);
@@ -37,7 +48,7 @@ const con = mysql.createConnection({
 	reconnect: true
 });
 
-con.connect(err => {
+con.connect(async err => {
 	console.log("Connecting to the database...");
 	if (err) throw err.message;
 	console.log("Connected to the database: " + con.config.database);
@@ -68,7 +79,7 @@ var EmojiThonkongString = "<:thonkong:414071099517698059>"
 	, EmojiProhibitedString = "<:prohibited:416350020355489803>"
 	, EmojiTwitchLogoString = "<:twitchlogo:416350019780870146>"
 
-//Emoji 
+//Emoji
 var EmojiThonkong = "thonkong:414071099517698059"
 	, EmojiYouTube_Logo = "youtube-logo:413446051480076288"
 	, EmojiGreenTick = "greenTick:412663578009796619"
@@ -103,7 +114,7 @@ var YouTubeThumbnail //Défini la miniature
 //var CommandList = ["restart", "leave", "join", "", ""];
 
 bot.on('ready', () => { //When bot is ready
-	setInterval(() => {
+		setInterval(() => {
 		try {
 			dbl.postStats(bot.guilds.size);
 			console.log("postStats is Done");
@@ -112,7 +123,7 @@ bot.on('ready', () => { //When bot is ready
 		}
 
 	}, 1800000); //30 min
-
+	
 
 	setInterval(datenow, 1000);
 	bot.user.setStatus("online")
@@ -153,8 +164,6 @@ bot.on('guildMemberAdd', async member => {
 	await SQL_GetResult(function (err, result) {
 		if (err) console.log("Database error!");
 		else {
-			console.log(result);
-
 			if (result == undefined) {
 				SQL_Insert_NewServer(member)
 				return;
@@ -166,14 +175,16 @@ bot.on('guildMemberAdd', async member => {
 
 			var t = String(result.welcome_channel).substr(2, 18)
 			let welcome_channel = member.guild.channels.find("id", t);
+      
 			if (welcome_channel == undefined) return;
+			if (!welcome_channel) return; //if channel don't exist then return
 			//console.log("le welcome_channel: " + t);
 
 			let welcome_message = String(result.welcome_message)
 
 			if (welcome_message.includes("{user}")) {
+				let welcome_msg_new = ReplaceThing(welcome_message, "{user}", "<@" + member.id + ">")
 
-				var welcome_msg_new = welcome_message.replace("{user}", "<@" + member.id + ">")
 				welcome_channel.send(welcome_msg_new)
 			} else {
 				welcome_channel.send(welcome_message)
@@ -187,7 +198,7 @@ bot.on('guildMemberAdd', async member => {
                 console.log(result)
                 show_welcome_channel = result.welcome_channel;
                 console.log(show_welcome_channel);
-    
+
                 show_welcome_message = result.welcome_message;
                 console.log(show_welcome_message);
             }*/
@@ -222,12 +233,13 @@ bot.on('guildCreate', async Guild => { //Quand le bot est ajouté sur un serveur
 	var StringallListServers = "";
 	var allListServers = bot.guilds.array();
 
-	msgToSend = [];
-	msgToSend.push("Hey! I'm **" + bot.user.username + "**\n")
-	msgToSend.push("You can use **`" + prefix + "help`** to see my commands.");
+	var msgToSend = [];
+	msgToSend.push(`${current_lang.guild_joining1}`)
+	//msgToSend.push(`${current_lang.guild_joining2} **${prefix}help** ${current_lang.guild_joining3}`);
+	msgToSend.push(`${String(current_lang.guild_joining2).replace("{0}", `**${prefix}help**`)}`);
 	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-	msgToSend.push("Here is my discord server: " + Server_Link)
-	msgToSend.push("Don't hesitate to join it in order to get the most recent informations about the bot ;-)")
+	msgToSend.push(`${current_lang.guild_joining4}: ${Server_Link}`)
+	msgToSend.push(`${current_lang.guild_joining5} ;-)`)
 	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
 	defaultChannel.send(msgToSend);
@@ -243,6 +255,28 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			message.author.send("And here is the link of my official discord server: " + Server_Link)
 		}
 		return;
+	}
+
+	let SQL_GetResult = async function (callback) {
+		/*console.log(
+			"callback = " + callback + "\n" +
+			"msg dans getresult = " + message
+		);*/
+
+		con.query(`SELECT * FROM ${DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
+			if (err) return callback(err);
+
+			if (results == undefined) {
+				SQL_Insert_NewServer(member)
+				return;
+			}
+
+			/*lang = results[0].lang;
+			current_lang = require(`./lang/${lang}.js`).lang;
+			console.log("DB answer");*/
+
+			callback(null, results[0])
+		})
 	}
 
 	//vérifie si le serveur est déjà dans la liste
@@ -330,7 +364,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					})
 				}, 6 * 1000);
 
-				/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `<nocmds>` !").then(function (msg) {
+				/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `< nocmds > ` !").then(function (msg) {
 					deleteMyMessage(msg, 6500)
 				})*/
 				return;
@@ -342,25 +376,42 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	}
 
 	if (message.author.bot) return;
-	if (!message.content.startsWith(prefix)) return;
+	if (!message.content.startsWith(prefix) || message.content.startsWith(prefix + prefix)) return;
 
-	let SQL_GetResult = function (callback) {
-		/*console.log(
-			"callback = " + callback + "\n" +
-			"msg dans getresult = " + message
-		);*/
+	//console.log(moment(Date.now()).format("HH:mm:ss:ms DD-MM-YYYY"));
+	//console.log(moment(Date.now()).get("milliseconds"));
 
-		con.query(`SELECT * FROM ${DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
-			if (err) return callback(err);
 
-			if (results == undefined) {
-				SQL_Insert_NewServer(member)
-				return;
+	await SQL_GetResult(function (err, result) {
+		if (err) console.log("Database error!");
+		else {
+			if (result == undefined) {
+				return message.reply(lang_english.Command_Welcome_Create_Server_To_Database).then(msg => {
+					SQL_Insert_NewServer(message.member).then(msg.edit(`~~${lang_english.Command_Welcome_Create_Server_To_Database}~~ ${lang_english.Something_Done}`))
+					deleteMyMessage(msg, 16 * 1000)
+				})
 			}
+			lang = result.lang;
+			if (lang == undefined || lang == null || lang == "") {
+				console.log("not defined");
 
-			callback(null, results[0])
-		})
-	}
+				return message.reply(`Currently changing the lang to default (english)...`).then(msg => {
+					SQL_UpdateSomething(message, "lang", "english").then(msg.edit(`~~Currently changing the lang to default (english)...~~ ${lang_english.Something_Done}`))
+					deleteMyMessage(msg, 16 * 1000)
+				})
+			}
+			//lang = result.lang;
+			//console.log("result.lang : " + result.lang);
+			current_lang = require(`./lang/${lang}.js`).lang;
+			/*
+			console.log("Defined current_lang " + lang);
+			console.log(moment(Date.now()).format("HH:mm:ss:ms DD-MM-YYYY"));
+			console.log(moment(Date.now()).get("milliseconds"));
+			*/
+
+		}
+	})
+
 
 	//Declaring variable
 	var MessageID = message.id;
@@ -371,7 +422,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	var Mess_Member = message.member;
 	if (Mess_Member.voiceChannel) { var Mess_voiceChannel = message.member.voiceChannel; }
 
-	//l'ajoute alors
 	var server = servers[message.guild.id];
 
 	//#region Permission Du Bot
@@ -379,7 +429,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	const BOT_MANAGE_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 	const BOT_ADMINISTRATORPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADMINISTRATOR") && message.channel.type === 'text'
 	const BOT_USE_EXTERNAL_EMOJISPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("USE_EXTERNAL_EMOJIS") && message.channel.type === 'text'
-
+	const BOT_ADD_REACTIONSPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADD_REACTIONS") && message.channel.type === 'text'
 	//#endregion
 
 
@@ -391,7 +441,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	//#endregion
 
 	//Auto-Delete Function
-	var deleteUserMsg = setInterval(DeleteUserMessage, 1000);
+	var deleteUserMsg = setInterval(DeleteUserMessage, 1200);
 	function DeleteUserMessage(deleteit = true) {
 		clearInterval(deleteUserMsg);
 		if (!deleteit) return;
@@ -403,1211 +453,1366 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		}
 	}
 
-	switch (args[0].toLowerCase()) {
+	//console.log("The current lang is : " + lang);
 
-		//Music Commands
-		//#region 
-		// - - Musique
-		case "play-list":
-			if (!args[1]) {
-				message.react("❌").catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("Error play-list > " + e);
-				})
-				message.reply(EmojiRedTickString + " Please tell me something to play (the playlist link)").then(function (msg) {
-					deleteMyMessage(msg, 16 * 1000);
-				})
-				return;
+	setTimeout(async => {
 
-			} else if (!Mess_Member.voiceChannel) {
-				message.react("❌").catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("Error play-list > " + e);
-				})
-				message.reply(EmojiRedTickString + " You have to be connected to a vocal channel").then(function (msg) {
-					deleteMyMessage(msg, 16 * 1000);
-				})
-				return;
-			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
-				message.react("❌").catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("Error play-list > " + e);
-				})
-				message.reply(EmojiRedTickString + " You have to be listening (not deafen)").then(function (msg) {
-					deleteMyMessage(msg, 16 * 1000);
-				})
-				return;
-			}
+		//DeleteTheMessage(message, 750)
+		switch (args[0].toLowerCase()) {
+			//Music Commands
+			//#region
+			// - - Musique
+			// ("./lang/${lang}.js").lang
+			case "lang":
+				SQL_GetResult(function (err, result) {
+					if (err) console.log("Database error!");
+					if (result == undefined) {
+						return
+					}
 
-			server.playit = true;
+					//console.log(result.lang);
 
-			var parsed = URL.parse(args[1]);
-			if (parsed && parsed.host) {
-				// YouTube URL
-				var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
-				var match = args[1].match(regExp);
+					lang = result.lang;
+					if (!args[1]) {
+						if (lang == undefined || lang == null || lang == "") {
+							return message.reply(`Current language: None`)
+						} else return message.reply(`Current language: ${result.lang}`)
 
-				if (match && match[2]) {
-					server.annonce_it = false;
-					queue_playlist(match[2], message);
-					return;
-				} else {
-					message.reply(EmojiRedTickString + " It's not a playlist.").then(msg => {
-						deleteMyMessage(msg, 14 * 1000)
+					} else if (!member_Has_MANAGE_GUILD) {
+						return message.reply(`${current_lang.Command_User_Not_Allowed} ${current_lang.Permission_Manage_Server_Required}`)
+					}
+
+					switch (args[1].toLowerCase()) {
+						case "help":
+
+							var lang_embed = new Discord.RichEmbed()
+								.setAuthor(bot.user.username, bot.user.avatarURL)
+								.setColor("GREEN")
+								.setDescription(
+									`Available language:\nFrench, English, Russian\n\nCommand to change the language: \`${prefix}lang English\``
+								)
+							message.channel.send(lang_embed).then(msg => {
+								deleteMyMessage(msg, 60 * 1000)
+							})
+							break;
+						case "french":
+							//define the current server to french
+							SQL_UpdateLang(message, "lang", "french").then(() => {
+								setTimeout(() => {
+									message.reply(current_lang.Lang_Defined_To_French)
+								}, 350);
+							})
+							break;
+
+						case "english":
+							SQL_UpdateLang(message, "lang", "english").then(() => {
+								setTimeout(() => {
+									message.reply(current_lang.Lang_Defined_To_English)
+								}, 350);
+							})
+							break;
+
+						case "russian":
+							SQL_UpdateLang(message, "lang", "russian").then(() => {
+								setTimeout(() => {
+									message.reply(current_lang.Lang_Defined_To_Russian)
+								}, 350);
+							})
+							break;
+						default:
+							message.reply(String(current_lang.Lang_Didnt_Find_Lang).replace("{0}", args[1]))
+							message.reply(`The help command is: ${prefix}lang help`)
+							break;
+					}
+
+				})
+				break;
+
+			case "play-list":
+				if (!args[1]) {
+					message.react("❌").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error play-list > " + e);
 					})
+					message.reply(current_lang.Music_Tell_Me_Something_Play_Playlist).then(function (msg) {
+						deleteMyMessage(msg, 16 * 1000);
+					})
+					return;
+
+				} else if (!Mess_Member.voiceChannel) {
+					message.react("❌").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error play-list > " + e);
+					})
+					message.reply(current_lang.Music_Not_In_Vocal).then(function (msg) {
+						deleteMyMessage(msg, 16 * 1000);
+					})
+					return;
+				} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
+					message.react("❌").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error play-list > " + e);
+					})
+					message.reply(current_lang.Music_Should_Not_Deafen).then(function (msg) {
+						deleteMyMessage(msg, 16 * 1000);
+					})
+					return;
 				}
-			} else {
-				message.reply(EmojiRedTickString + " Hmm sorry but... it's not a link :/").then(msg => {
-					deleteMyMessage(msg, 14 * 1000)
-				})
-			}
-			break;
-		//------
-		case "play":
-			if (!args[1]) {
-				message.react("❌").catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("Error play > " + e);
-				})
-				message.reply(EmojiRedTickString + " Please tell me something to play (a link or a title)").then(function (msg) {
-					deleteMyMessage(msg, 16 * 1000);
-				})
-				return;
 
-			} else if (!Mess_Member.voiceChannel) {
-				message.react("❌").catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("Error play > " + e);
-				})
-				message.reply(EmojiRedTickString + " You have to be connected to a vocal channel").then(function (msg) {
-					deleteMyMessage(msg, 16 * 1000);
-				})
-				return;
-			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
-				message.react("❌").catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("Error play > " + e);
-				})
-				message.reply(EmojiRedTickString + " You have to be listening (not deafen)").then(function (msg) {
-					deleteMyMessage(msg, 16 * 1000);
-				})
-				return;
-			}
-
-			try {
 				server.playit = true;
 
 				var parsed = URL.parse(args[1]);
 				if (parsed && parsed.host) {
 					// YouTube URL
-
-					//var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
-					/*
+					var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
 					var match = args[1].match(regExp);
 
-					if (match && match[2]) {
+					if (match[2]) {//if (match && match[2]) {
 						server.annonce_it = false;
 						queue_playlist(match[2], message);
 						return;
-					}
-					*/
-
-					server.annonce_it = true;
-					if (parsed.host.match(/(www\.)?youtube.com|(www\.)?youtu.be/i)) {
-						console.log("C'est un lien youtube")
-						console.log(args[1]);
-
-						q = args[1]
-
-						if (args[1].includes("&t=")) {
-							//console.log("ça donnerait => " + args[1].split("&t="));
-							q = args[1].split("&t=").shift();
-
-						} else if (args[1].includes("&feature=youtu.be")) {
-							q = args[1].replace("&feature=youtu.be", "")
-						}
-
-						search_video(message, q);
-
-						return;
-
-					} else if (parsed.host.match(/(www\.)?soundcloud.com/i)) {
-						console.log("C'est du soundcloud")
-						message.reply("Soundcloud isn't actually supported. Soon :tm:").then(function (msg) {
-							deleteMyMessage(msg, 16 * 1000);
-						})
-						return;
-					}
-
-				} else {
-					var argsSearch = message.content.split(" ");
-
-					var q = "";
-
-					for (var i = 1; i < argsSearch.length; i++) {
-						q += argsSearch[i] + " ";
-					}
-					//console.log(argsSearch)
-					//console.log("q => " + q)
-					search_video(message, q);
-					return;
-				}
-
-
-			} catch (error) {
-				console.log("Erreur dans le play, quelque chose ne va pas: " + error)
-			}
-
-			break;
-
-		//----------
-		case "pause":
-			if (!server.dispatcher) {
-				console.log("No dispatcher")
-				message.reply(EmojiRedTickString + " There is no music actually playing !").then(msg => {
-					deleteMyMessage(msg, 15 * 1000)
-				});
-				return;
-
-			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
-				message.reply(EmojiRedTickString + " You are not in the same vocal channel as me.")
-					.then(function (msg) {
-						deleteMyMessage(msg, 12 * 1000);
-					})
-				return;
-			}
-
-			if (server.dispatcher_paused) {
-				server.dispatcher.resume();
-				server.dispatcher_paused = false;
-				message.reply("Successfully resumed :play_pause:, :headphones:").then(msg => {
-					deleteMyMessage(msg, 20 * 1000)
-				})
-			} else {
-				server.dispatcher.pause();
-				server.dispatcher_paused = true;
-				message.reply("Successfully paused :stop_button:, :headphones:").then(msg => {
-					deleteMyMessage(msg, 20 * 1000)
-				})
-			}
-			break;
-		//-------
-		case "search":
-			if (!args[1]) {
-				message.react("❌").catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("Error search > " + e);
-				})
-				message.reply("Please, put a music's title").then(function (msg) {
-					deleteMyMessage(msg, 12 * 1000);
-				})
-				return;
-			}
-			server.playit = false;
-			var argsSearch = message.content.split(" ");
-
-			var q = "";
-			for (var i = 1; i < argsSearch.length; i++) {
-				q += argsSearch[i] + " ";
-			}
-			/*console.log(argsSearch);
-			console.log("q => " + q);*/
-			search_video(message, q);
-
-			break;
-		//-------
-		case "skip":
-
-			if (!Mess_Member.voiceChannel) {
-				message.reply(EmojiRedTickString + " You should be in a vocal channel before asking me to skip some musics.").then(function (msg) {
-					deleteMyMessage(msg, 12 * 1000);
-				})
-				return;
-			} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
-				message.reply(EmojiRedTickString + " You should not be deafen *(For saving some bandwidth of the bot)*").then(function (msg) {
-					deleteMyMessage(msg, 12 * 1000);
-				})
-				return;
-
-			} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
-				message.reply(EmojiRedTickString + " You are not in the same vocal channel as me.")
-					.then(function (msg) {
-						deleteMyMessage(msg, 12 * 1000);
-					})
-				return;
-			} else if (!server.queue[1]) {
-				message.reply(EmojiRedTickString + " I didn't found any other music.").then(function (msg) {
-					deleteMyMessage(msg, 10 * 1000)
-				})
-				return;
-			}
-			//console.log("User: " + Mess_Member.voicechannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
-
-			console.log(server.dispatcher);
-
-			var video_id = server.queue[1]["id"];
-			var title = server.queue[1]["title"];
-			var user = server.queue[1]["user"];
-
-			/*if (currentlySong === null) {
-				message.reply("No music is actually playing.").then(function (msg) {
-					deleteMyMessage(msg, 10000)
-				})
-				return;
-			}*/
-
-			if (server.dispatcher) {
-				var msg = [];
-				msg.push("Successfuly skipped the song: \n`" + server.now_playing_data["title"] + "` *(requested by " + server.now_playing_data["user"] + ")* \n\n");
-				msg.push("Now playing: `" + title + "` *(requested by " + user + ")*")
-				message.reply(msg).then(function (msg) {
-					deleteMyMessage(msg, 60 * 1000);
-				})
-				server.dispatcher.end();
-			}
-
-			server.now_playing_data["title"] = title;
-			server.now_playing_data["user"] = user;
-			break;
-		//-------
-		case "stop":
-			//var server = servers[message.guild.id];
-
-			if (message.guild.voiceConnection) {
-				for (var i = server.queue.length - 1; i >= 0; i--) {
-					server.queue.splice(i, 1);
-				}
-				Mess_Channel.send(EmojiGreenTickString + " Stopped all the music from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
-					deleteMyMessage(msg, 20 * 1000);
-				})
-				message.guild.voiceConnection.disconnect();
-			}
-			break;
-		//-------
-		case "queue":
-
-			var argsQueue = message.content.substring(5).split(" ");
-			//var server = servers[message.guild.id];
-			var xQueue = server.queue;
-			//var answer = "";
-
-			try {
-				// CE CODE FONCTIONNE
-				/*if (argsQueue[1] === "list") {
-					Mess_Channel.send("Oui.");
-				}*/
-
-				if (!xQueue[0]) {
-					message.reply(EmojiRedTickString + " The queue is actually empty.").then(function (msg) {
-						deleteMyMessage(msg, 20 * 1000);
-					})
-					return;
-				}
-				//console.log("Queue length: " + xQueue.length) //show us how many musics there is 
-				let embedQueue = new Discord.RichEmbed()
-					.setColor("#ffa500")
-					.setAuthor("Queue list", bot.user.avatarURL)
-					.setDescription("*Here is your queue list*")
-					.setFooter("Queue list requested by " + message.author.username + " • ID: " + message.author.id)
-					.addBlankField();
-
-				var xQueue_AddedFields = 0;
-
-				for (var i in xQueue) {
-					//console.log(embedQueue.fields.length)
-					if (embedQueue.fields.includes("It's the end of the text")) return;
-
-					if (embedQueue.fields.length <= 22) {
-						xQueue_AddedFields++;
-						embedQueue.addField("[" + i + "] » " + xQueue[i]['title'], "*requested by " + xQueue[i]['user'] + "*")
 					} else {
-						var RemainingNumber = xQueue.length - xQueue_AddedFields
-						embedQueue.addField("And " + RemainingNumber + " more...", "It's the end of the text")
-					}
-				}
-
-				embedQueue.addBlankField();
-
-				message.channel.send(embedQueue).then(function (msg) {
-					deleteMyMessage(msg, 180 * 1000);
-				})
-
-			} catch (error) {
-				console.log("Queue command problem: " + error)
-			}
-			break;
-		//----------
-		case "loop":
-			try {
-				if (server.loopit) {
-					server.loopit = false;
-					message.reply(`:ok_hand: \`${server.queue[0]["title"]}\` won't be repeated :wink: ${EmojiGreenTickString}`).then(function (msg) {
-						deleteMyMessage(msg, 10000);
-					})
-				} else {
-					server.loopit = true;
-					message.reply(`:ok_hand: \`${server.queue[0]["title"]}\` will be repeated :wink: ${EmojiGreenTickString}`).then(function (msg) {
-						deleteMyMessage(msg, 10000);
-					})
-				}
-			} catch (error) {
-				console.log("Loop error: " + error)
-			}
-			break;
-
-		//----------
-		case "status":
-			if (!server.queue[0]) {
-				message.reply(EmojiRedTickString + " There's no music").then(function (msg) {
-					deleteMyMessage(msg, 15 * 1000)
-				})
-				return;
-			}
-			function CheckInfo_ToBooleanEmoji(thing) { if (thing) { return "Yes " + EmojiGreenTickString } else { return "No " + EmojiRedTickString } }
-			var disp_time = moment.duration(server.dispatcher.time, "milliseconds")
-			var time_remainingSec = (server.queue[0]["YouTubeTimeSec"] - disp_time.get("seconds"))
-			console.log(server.queue[0]["YouTubeTimeSec"])
-			console.log(disp_time.get("seconds"))
-			console.log(time_remainingSec);
-
-
-			var de = new Date(null);
-			de.setSeconds(time_remainingSec);
-			var TimeRemaining = de.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
-
-			try {
-				embedStatus = new Discord.RichEmbed()
-					.setColor("#FFFF00")
-					.setAuthor("Status", bot.user.avatarURL)
-					.setDescription("*The current status of the song*")
-					.setThumbnail(server.queue[0]["YouTubeThumbnail"]).setURL(server.queue[0]["YouTubeLink"])
-
-					.addField("The Current song: " + server.queue[0]["title"], " *(requested by " + server.queue[0]["user"] + ")*")
-					.addBlankField()
-
-					.addField("Is the track looped ?", CheckInfo_ToBooleanEmoji(server.loopit), true)
-					.addField("Is the track paused ?", CheckInfo_ToBooleanEmoji(server.dispatcher_paused), true)
-
-					.addBlankField()
-
-					.addField("Uploaded by", server.queue[0]["YouTubeUploader"], true)
-					.addField("Song duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
-					.addBlankField(true)
-					.addField("Time remaining", "**" + TimeRemaining + "**", true)
-
-					.addBlankField()
-
-					.addField("Views", server.queue[0]["YouTubeViews"], true)
-					.addField("Link", "[Click here](" + server.queue[0]["YouTubeLink"] + ")", true)
-
-					.setFooter("Status requested by " + message.author.username + " • ID: " + message.author.id)
-
-				message.channel.send(embedStatus).then(function (msg) {
-					deleteMyMessage(msg, 120 * 1000);
-				})
-			} catch (error) {
-				console.log("Status command problem: " + error)
-			}
-			break;
-
-		//--------
-		//#endregion
-
-		//Other Commands
-		//#region Other commands
-
-		case "say":
-			const SayMessage = message.content.substr(prefix.length + 3);
-
-			if (member_has_MANAGE_MESSAGES) {
-				Mess_Channel.send(SayMessage).catch(error => {
-					//console.log(error + " -- " + error.name);
-
-					if (error.name == "DiscordAPIError") {
-						return message.reply("Your message is empty.").then(function (msg) {
-							deleteMyMessage(msg, 9 * 1000)
+						message.reply(current_lang.Music_Not_Playlist).then(msg => {
+							deleteMyMessage(msg, 14 * 1000)
 						})
 					}
-				});
-			} else {
-				message.reply("You need the permission **(MANAGE_MESSAGES)** to do that (*say)").then(function (msg) {
-					deleteMyMessage(msg, 10000);
-				})
-			}
-
-			break;
-		//----------
-		case "github":
-			sendDMToUser(message, "My GitHub project : https://github.com/RisedSky/discordPandaJS")
-
-			break;
-		//----------
-		case "ping":
-			Mess_Channel.send(":ping_pong: My ping is: ?").then(function (newMessage) {
-				newMessage.edit(newMessage.content.replace("?", ((newMessage.createdTimestamp - message.createdTimestamp) / 10) + ' ms'));
-				deleteMyMessage(newMessage, 14 * 1000);
-			});
-			break;
-		//--------
-		case "purge":
-			try {
-
-				var NumberToDelete = message.content.substr(7);
-
-				if (!args[1]) {
-					message.reply("You didn't put the number of message you want to clear.").then(function (msg) {
-						deleteMyMessage(msg, 6000);
-					})
-
-					return;
-				} else if (!parseInt(NumberToDelete)) {
-					console.log("pas un int")
-					message.reply(EmojiRedTickString + " `" + NumberToDelete + "` isn't a number.").then(msg => {
-						deleteMyMessage(msg, 9 * 1000)
-					})
-					return;
-				}
-
-				if (!BOT_MANAGE_MESSAGESPerm) {
-					message.reply(EmojiProhibitedString + " Sadly, I haven't the  **(MANAGE_MESSAGES)** permission.").then(function (msg) {
-						deleteMyMessage(msg, 15 * 1000)
-					});
-					return;
-				} else if (NumberToDelete <= 0) {
-					message.reply("Please put a number of message to purge").then(function (msg) {
-						deleteMyMessage(msg, 5000);
-					})
-					return;
-
-				} else if (NumberToDelete > 100) {
-					message.reply(EmojiProhibitedString + " Sadly, the bot can only delete 100 messages at a time.").then(function (msg) {
-						deleteMyMessage(msg, 6000);
-					})
-
-					return;
-				} else if (!member_has_MANAGE_MESSAGES) {
-					message.reply(EmojiProhibitedString + " Sadly, you don't have the permission: **(MANAGE_MESSAGES)**.").then(function (msg) {
-						deleteMyMessage(msg, 7000);
-					})
-
-					return;
-				}
-
-				var nmbr = 0;
-				var nmbrdeleted = 0;
-				setTimeout(() => {
-					var allMsgs = message.channel.fetchMessages({ limit: NumberToDelete })
-						.then(messages => {
-							NumberToDelete = messages.size;
-							Mess_Channel.send("Deleting `" + NumberToDelete + "` message(s) :cloud_tornado: :cloud_tornado: :cloud_tornado: ").then(msgdeleted => {
-								messages.forEach(mess => {
-									nmbr++;
-
-									console.log(nmbr + " > " + mess.content)
-									if (mess.pinned) return;
-									if (!mess.deletable) return;
-									nmbrdeleted++;
-									msgdeleted.edit("Deleted `" + nmbrdeleted + "` message(s) ! :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
-									mess.delete().then(t => {
-										//console.log(t.content)
-										if (nmbrdeleted == NumberToDelete) {
-											console.log("1> fini !")
-											msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
-
-											setTimeout(() => {
-												nmbrdeleted = 0;
-												NumberToDelete = 0;
-												nmbr = 0;
-												messages.clear();
-											}, 6000);
-											deleteMyMessage(msgdeleted, 13 * 1000)
-										}
-									})
-
-								})
-							})
-						});
-				}, 3500);
-			} catch (error) {
-				console.log("Purge command problem: " + error)
-			}
-			break;
-		//----------
-		case "restart":
-			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
-				Mess_Channel.send("Restarting ...");
-				bot.user.setStatus("invisible");
-				bot.disconnect;
-				console.log("Disconnected")
-				setTimeout(function () {
-					bot.login(BOT_TOKEN);
-					console.log("Reconnected")
-					bot.user.setStatus("online")
-				}, 5000);
-			}
-			break;
-		//-------
-		case "random-number":
-			if (!args[1]) {
-				Mess.reply("You need to add a number (first should be the minimum)")
-				return;
-			} else if (!args[2]) {
-				Mess.reply("You need to add a number (second should be the maximum)")
-				return;
-			}
-
-			if (isNaN(args[1]) == true) {
-				if (isNaN(args[2]) == true) {
-					Mess.reply("Please, write a minimum and maximum value to generate a random number")
-					return;
 				} else {
-					Mess.reply("Please, write a minimum value to generate a random number")
-					return;
+					message.reply(current_lang.Music_Not_Link).then(msg => {
+						deleteMyMessage(msg, 14 * 1000)
+					})
 				}
-			}
-			if (isNaN(args[2]) == true) {
-				Mess.reply("Please, write a minimum value to generate a random number")
-				return;
-			}
-			args[1] = parseInt(args[1]);
-			args[2] = parseInt(args[2]);
-
-			try {
-
-				var argsQueue = message.content.substring(13).split(" ");
-				var argMini = args[1];
-				var argMaxi = args[2];
-
-				//Debug
-				console.log("1: " + argMini)
-				console.log("2: " + argMaxi)
-
-				min = Math.ceil(argMini);
-				max = Math.floor(argMaxi);
-
-				Calcul = Math.floor(Math.random() * (max - min + 1)) + min;
-
-				message.reply("Hmmm let me think, ..., between **" + min + "** and **" + max + "** I would choose **" + Calcul + "** !").then(function (msg) {
-					deleteMyMessage(msg, 600 * 1000)
-				});
-			} catch (error) {
-				console.log("Erreur #367: " + error)
-				//message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
-			}
-			break;
-		//--------
-		case "random-member":
-			var nbMemb = message.guild.memberCount;
-			var memb_list = message.guild.members;
-			var rand_member = memb_list.random();
-			embed = new Discord.RichEmbed()
-				.setColor("RED")
-				.setAuthor("Random-Member by " + message.author.username, message.author.avatarURL)
-				.setDescription(rand_member + " has been chosen between the " + nbMemb + " members of the server !")
-			message.channel.send(embed)
-			break;
-		//--------
-		case "poll":
-			cont = message.content
-			b1 = cont.indexOf(" | ");
-			b2 = cont.indexOf(" | ", b1 + 3);
-			b3 = cont.indexOf(" | ", b2 + 3);
-			if (b3 == -1) b3 = cont.length;
-			b4 = cont.indexOf(" | ", b3 + 3);
-			if (b4 == -1) b4 = cont.length;
-			b5 = cont.indexOf(" | ", b4 + 3);
-			if (b5 == -1) b5 = cont.length;
-			b6 = cont.indexOf(" | ", b5 + 3);
-			if (b6 == -1) b6 = cont.length;
-			b7 = cont.indexOf(" | ", b6 + 3);
-			if (b7 == -1) b7 = cont.length;
-			b8 = cont.indexOf(" | ", b7 + 3);
-			if (b8 == -1) b8 = cont.length;
-			b9 = cont.indexOf(" | ", b8 + 3);
-			if (b9 == -1) b9 = cont.length;
-
-			question = cont.substr(5, b1 - 5);
-			prop1 = cont.substr(b1 + 3, b2 - b1 - 3);
-			prop2 = cont.substr(b2 + 3, b3 - b2 - 3);
-			prop3 = cont.substr(b3 + 3, b4 - b3 - 3);
-			prop4 = cont.substr(b4 + 3, b5 - b4 - 3);
-			prop5 = cont.substr(b5 + 3, b6 - b5 - 3);
-			prop6 = cont.substr(b6 + 3, b7 - b6 - 3);
-			prop7 = cont.substr(b7 + 3, b8 - b7 - 3);
-			prop8 = cont.substr(b8 + 3, b9 - b8 - 3);
-			prop9 = cont.substr(b9 + 3);
-
-			if (question == "" || prop1 == "" || prop2 == "") {
-				message.reply(EmojiRedTickString + " Sorry, you didn't put any question/answer1/answer2 in your poll.\n(just follow this exemple: `" + prefix + "poll Question | Answer1 | Answer2`)").then(msg => {
-					deleteMyMessage(msg, 13 * 1000)
-				})
 				break;
-			}
+			//------
+			case "play":
+				if (!args[1]) {
+					message.react("❌").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error play > " + e);
+					})
+					message.reply(current_lang.Music_Tell_Me_Something_Play).then(function (msg) {
+						deleteMyMessage(msg, 16 * 1000);
+					})
+					return;
 
-			embed = new Discord.RichEmbed()
-				.setColor("DARK_PURPLE")
-				.setAuthor("Poll by " + message.member.displayName, message.author.displayAvatarURL)
-				.setTitle(question)
-				.addField(prop1, ":one:", true)
-				.addField(prop2, ":two:", true)
-				.setFooter(AskedBy_EmbedFooter(message.author))
-				.setTimestamp();
-
-			if (prop3 != "") embed.addField(prop3, ":three:", true);
-			if (prop4 != "") embed.addField(prop4, ":four:", true);
-			if (prop5 != "") embed.addField(prop5, ":five:", true);
-			if (prop6 != "") embed.addField(prop6, ":six:", true);
-			if (prop7 != "") embed.addField(prop7, ":seven:", true);
-			if (prop8 != "") embed.addField(prop8, ":eight:", true);
-			if (prop9 != "") embed.addField(prop9, ":nine:", true);
-			Mess_Channel.send(embed)
-				.then(function (msg) {
-					msg.react("1%E2%83%A3")
-					setTimeout(function () { msg.react("2%E2%83%A3") }, 1000);
-					setTimeout(function () { if (prop3 != "") msg.react("3%E2%83%A3") }, 2000);
-					setTimeout(function () { if (prop4 != "") msg.react("4%E2%83%A3") }, 3000);
-					setTimeout(function () { if (prop5 != "") msg.react("5%E2%83%A3") }, 4000);
-					setTimeout(function () { if (prop6 != "") msg.react("6%E2%83%A3") }, 5000);
-					setTimeout(function () { if (prop7 != "") msg.react("7%E2%83%A3") }, 6000);
-					setTimeout(function () { if (prop8 != "") msg.react("8%E2%83%A3") }, 7000);
-					setTimeout(function () { if (prop9 != "") msg.react("9%E2%83%A3") }, 8000);
-				});
-
-			break;
-
-		//--------
-		case "kappa":
-			message.reply({ file: __dirname + "/images/Kappahd.png" })/*.then(function (msg) {
-				deleteMyMessage(msg, 600 * 1000);
-			})*/
-			break;
-		//-------
-		case "rekt":
-			if (!args[1]) {
-				message.reply(EmojiRedTickString + " There is nobody to rekt (@ a user to rekt him)").then(function (msg) {
-					deleteMyMessage(msg, 10 * 1000)
-				})
-				return;
-			} else if (message.mentions.users.first() === message.author) {
-				message.reply(EmojiRedTickString + " You can't rekt yourself").then(function (msg) {
-					deleteMyMessage(msg, 10 * 1000)
-				})
-				return;
-			}
-			embed = new Discord.RichEmbed()
-				.setColor("RED")
-				.setAuthor("Rekt command by " + message.author.username, message.author.avatarURL)
-				.setDescription("Wow, " + message.mentions.users.first() + " you got rekt by " + NotifyUser(message.member.id))
-				.setImage("https://media1.tenor.com/images/f0515e416fd1ba95974412c18fd90d46/tenor.gif?itemid=5327720")
-			message.channel.send(embed)
-			break;
-		//-------
-		case "message":
-			if (message.author.id != "145632403946209280" && message.author.id != "268813812281376769" && message.author.id != "308674089873309696") return;
-			if (!args[2]) {
-				message.reply(EmojiRedTickString + "Some arguments are missing").then(function (msg) {
-					deleteMyMessage(msg, 10 * 1000)
-				});
-			}
-			bot.fetchUser(args[1]).catch(() => {
-				message.reply(EmojiRedTickString + " Sorry, can't find this user ! :thinking:").then(msg => {
-					deleteMyMessage(msg, 8 * 1000)
-				})
-			}).then(function (user) {
-				user.send(message.content.slice(prefix.length+args[0].length+args[1].length+2)).catch(() => {
-					message.reply(EmojiRedTickString + " Sorry but i can't DM him.").then(msg => {
-						deleteMyMessage(msg, 8 * 1000)
-					});
-				});
-			});
-			break
-
-		//-------
-		case "welcome":
-			argsCMD = "`" + "help, on, off, set, show, delete" + "`"
-
-			if (!member_Has_MANAGE_GUILD) {
-				message.reply(EmojiRedTickString + " You don't have the permission to do that ! (**MANAGE_SERVER** is needed)")
-				return;
-			}
-
-			if (args[1] === "on") {
-				let activated;
-				await SQL_GetResult(function (err, result) {
-					if (err) console.log("Database error!");
-					else {
-						if (result == undefined) {
-							SQL_Insert_NewServer(message.member)
-							message.reply(":warning: Creating the server in my DB... (redo the command plz)").then(msg => {
-								deleteMyMessage(msg, 12 * 1000)
-							})
-							return;
-						}
-
-						activated = result.welcome_status;
-						console.log(result.welcome_status);
-
-						if (activated == undefined) {
-							SQL_Insert_NewServer(message.member)
-							return false;
-						}
-
-						if (activated === 1) {
-							console.log("Already activated");
-							message.reply(EmojiRedTickString + " The welcome message is already enabled.")
-							return false;
-						} else {
-							console.log("Now Activated");
-							con.query(`UPDATE ${DB_Model} SET welcome_status = true WHERE serverid = '${message.guild.id}'`, (err, results) => {
-								if (err) throw err;
-
-								console.log("welcome_status activated!");
-								message.reply(EmojiGreenTickString + " The welcome message is now activated.")
-								console.log(result)
-							});
-						}
-					}
-				});
-
-			} else if (args[1] === "off") {
-				let activated;
-				await SQL_GetResult(function (err, result) {
-					if (err) console.log("Database error!");
-					else {
-						if (result == undefined) {
-							SQL_Insert_NewServer(message.member)
-							message.reply(":warning: Creating the server in my DB... (redo the command plz)").then(msg => {
-								deleteMyMessage(msg, 12 * 1000)
-							})
-							return;
-						}
-
-						activated = result.welcome_status;
-						console.log(result.welcome_status);
-
-						if (activated === 0) {
-							console.log("Already deactivated");
-							message.reply(EmojiRedTickString + " The welcome message is already deactivated.")
-							return;
-						} else {
-							console.log("Now Activated");
-							con.query(`UPDATE ${DB_Model} SET welcome_status = false WHERE serverid = '${message.guild.id}'`, (err, results) => {
-								if (err) throw err;
-
-								console.log("welcome_status deactivated !");
-								message.reply(EmojiGreenTickString + " The welcome message is now deactivated !")
-								console.log(results[0])
-							});
-						}
-					}
-				});
-
-			} else if (args[1] === "set") {
-				let channel = message.mentions.channels.first();
-				if (!channel) { message.reply("You didn't put any channel in your message (Exemple: `" + prefix + "welcome set #channel Your message`"); return; }
-
-				console.log(args)
-				console.log(args_next)
-				const channelMsg = args_next.substr(args[0].length + 1 + args[1].length + 1 + ("<#" + channel.id + ">").length + 1)
-				console.log("channelmsg: '" + channelMsg + "'")
-
-				if (channelMsg.length === 0) {
-					message.reply("You didn't put a welcome message.")
+				} else if (!Mess_Member.voiceChannel) {
+					message.react("❌").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error play > " + e);
+					})
+					message.reply(current_lang.Music_Not_In_Vocal).then(function (msg) {
+						deleteMyMessage(msg, 16 * 1000);
+					})
+					return;
+				} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
+					message.react("❌").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error play > " + e);
+					})
+					message.reply(current_lang.Music_Should_Not_Deafen).then(function (msg) {
+						deleteMyMessage(msg, 16 * 1000);
+					})
 					return;
 				}
-
-				message.reply("Setting up your welcome message for: " + channel + "\n```\n" + channelMsg + "```")
 
 				try {
-					//const srv = await ${DB_Model}_DB.findOne({ where: { serverid: message.guild.id } })
-					//const welcome_server = await ${DB_Model}_DB.update({ welcome_message: channelMsg, welcome_channel: channel }, { where: { serverid: message.guild.id } })
+					server.playit = true;
 
-					//console.log("SQL_GetResult pour le welcome set" + SQL_GetResult(message).welcome_message)
-					SQL_UpdateChannelMessage(message, channel);
-					SQL_UpdateWelcomeMessage(message, channelMsg)
-					return message.channel.send(`Welcome message in the channel: ${channel} successfully changed.`);
-				}
-				catch (e) {
-					return message.reply("Something went wrong when setting the welcome_message: " + e);
-				}
+					var parsed = URL.parse(args[1]);
+					if (parsed && parsed.host) {
+						// YouTube URL
 
-				//console.log(args[2].split(" ").join(" "))
+						//var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+						/*
+						var match = args[1].match(regExp);
+		
+						if (match && match[2]) {
+							server.annonce_it = false;
+							queue_playlist(match[2], message);
+							return;
+						}
+						*/
 
-			} else if (args[1] === "show") {
-				var msgToSend = [];
-				var show_welcome_channel = "";
-				var show_welcome_message = "";
-				var show_welcome_status;
+						server.annonce_it = true;
+						if (parsed.host.match(/(www\.)?youtube.com|(www\.)?youtu.be/i)) {
 
-				await SQL_GetResult(function (err, result) {
-					if (err) console.log("Database error!");
-					else {
-						if (err) throw err;
+							var regExp = /^.*v=([^#\&\?]*).*/;
+							var match = args[1].match(regExp);
 
-						if (result == undefined) {
-							SQL_Insert_NewServer(message.member)
-							message.reply(":warning: Creating the server in my DB... (redo the command plz)").then(msg => {
-								deleteMyMessage(msg, 12 * 1000)
+							if (match[1]) {//if (match && match[2]) {
+								search_video(message, match[1]);
+								return;
+							} else {
+								message.reply(current_lang.Music_Not_Playlist).then(msg => {
+									deleteMyMessage(msg, 14 * 1000)
+								})
+							}
+							//var test = args[1].match(/^.*v=([^#\&\?]*).*/)
+							/*
+							console.log("TEST DE OUF => " + test[1]);
+	
+							console.log("C'est un lien youtube")
+							console.log("args[1] => " + args[1]);
+	
+							q = args[1]
+	
+							if (q.includes("&t=")) {
+								//console.log("ça donnerait => " + args[1].split("&t="));
+								q.split("&t=").shift();
+							}
+							if (q.includes("&feature=youtu.be")) {
+								q.replace("&feature=youtu.be", "")
+							}
+							if (q.includes("&index=")) {
+								q.split("&index=").shift()
+							}
+							if (q.includes("&list=")) {
+								q.split("&list=").shift()
+							}
+	
+							console.log("q=> " + q);
+							search_video(message, q);
+							*/
+
+
+							return;
+
+						} else if (parsed.host.match(/(www\.)?soundcloud.com/i)) {
+							console.log("C'est du soundcloud")
+							message.reply(current_lang.Music_Soundcloud_Not_Supported).then(function (msg) {
+								deleteMyMessage(msg, 16 * 1000);
 							})
+
 							return;
 						}
 
-						show_welcome_channel = result.welcome_channel;
+					} else {
+						var argsSearch = message.content.split(" ");
 
-						show_welcome_message = result.welcome_message;
+						var q = "";
 
-						show_welcome_status = CheckInfo_ToBooleanEmoji(result.welcome_status)
-
-						if (result.welcome_channel == null) {
-							show_welcome_channel = "`Not defined`"
+						for (var i = 1; i < argsSearch.length; i++) {
+							q += argsSearch[i] + " ";
 						}
-						if (result.welcome_message == null) {
-							show_welcome_message = "`Not defined`"
-						}
-
-
-						msgToSend.push("Welcome channel: " + show_welcome_channel + " \n")
-						msgToSend.push("Welcome message: `" + show_welcome_message + "`\n")
-						msgToSend.push("Welcome is activated: " + show_welcome_status)
-
-						message.channel.send(msgToSend)
-						msgToSend = [];
+						//console.log(argsSearch)
+						//console.log("q => " + q)
+						search_video(message, q);
+						return;
 					}
-				});
-
-			} else if (args[1] === "help") {
-				message.reply(
-					"To configure the welcomer you need to do theres steps:\n\n" +
-					":one: Enable the welcomer via the command: `" + prefix + "welcome on`\n" +
-					":two: Personalize it with the command: `" + prefix + "welcome set #channel Your message`\n" +
-					":notepad_spiral: You can tag the new user in the welcome message when setting up the message : `{user}`\n" +
-					"\nThat's it ! you finally did it ! (easy uh ? :wink:)"
-				)
-				return;
-			} else {
-				message.reply("Use their following arguments: " + argsCMD)
-				argsCMD = "";
-			}
-			break;
-
-		//#endregion
-
-		//Encore d'autres commandes
-		//#region 
-		case "bot-info":
-			var d = new Date(null);
-			d.setSeconds(online_since);
-			var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
-
-			var time = moment.duration(bot.uptime, "milliseconds");
-			console.log(bot.uptime);
-
-			var time_string;
-			if (time.get("days") > 1) {
-				time_string = time.get("days") + " days, " + time.get("hours") + " hours, " + time.get("minutes") + " minutes, " + time.get("s") + " seconds."
-
-			} else if (time.get("hours") > 1) {
-				time_string = time.get("hours") + " hours, " + time.get("minutes") + " minutes, " + time.get("s") + " seconds."
-
-			} else if (time.get("minutes") > 1) {
-				time_string = time.get("minutes") + " minutes, " + time.get("s") + " seconds."
-
-			} else if (time.get("seconds") > 1) {
-				time_string = time.get("s") + " seconds."
-
-			}
 
 
-			console.log(bot_online_since_time)
-			//var bot_online_since_time = moment(d).format("HH:mm:ss DD-MM-YYYY")
-			var bot_online_since_time = time_string
-			var bot_date_created = moment(bot.user.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
+				} catch (error) {
+					console.log("Erreur dans le play, quelque chose ne va pas: " + error)
+				}
 
-			var embedbot_info = new Discord.RichEmbed()
-				.setColor("#FFFFFF")
-				.setAuthor("Bot-Information", bot.user.avatarURL)
-				.setTitle("Created by RisedSky & PLfightX")
-				.addField("I'm developed in Node.js", "I'm using Discord.js libraries", true)
-				.addField("My node version", process.version, true)
-				.addBlankField()
-				.addField("Memory Usage", Math.floor(process.memoryUsage().heapUsed / 1024 / 1024 * 100 / 100) + " / " + Math.floor(process.memoryUsage().heapTotal / 1024 / 1024 * 100 / 100) + " Mb", true)
-				.addField("My version", bot_version, true)
-				.addBlankField()
-				.addField("I am created since", bot_date_created, true)
-				.addField("I am online since", bot_online_since_time, true)
-				.addBlankField()
-				.addField("I am in", bot.guilds.size + " servers", true)
-				.addField("With", bot.users.size + " users", true)
-				//.setFooter("Asked by " + message.author.username + "")
-				.setFooter(AskedBy_EmbedFooter(message.author))
-				.setTimestamp();
-			//.addField("")
-			//liste des bêta-testers
-			Mess_Channel.send(embedbot_info).then(function (msg) {
-				deleteMyMessage(msg, 120 * 1000)
-			})
+				break;
 
-			break;
-		//---------
-		case "server-info":
-			var server_date_created = moment(message.guild.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
-
-			var embedbot_info = new Discord.RichEmbed()
-				.setColor("#FFFFFF")
-				.setAuthor("Server-Information", message.guild.iconURL)
-				.setTitle("Server: '" + message.guild.name + "' | ID: '" + message.guild.id + "'")
-				.addField("Members number", message.guild.memberCount, true)
-				.addField("Channels number", message.guild.channels.size, true)
-				.addBlankField()
-				.addField("Server Region", message.guild.region, true)
-				.addField("Server created since", server_date_created, true)
-				.addBlankField()
-				.addField("Server owner", message.guild.owner + " (" + message.guild.owner.id + ")", true)
-				.addField("Roles", message.guild.roles.size, true)
-				//.setFooter("Asked by " + message.author.username + "")
-				.setFooter(AskedBy_EmbedFooter(message.author))
-				.setTimestamp();
-
-			Mess_Channel.send(embedbot_info).then(function (msg) {
-				deleteMyMessage(msg, 300 * 1000)
-			})
-
-			break;
-		//--------
-		case "user-info":
-			if (!args[1] || !message.mentions.members.first()) {
-				message.reply(EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg) {
-					deleteMyMessage(msg, 10 * 1000)
-				})
-				return;
-			}
-			var infomember = message.mentions.members.first();
-			var infouser = infomember.user;
-			var usercreated_date = moment(infouser.createdTimestamp).format("DD-MM-YYYY HH:mm:ss");
-			var userjoining_date = moment(infomember.joinedTimestamp).format("DD-MM-YYYY HH:mm:ss");
-			var embeduser_info = new Discord.RichEmbed()
-				.setColor(infomember.displayHexColor)
-				.setAuthor(infomember.displayName + " informations", infouser.displayAvatarURL)
-				.setTitle("DiscordTag: " + infouser.tag + " | ID: " + infouser.id)
-				.addBlankField()
-				.addField("**Account created: **", usercreated_date, true)
-				.addField("**Joining date: **", userjoining_date, true)
-				.addBlankField()
-				.addField("**Avatar url:**", infouser.displayAvatarURL)
-				.setFooter(AskedBy_EmbedFooter(message.author))
-				.setTimestamp();
-
-			Mess_Channel.send(embeduser_info).then(function (msg) {
-				deleteMyMessage(msg, 60 * 1000)
-			})
-
-			break;
-		//--------
-		case "verif-perms":
-
-			embed = new Discord.RichEmbed()
-				.setColor("#00FF00")
-				.setAuthor("Permissions checking", bot.user.avatarURL)
-				.setThumbnail(message.author.avatarURL)
-				.setDescription("Looking **my** permission for **<#" + Mess_Channel.id + ">**")
-
-				.addField("SEND_MESSAGES", PermissionCheck(BOT_SEND_MESSAGESPerm), true)
-				.addField("MANAGE_MESSAGES", PermissionCheck(BOT_MANAGE_MESSAGESPerm), true)
-				.addField("ADMINISTRATOR", PermissionCheck(BOT_ADMINISTRATORPerm), true)
-				.addField("USE_EXTERNAL_EMOJIS", PermissionCheck(BOT_USE_EXTERNAL_EMOJISPerm), true)
-
-				.setFooter("Asked by " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
-
-			Mess_Channel.send(embed).then(function (msg) {
-				deleteMyMessage(msg, 25 * 1000);
-			})
-
-			//message.guild.me).hasPermissions("SEND_MESSAGES") && c.type === 'text')
-			//const truc = message.guild.channels.find(c => c.permissionsFor(message.guild.me).hasPermissions("SEND_MESSAGES") && c.type === 'text')
-
-			break;
-		//-------
-		case "staff":
-			try {
-				if (!args[1]) {
-					message.reply(EmojiRedTickString + " There is no text in your message.").then(function (msg) {
+			//----------
+			case "pause":
+				if (!server.dispatcher) {
+					console.log("No dispatcher")
+					message.reply(current_lang.Music_No_Music_Playing).then(msg => {
 						deleteMyMessage(msg, 15 * 1000)
 					});
 					return;
+
+				} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
+					message.reply(current_lang.Music_Not_In_The_Same_Vocal)
+						.then(function (msg) {
+							deleteMyMessage(msg, 12 * 1000);
+						})
+					return;
 				}
 
-				var msgStaff = message.content.substr(6);
-				bot.guilds.forEach(guild => {
-					const staff_commands_channels = guild.channels.find("id", "418847993182289926");
-					if (!staff_commands_channels) return;
-					staff_commands_channels.send(
-						"Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
-						"\nSur le serveur: `" + message.guild.name + "` - ID guild: `" + message.guild.id + "`" +
-						"\n(via la commande `" + prefix + "staff`) \n```" + msgStaff + "```" +
-						"\n------------------------------------------------------------------------------------------"
-					);
+				if (server.dispatcher_paused) {
+					server.dispatcher.resume();
+					server.dispatcher_paused = false;
+					message.reply(`${current_lang.Music_Resume_Success} :play_pause:, :headphones:`).then(msg => {
+						deleteMyMessage(msg, 20 * 1000)
+					})
+				} else {
+					server.dispatcher.pause();
+					server.dispatcher_paused = true;
+					message.reply(`${current_lang.Music_Pause_Success} :stop_button:, :headphones:`).then(msg => {
+						deleteMyMessage(msg, 20 * 1000)
+					})
+				}
+				break;
+			//-------
+			case "search":
+				if (!args[1]) {
+					message.react("❌").catch(e => {
+						if (e.name === "DiscordAPIError") return;
+						console.log("Error search > " + e);
+					})
+					message.reply(current_lang.Music_Need_Music_Title).then(function (msg) {
+						deleteMyMessage(msg, 12 * 1000);
+					})
+					return;
+				}
+				server.playit = false;
+				var argsSearch = message.content.split(" ");
 
-					message.reply("Your message has been sent to my creators :wink: " + EmojiGreenTickString).then(function (msg) {
+				var q = "";
+				for (var i = 1; i < argsSearch.length; i++) {
+					q += argsSearch[i] + " ";
+				}
+				/*console.log(argsSearch);
+				console.log("q => " + q);*/
+				search_video(message, q);
+
+				break;
+			//-------
+			case "skip":
+
+				if (!Mess_Member.voiceChannel) {
+					message.reply(current_lang.Music_Skip_Not_In_Vocal).then(function (msg) {
+						deleteMyMessage(msg, 12 * 1000);
+					})
+					return;
+				} else if (Mess_Member.selfDeaf) { //Si la personne est deafen alors on fait éviter de faire user la bande passante pour rien
+					message.reply(current_lang.Music_Should_Not_Deafen).then(function (msg) {
+						deleteMyMessage(msg, 12 * 1000);
+					})
+					return;
+
+				} else if (!Mess_Member.voiceChannel.name === message.guild.voiceConnection.channel.name) {
+					message.reply(current_lang.Music_Not_In_The_Same_Vocal)
+						.then(function (msg) {
+							deleteMyMessage(msg, 12 * 1000);
+						})
+					return;
+				} else if (!server.queue[1]) {
+					message.reply(current_lang.Music_Skip_No_Music_Found).then(function (msg) {
+						deleteMyMessage(msg, 10 * 1000)
+					})
+					return;
+				}
+				//console.log("User: " + Mess_Member.voicechannel.name + " | " + "Me: " + message.guild.voiceConnection.channel.name)
+
+				console.log(server.dispatcher);
+
+				var video_id = server.queue[1]["id"];
+				var title = server.queue[1]["title"];
+				var user = server.queue[1]["user"];
+
+				/*if (currentlySong === null) {
+					message.reply("No music is actually playing.").then(function (msg) {
+						deleteMyMessage(msg, 10000)
+					})
+					return;
+				}*/
+
+				if (server.dispatcher) {
+					var msg = [];
+					msg.push(`${current_lang.Music_Skip_Success} \n\`${server.now_playing_data["title"]}\` *(${current_lang.Music_Requested_By} ${server.now_playing_data["user"]})* \n\n`);
+					msg.push(`${current_lang.Music_Now_Playing}: \`${title}\` *(${current_lang.current_lang} ${user})*`)
+					message.reply(msg).then(function (msg) {
+						deleteMyMessage(msg, 60 * 1000);
+					})
+					server.dispatcher.end();
+				}
+
+				server.now_playing_data["title"] = title;
+				server.now_playing_data["user"] = user;
+				break;
+			//-------
+			case "stop":
+				//var server = servers[message.guild.id];
+
+				if (message.guild.voiceConnection) {
+					for (var i = server.queue.length - 1; i >= 0; i--) {
+						server.queue.splice(i, 1);
+					}
+					Mess_Channel.send(`${current_lang.Music_Stopped_From}: \`${message.guild.voiceConnection.channel.name}\` :wave:`).then(function (msg) {
+						deleteMyMessage(msg, 20 * 1000);
+					})
+					message.guild.voiceConnection.disconnect();
+				}
+				break;
+			//-------
+			case "queue":
+
+				var argsQueue = message.content.substring(5).split(" ");
+				//var server = servers[message.guild.id];
+				var xQueue = server.queue;
+				//var answer = "";
+
+				try {
+					// CE CODE FONCTIONNE
+					/*if (argsQueue[1] === "list") {
+						Mess_Channel.send("Oui.");
+					}*/
+
+					if (!xQueue[0]) {
+						message.reply(current_lang.Music_Currently_Queue_Empty).then(function (msg) {
+							deleteMyMessage(msg, 20 * 1000);
+						})
+						return;
+					}
+					//console.log("Queue length: " + xQueue.length) //show us how many musics there is
+					let embedQueue = new Discord.RichEmbed()
+						.setColor("#ffa500")
+						.setAuthor(`${current_lang.Music_Queue_List}`, bot.user.avatarURL)
+						.setDescription(`*${current_lang.Music_Here_Queue_List}*`)
+						.setFooter(`${current_lang.Music_Queue_List_Requested_By} ${message.author.username} • ID: ${message.author.id}`)
+						.addBlankField()
+
+					var xQueue_AddedFields = 0;
+
+					for (var i in xQueue) {
+						//console.log(embedQueue.fields.length)
+						if (embedQueue.fields.includes("It's the end of the text")) return;
+
+						if (embedQueue.fields.length <= 22) {
+							xQueue_AddedFields++;
+							embedQueue.addField(`[${i}] » ${xQueue[i]['title']}`, `*${current_lang.Music_Requested_By} ${xQueue[i]['user']}*`)
+						} else {
+							var RemainingNumber = xQueue.length - xQueue_AddedFields
+							embedQueue.addField(`${current_lang.Music_And} ${RemainingNumber} ${current_lang.Music_More}`, `${current_lang.Music_End_Of_Text}`)
+						}
+					}
+
+					embedQueue.addBlankField();
+
+					message.channel.send(embedQueue).then(function (msg) {
+						deleteMyMessage(msg, 180 * 1000);
+					})
+
+				} catch (error) {
+					console.log("Queue command problem: " + error)
+				}
+				break;
+			//----------
+			case "loop":
+				try {
+					if (server.loopit) {
+						server.loopit = false;
+						message.reply(`:ok_hand: ${EmojiGreenTickString} \`${server.queue[0]["title"]}\` ${current_lang.Music_Song_Will_Not_Repeated} :wink:`).then(function (msg) {
+							deleteMyMessage(msg, 10000);
+						})
+					} else {
+						server.loopit = true;
+						message.reply(`:ok_hand: ${EmojiGreenTickString} \`${server.queue[0]["title"]}\` ${current_lang.Music_Song_Will_Be_Repeated} :wink:`).then(function (msg) {
+							deleteMyMessage(msg, 10000);
+						})
+					}
+				} catch (error) {
+					console.log("Loop error: " + error)
+				}
+				break;
+
+			//----------
+			case "status":
+				if (!server.queue[0]) {
+					message.reply(current_lang.Music_Status_No_Music).then(function (msg) {
+						deleteMyMessage(msg, 15 * 1000)
+					})
+					return;
+				}
+				function CheckInfo_ToBooleanEmoji(thing) { if (thing) { return `${current_lang.Music_Status_Yes} ${EmojiGreenTickString}` } else { return `${current_lang.Music_Status_No} ${EmojiRedTickString}` } }
+				var disp_time = moment.duration(server.dispatcher.time, "milliseconds")
+				var time_remainingSec = (server.queue[0]["YouTubeTimeSec"] - disp_time.get("seconds"))
+				/*
+				console.log(server.queue[0]["YouTubeTimeSec"])
+				console.log(disp_time.get("seconds"))
+				console.log(time_remainingSec);
+				*/
+
+				var de = new Date(null);
+				de.setSeconds(time_remainingSec);
+				var TimeRemaining = de.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+
+				try {
+					embedStatus = new Discord.RichEmbed()
+						.setColor("#FFFF00")
+						.setAuthor(current_lang.Music_Status_Status, bot.user.avatarURL)
+						.setDescription(`*${current_lang.Music_Status_Current_Status}*`)
+						.setThumbnail(server.queue[0]["YouTubeThumbnail"]).setURL(server.queue[0]["YouTubeLink"])
+
+						.addField(`${current_lang.Music_Status_Current_Song}: ${server.queue[0]["title"]}`, `*(${current_lang.Music_Requested_By} ${server.queue[0]["user"]})*`)
+						.addBlankField()
+
+						.addField(current_lang.Music_Status_Track_Loop, CheckInfo_ToBooleanEmoji(server.loopit), true)
+						.addField(current_lang.Music_Status_Track_Paused, CheckInfo_ToBooleanEmoji(server.dispatcher_paused), true)
+
+						.addBlankField()
+
+						.addField(current_lang.Music_Status_Uploaded_By, server.queue[0]["YouTubeUploader"], true)
+						.addField(current_lang.Music_Status_Song_Duration, `**${server.queue[0]["YouTubeTime"]}**`, true) //temps
+						.addBlankField(true)
+						.addField(current_lang.Music_Status_Time_Remaining, `**${TimeRemaining}**`, true)
+
+						.addBlankField()
+
+						.addField(current_lang.Music_Status_Views, server.queue[0]["YouTubeViews"], true)
+						.addField(current_lang.Music_Status_Link, `[Click here](${server.queue[0]["YouTubeLink"]})`, true)
+
+						.setFooter(`${current_lang.Music_Status_Requested_By} ${message.author.username} • ID: ${message.author.id}`)
+
+					message.channel.send(embedStatus).then(function (msg) {
+						deleteMyMessage(msg, 120 * 1000);
+					})
+				} catch (error) {
+					console.log("Status command problem: " + error)
+				}
+				break;
+
+			//--------
+			//#endregion
+
+			//Other Commands
+			//#region Other commands
+
+			case "say":
+				const SayMessage = message.content.substr(prefix.length + 3);
+
+				if (member_has_MANAGE_MESSAGES) {
+					Mess_Channel.send(SayMessage).catch(error => {
+						//console.log(error + " -- " + error.name);
+
+						if (error.name == "DiscordAPIError") {
+							return message.reply(current_lang.Command_User_Message_Is_Empty).then(function (msg) {
+								deleteMyMessage(msg, 9 * 1000)
+							})
+						}
+					});
+				} else {
+					message.reply(current_lang.Command_User_Need_Permission_Manage_Messages).then(function (msg) {
+						deleteMyMessage(msg, 10000);
+					})
+				}
+
+				break;
+			//----------
+			case "github":
+				sendDMToUser(message, `${current_lang.Command_Github_Project} : https://github.com/RisedSky/discordPandaJS`)
+
+				break;
+			//----------
+			case "ping":
+				Mess_Channel.send(`:ping_pong: ${current_lang.Command_Bot_My_Ping}: ?`).then(function (newMessage) {
+					newMessage.edit(newMessage.content.replace("?", ((newMessage.createdTimestamp - message.createdTimestamp) / 10) + ' ms'));
+					deleteMyMessage(newMessage, 14 * 1000);
+				});
+				break;
+			//--------
+			case "purge":
+				try {
+
+					var NumberToDelete = message.content.substr(7);
+
+					if (!args[1]) {
+						message.reply(current_lang.Command_Purge_No_Number).then(function (msg) {
+							deleteMyMessage(msg, 6000);
+						})
+
+						return;
+					} else if (!parseInt(NumberToDelete)) {
+						console.log("pas un int")
+						message.reply(current_lang.Command_Purge_Not_Number.replace("{0}", NumberToDelete)).then(msg => {
+							deleteMyMessage(msg, 9 * 1000)
+						})
+						return;
+					}
+
+					if (!BOT_MANAGE_MESSAGESPerm) {
+						message.reply(current_lang.Command_Bot_Need_Permission_Manage_Messages).then(function (msg) {
+							deleteMyMessage(msg, 15 * 1000)
+						});
+						return;
+					} else if (NumberToDelete <= 0) {
+						message.reply(current_lang.Command_Purge_Need_Number).then(function (msg) {
+							deleteMyMessage(msg, 5000);
+						})
+						return;
+
+					} else if (NumberToDelete > 100) {
+						message.reply(current_lang.Command_Purge_Max_100_Message_Delete).then(function (msg) {
+							deleteMyMessage(msg, 6000);
+						})
+
+						return;
+					} else if (!member_has_MANAGE_MESSAGES) {
+						message.reply(current_lang.Command_User_Need_Permission_Manage_Messages).then(function (msg) {
+							deleteMyMessage(msg, 7000);
+						})
+
+						return;
+					}
+
+					var nmbr = 0;
+					var nmbrdeleted = 0;
+					setTimeout(() => {
+						var allMsgs = message.channel.fetchMessages({ limit: NumberToDelete })
+							.then(async messages => {
+								let msg = messages.array()
+								NumberToDelete = messages.size;
+								console.log("Number to delete: " + NumberToDelete);
+								Mess_Channel.send(String(current_lang.Command_Purge_X_Messages).replace("{0}", NumberToDelete)).then(msgdeleted => {
+
+									var IntervalDelete = setInterval(DeleteCollectionMessage, 1250)
+
+									function DeleteCollectionMessage() {
+										try {
+											if (nmbrdeleted == NumberToDelete) {
+												msgdeleted.edit(String(current_lang.Command_Purged_X_Messages).replace("{0}", nmbrdeleted).replace("{1}", NumberToDelete))
+												deleteMyMessage(msgdeleted, 8 * 1000)
+												return clearInterval(IntervalDelete)
+											}
+											if (time == undefined || time == null) time = 750;
+											if (!message.deletable) return
+											if (message.pinned) return;
+
+											if (!msg || msg == undefined || msg == null) {
+
+												return clearInterval(IntervalDelete)
+											}
+
+											let MsgToDelete = msg.shift()
+											console.log(MsgToDelete)
+											if (MsgToDelete == null || MsgToDelete == undefined) {
+												return clearInterval(IntervalDelete)
+											}
+											nmbrdeleted++;
+											msgdeleted.edit(String(current_lang.Command_Purge_Deleted_X_Messages).replace("{0}", nmbrdeleted))
+											MsgToDelete.delete(time)
+										} catch (error) {
+											console.log(error);
+
+										}
+									}
+									/*messages.forEach(mess => {
+										nmbr++;
+					
+										console.log(nmbr + " > " + mess.content)
+										if (mess.pinned) return;
+										if (!mess.deletable) return;
+										DeleteTheMessage(mess, 3000)
+										nmbrdeleted++;
+										msgdeleted.edit("Deleted `" + nmbrdeleted + "` message(s) ! :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
+										mess.delete().then(t => {
+											//console.log(t.content)
+											if (nmbrdeleted == NumberToDelete) {
+												console.log("1> fini !")
+												msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
+					
+												setTimeout(() => {
+													nmbrdeleted = 0;
+													NumberToDelete = 0;
+													nmbr = 0;
+													messages.clear();
+												}, 6000);
+												deleteMyMessage(msgdeleted, 13 * 1000)
+											}
+										})
+					
+									})*/
+
+								})
+							});
+					}, 3500);
+				} catch (error) {
+					console.log("Purge command problem: " + error)
+				}
+				break;
+			//----------
+			case "restart":
+				if (message.author.id === "145632403946209280" || message.author.id === "268813812281376769") {
+					Mess_Channel.send("Restarting ...");
+					bot.user.setStatus("invisible");
+					bot.disconnect;
+					console.log("Disconnected")
+					setTimeout(function () {
+						bot.login(BOT_TOKEN);
+						console.log("Reconnected")
+						bot.user.setStatus("online")
+					}, 5000);
+				}
+				break;
+			//-------
+			case "random-number":
+				if (!args[1]) {
+					Mess.reply(current_lang.Command_Random_Number_No_First_Number)
+					return;
+				} else if (!args[2]) {
+					Mess.reply(current_lang.Command_Random_Number_No_Second_Number)
+					return;
+				}
+
+				if (isNaN(args[1]) == true) {
+					if (isNaN(args[2]) == true) {
+						Mess.reply(current_lang.Command_Random_Number_No_Number)
+						return;
+					} else {
+						Mess.reply(current_lang.Command_Random_Number_No_Minimum_Value)
+						return;
+					}
+				}
+				if (isNaN(args[2]) == true) {
+					Mess.reply(current_lang.Command_Random_Number_No_Maximum_Value)
+					return;
+				}
+				args[1] = parseInt(args[1]);
+				args[2] = parseInt(args[2]);
+
+				try {
+
+					var argsQueue = message.content.substring(13).split(" ");
+					var argMini = args[1];
+					var argMaxi = args[2];
+
+					//Debug
+					console.log("1: " + argMini)
+					console.log("2: " + argMaxi)
+
+					let random_number_min = Math.ceil(argMini);
+					let random_number_max = Math.floor(argMaxi);
+
+					let random_number_Calcul = Math.floor(Math.random() * (random_number_max - random_number_min + 1)) + random_number_min;
+
+					message.reply(String(current_lang.Command_Random_Number_Result).replace("{0}", random_number_min).replace("{1}", random_number_max).replace("{2}", random_number_Calcul)).then(function (msg) {
+						deleteMyMessage(msg, 600 * 1000)
+					});
+				} catch (error) {
+					console.log("Erreur #367: " + error)
+					//message.reply("You failed something... ex: " + prefix + "randomnumber 10 20");
+				}
+				break;
+			//--------
+			case "random-member":
+				var nbMemb = message.guild.memberCount;
+				var memb_list = message.guild.members;
+				var rand_member = memb_list.random();
+				var embed = new Discord.RichEmbed()
+					.setColor("RED")
+					.setAuthor(`${current_lang.Command_Random_Member_By} ${message.author.username}`, message.author.avatarURL)
+					.setDescription(String(current_lang.Command_Random_Member_User_Chosen).replace("{0}", rand_member).replace("{1}", nbMemb))
+				message.channel.send(embed)
+				break;
+			//--------
+			case "poll":
+				DeleteUserMessage(false)
+				var cont = message.content
+				b1 = cont.indexOf(" | ");
+				b2 = cont.indexOf(" | ", b1 + 3);
+				b3 = cont.indexOf(" | ", b2 + 3);
+				if (b3 == -1) b3 = cont.length;
+				b4 = cont.indexOf(" | ", b3 + 3);
+				if (b4 == -1) b4 = cont.length;
+				b5 = cont.indexOf(" | ", b4 + 3);
+				if (b5 == -1) b5 = cont.length;
+				b6 = cont.indexOf(" | ", b5 + 3);
+				if (b6 == -1) b6 = cont.length;
+				b7 = cont.indexOf(" | ", b6 + 3);
+				if (b7 == -1) b7 = cont.length;
+				b8 = cont.indexOf(" | ", b7 + 3);
+				if (b8 == -1) b8 = cont.length;
+				b9 = cont.indexOf(" | ", b8 + 3);
+				if (b9 == -1) b9 = cont.length;
+
+				var question = cont.substr(5, b1 - 5);
+				prop1 = cont.substr(b1 + 3, b2 - b1 - 3);
+				prop2 = cont.substr(b2 + 3, b3 - b2 - 3);
+				prop3 = cont.substr(b3 + 3, b4 - b3 - 3);
+				prop4 = cont.substr(b4 + 3, b5 - b4 - 3);
+				prop5 = cont.substr(b5 + 3, b6 - b5 - 3);
+				prop6 = cont.substr(b6 + 3, b7 - b6 - 3);
+				prop7 = cont.substr(b7 + 3, b8 - b7 - 3);
+				prop8 = cont.substr(b8 + 3, b9 - b8 - 3);
+				prop9 = cont.substr(b9 + 3);
+
+				if (question == "" || prop1 == "" || prop2 == "") {
+					message.reply(String(current_lang.Command_Poll_No_Question_Or_Answer.replace("{0}", prefix))).then(msg => {
 						deleteMyMessage(msg, 13 * 1000)
 					})
-				})
+					break;
+				}
 
-			} catch (error) {
-				console.log(error)
-			}
-			break;
+				var embed = new Discord.RichEmbed()
+					.setColor("DARK_PURPLE")
+					.setAuthor(`${current_lang.Command_Poll_By} ${message.author.username}`, message.author.displayAvatarURL)
+					.setTitle(question)
+					.addField(prop1, ":one:", true)
+					.addField(prop2, ":two:", true)
+					.setFooter(AskedBy_EmbedFooter(message.author))
+					.setTimestamp();
 
-		//--------
-		case "servers":
-			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
-				var ServerListArray = bot.guilds.array();
-				var ServerListString = "";
-				ServerListString = "I am on " + bot.guilds.size + " servers\n\n"
-				for (var i in ServerListArray) {
-					ServerListString += `${i} » Server Name: ${ServerListArray[i].name} - Server ID: ${ServerListArray[i].id}\n| Containing: ${ServerListArray[i].memberCount} members\n| Server Owner: ${ServerListArray[i].owner} - Owner ID: ${ServerListArray[i].ownerID}\n\n`
+				if (prop3 != "") embed.addField(prop3, ":three:", true);
+				if (prop4 != "") embed.addField(prop4, ":four:", true);
+				if (prop5 != "") embed.addField(prop5, ":five:", true);
+				if (prop6 != "") embed.addField(prop6, ":six:", true);
+				if (prop7 != "") embed.addField(prop7, ":seven:", true);
+				if (prop8 != "") embed.addField(prop8, ":eight:", true);
+				if (prop9 != "") embed.addField(prop9, ":nine:", true);
+				Mess_Channel.send(embed)
+					.then(function (msg) {
+						msg.react("1%E2%83%A3")
+						setTimeout(function () { msg.react("2%E2%83%A3") }, 1000);
+						setTimeout(function () { if (prop3 != "") msg.react("3%E2%83%A3") }, 2000);
+						setTimeout(function () { if (prop4 != "") msg.react("4%E2%83%A3") }, 3000);
+						setTimeout(function () { if (prop5 != "") msg.react("5%E2%83%A3") }, 4000);
+						setTimeout(function () { if (prop6 != "") msg.react("6%E2%83%A3") }, 5000);
+						setTimeout(function () { if (prop7 != "") msg.react("7%E2%83%A3") }, 6000);
+						setTimeout(function () { if (prop8 != "") msg.react("8%E2%83%A3") }, 7000);
+						setTimeout(function () { if (prop9 != "") msg.react("9%E2%83%A3") }, 8000);
+					});
+
+				break;
+
+			//--------
+			case "kappa":
+				message.reply({ file: __dirname + "/images/kappa.png" })/*.then(function (msg) {
+				deleteMyMessage(msg, 600 * 1000);
+			})*/
+				break;
+			//-------
+			case "rekt":
+				if (!args[1]) {
+					message.reply(current_lang.Command_Rekt_Nobody_To_Rekt).then(function (msg) {
+						deleteMyMessage(msg, 10 * 1000)
+					})
+					return;
+				} else if (message.mentions.users.first() === message.author) {
+					message.reply(current_lang.Command_Rekt_Cant_Rekt_Yourself).then(function (msg) {
+						deleteMyMessage(msg, 10 * 1000)
+					})
+					return;
+				}
+				var embed = new Discord.RichEmbed()
+					.setColor("RED")
+					.setAuthor(`${Command_Rekt_By} ${message.author.username}`, message.author.avatarURL)
+					.setDescription(String(current_lang.Command_Rekt_Got_Rekt_By).replace("{0}", message.mentions.users.first()).replace("{1}", NotifyUser(message.member.id)))
+					.setImage("https://media1.tenor.com/images/f0515e416fd1ba95974412c18fd90d46/tenor.gif?itemid=5327720")
+				message.channel.send(embed)
+				break;
+			//-------
+			case "message":
+				if (message.author.id != "145632403946209280" && message.author.id != "268813812281376769" && message.author.id != "308674089873309696") return;
+				if (!args[2]) {
+					message.reply(EmojiRedTickString + "Some arguments are missing").then(function (msg) {
+						deleteMyMessage(msg, 10 * 1000)
+					});
+				}
+				bot.fetchUser(args[1]).catch(() => {
+					message.reply(EmojiRedTickString + " Sorry, can't find this user ! :thinking:").then(msg => {
+						deleteMyMessage(msg, 8 * 1000)
+					})
+				}).then(function (user) {
+					var message_to_send = message.content.slice(prefix.length + args[0].length + args[1].length + 2)
+					user.send(message_to_send)
+						.then(() => {
+							Mess_Channel.send(`${message.author.tag} Sended the message to ${user.tag} - ${NotifyUser(user.id)} \n\`\`\`${message_to_send}\`\`\` `)
+						})
+						.catch(() => {
+							message.reply(EmojiRedTickString + " Sorry but i can't DM him.").then(msg => {
+								deleteMyMessage(msg, 8 * 1000)
+							});
+						});
+
+				});
+				break
+
+			//-------
+			case "welcome":
+				let argsCMD = "`" + "help, on, off, set, show, delete" + "`"
+
+				if (!member_Has_MANAGE_GUILD) {
+					message.reply(current_lang.Command_Welcome_User_Dont_Have_Permission)
+					return;
+				}
+
+				if (args[1] === "on") {
+					let activated;
+					SQL_GetResult(function (err, result) {
+						if (err) console.log("Database error!");
+						else {
+							if (result == undefined) {
+								SQL_Insert_NewServer(message.member)
+								message.reply(current_lang.Command_Welcome_Create_Server_To_Database).then(msg => {
+									deleteMyMessage(msg, 12 * 1000)
+								})
+								return;
+							}
+
+							activated = result.welcome_status;
+							console.log(result.welcome_status);
+
+							if (activated == undefined) {
+								SQL_Insert_NewServer(message.member)
+								return false;
+							}
+
+							if (activated === 1) {
+								console.log("Already activated");
+								message.reply(current_lang.Command_Welcome_Already_Activated)
+								return false;
+							} else {
+								console.log("Now Activated");
+								con.query(`UPDATE ${DB_Model} SET welcome_status = true WHERE serverid = '${message.guild.id}'`, (err, results) => {
+									if (err) throw err;
+
+									console.log("welcome_status activated!");
+									message.reply(current_lang.Command_Welcome_Now_Activated)
+									console.log(result)
+								});
+							}
+						}
+					});
+
+				} else if (args[1] === "off") {
+					let activated;
+					SQL_GetResult(function (err, result) {
+						if (err) console.log("Database error!");
+						else {
+							if (result == undefined) {
+								SQL_Insert_NewServer(message.member)
+								message.reply(current_lang.Command_Welcome_Create_Server_To_Database).then(msg => {
+									deleteMyMessage(msg, 12 * 1000)
+								})
+								return;
+							}
+
+							activated = result.welcome_status;
+							console.log(result.welcome_status);
+
+							if (activated === 0) {
+								console.log("Already deactivated");
+								message.reply(current_lang.Command_Welcome_Already_Deactivated)
+								return;
+							} else {
+								console.log("Now Activated");
+								con.query(`UPDATE ${DB_Model} SET welcome_status = false WHERE serverid = '${message.guild.id}'`, (err, results) => {
+									if (err) throw err;
+
+									console.log("welcome_status deactivated !");
+									message.reply(current_lang.Command_Welcome_Now_Deactivated)
+									console.log(results[0])
+								});
+							}
+						}
+					});
+
+				} else if (args[1] === "set") {
+					let channel = message.mentions.channels.first();
+					if (!channel) { message.reply(String(current_lang.Command_Welcome_No_Channel_In_Message).replace("{0}", prefix)); return; }
+
+					console.log(args)
+					console.log(args_next)
+					const channelMsg = args_next.substr(args[0].length + 1 + args[1].length + 1 + ("<#" + channel.id + ">").length + 1)
+					console.log("channelmsg: '" + channelMsg + "'")
+
+					if (channelMsg.length === 0) {
+						message.reply(current_lang.Command_Welcome_No_Welcome_Channel_In_Message)
+						return;
+					}
+
+					message.reply(`${current_lang.Command_Welcome_Setting_Up_Your_Welcome_Message} ${channel} \n\`\`\`\n ${channelMsg} \`\`\` `)
+
+					try {
+						//const srv = await ${DB_Model}_DB.findOne({ where: { serverid: message.guild.id } })
+						//const welcome_server = await ${DB_Model}_DB.update({ welcome_message: channelMsg, welcome_channel: channel }, { where: { serverid: message.guild.id } })
+
+						//console.log("SQL_GetResult pour le welcome set" + SQL_GetResult(message).welcome_message)
+						SQL_UpdateChannelMessage(message, channel);
+						SQL_UpdateWelcomeMessage(message, channelMsg)
+						return message.channel.send(String(current_lang.Command_Welcome_Message_In_Channel_Changed).replace("{0}", channel));
+					}
+					catch (e) {
+						return message.reply(`${current_lang.Command_Welcome_Error_On_Setting_Welcome_Message} ${e}`);
+					}
+
+					//console.log(args[2].split(" ").join(" "))
+
+				} else if (args[1] === "show") {
+					var msgToSend = [];
+					var show_welcome_channel = "";
+					var show_welcome_message = "";
+					var show_welcome_status;
+
+					SQL_GetResult(function (err, result) {
+						if (err) console.log("Database error!");
+						else {
+							if (err) throw err;
+
+							if (result == undefined) {
+								SQL_Insert_NewServer(message.member)
+								message.reply(current_lang.Command_Welcome_Create_Server_To_Database).then(msg => {
+									deleteMyMessage(msg, 12 * 1000)
+								})
+								return;
+							}
+
+							show_welcome_channel = result.welcome_channel;
+
+							show_welcome_message = result.welcome_message;
+
+							show_welcome_status = CheckInfo_ToBooleanEmoji(result.welcome_status)
+
+							if (result.welcome_channel == null) {
+								show_welcome_channel = "`Not defined`"
+							}
+							if (result.welcome_message == null) {
+								show_welcome_message = "`Not defined`"
+							}
+
+
+							msgToSend.push(String(current_lang.Command_Welcome_Welcome_Channel).replace("{0}", show_welcome_channel))
+							msgToSend.push(String(current_lang.Command_Welcome_Welcome_Message).replace("{0}", show_welcome_message))
+							msgToSend.push(String(current_lang.Command_Welcome_Welcome_Status).replace("{0}", show_welcome_status))
+
+							message.channel.send(msgToSend)
+							msgToSend = [];
+						}
+					});
+
+				} else if (args[1] === "help") {
+					message.reply(
+						current_lang.Command_Welcome_Help_Line1 +
+						String(current_lang.Command_Welcome_Help_Line2).replace("{0}", prefix) +
+						String(current_lang.Command_Welcome_Help_Line3).replace("{0}", prefix) +
+						current_lang.Command_Welcome_Help_Line4 +
+						current_lang.Command_Welcome_Help_Line5
+					)
+					return;
+				} else {
+					message.reply(`${current_lang.Command_Welcome_User_Their_Args} ${argsCMD}`)
+					argsCMD = "";
+				}
+				break;
+
+			//#endregion
+
+			//Encore d'autres commandes
+			//#region
+			case "bot-info":
+				var d = new Date(null);
+				d.setSeconds(online_since);
+				var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
+
+				var time = moment.duration(bot.uptime, "milliseconds");
+				console.log(bot.uptime);
+
+				var time_string;
+				if (time.get("days") > 1) {
+					time_string = time.get("days") + " days, " + time.get("hours") + " hours, " + time.get("minutes") + " minutes, " + time.get("s") + " seconds."
+
+				} else if (time.get("hours") > 1) {
+					time_string = time.get("hours") + " hours, " + time.get("minutes") + " minutes, " + time.get("s") + " seconds."
+
+				} else if (time.get("minutes") > 1) {
+					time_string = time.get("minutes") + " minutes, " + time.get("s") + " seconds."
+
+				} else if (time.get("seconds") > 1) {
+					time_string = time.get("s") + " seconds."
 
 				}
-				message.author.send(ServerListString, { split: true }).then(msg => {
-					deleteMyMessage(msg, 600 * 1000);
-					ServerListString.length = 0;
-					ServerListString = "";
+
+
+				console.log(bot_online_since_time)
+				//var bot_online_since_time = moment(d).format("HH:mm:ss DD-MM-YYYY")
+				var bot_online_since_time = time_string
+				var bot_date_created = moment(bot.user.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
+
+				var embedbot_info = new Discord.RichEmbed()
+					.setColor("#FFFFFF")
+					.setAuthor("Bot-Information", bot.user.avatarURL)
+					.setTitle("Created by RisedSky & PLfightX")
+					.addField("I'm developed in Node.js", "I'm using Discord.js libraries", true)
+					.addField("My node version", process.version, true)
+					.addBlankField()
+					.addField("Memory Usage", Math.floor(process.memoryUsage().heapUsed / 1024 / 1024 * 100 / 100) + " / " + Math.floor(process.memoryUsage().heapTotal / 1024 / 1024 * 100 / 100) + " Mb", true)
+					.addField("My version", bot_version, true)
+					.addBlankField()
+					.addField("I am created since", bot_date_created, true)
+					.addField("I am online since", bot_online_since_time, true)
+					.addBlankField()
+					.addField("I am in", bot.guilds.size + " servers", true)
+					.addField("With", bot.users.size + " users", true)
+					//.setFooter("Asked by " + message.author.username + "")
+					.setFooter(AskedBy_EmbedFooter(message.author))
+					.setTimestamp();
+				//.addField("")
+				//liste des bêta-testers
+				Mess_Channel.send(embedbot_info).then(function (msg) {
+					deleteMyMessage(msg, 300 * 1000)
 				})
-			}
-			break;
 
-		//-------
-		case "invite":
-			try {
-				message.author.createDM();
-				message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
-				message.author.send("And here is the link of my official discord server: " + Server_Link)
+				break;
+			//---------
+			case "server-info":
+				var server_date_created = moment(message.guild.createdTimestamp).format("HH:mm:ss DD-MM-YYYY");
 
-			} catch (error) {
-				message.reply("Your DM are closed. I can't DM you :worried: ").then(function (msg) {
-					deleteMyMessage(msg, 15 * 1000);
+				var embedbot_info = new Discord.RichEmbed()
+					.setColor("#FFFFFF")
+					.setAuthor("Server-Information", message.guild.iconURL)
+					.setTitle("Server: '" + message.guild.name + "' | ID: '" + message.guild.id + "'")
+					.addField("Members number", message.guild.memberCount, true)
+					.addField("Channels number", message.guild.channels.size, true)
+					.addBlankField()
+					.addField("Server Region", message.guild.region, true)
+					.addField("Server created since", server_date_created, true)
+					.addBlankField()
+					.addField("Server owner", message.guild.owner + " (" + message.guild.owner.id + ")", true)
+					.addField("Roles", message.guild.roles.size, true)
+					//.setFooter("Asked by " + message.author.username + "")
+					.setFooter(AskedBy_EmbedFooter(message.author))
+					.setTimestamp();
+
+				Mess_Channel.send(embedbot_info).then(function (msg) {
+					deleteMyMessage(msg, 300 * 1000)
 				})
-				console.log("Invite error: " + error + " | User: " + message.author.username)
-			}
 
-			break;
-		//-------
-		case "help":
-
-			var help_msgToSend_summary = ("```fix\n" +
-				"# » Created by RisedSky & PLfightX" + "\n" +
-				"# » And obviously helped by the bêta - testers.```" + "\n" +
-				"```dsconfig\n" +
-				"The prefix for the server " + message.guild.name + " is '" + prefix + "'\n" +
-				"```\n")
-
-			var help_msgToSend_cmds = (
-				"```md\n" +
-				"<» Music Commands>\n\n" +
-				"#» " + prefix + "play [title / music's link]\nThe bot will join your channel and will play your music" + "\n\n" +
-				"#» " + prefix + "play-list [playlist link]\nThe bot will join your channel and will play the playlist" + "\n\n" +
-				"#» " + prefix + "pause\nThe bot pause the music (resume & pause included in)" + "\n\n" +
-				"#» " + prefix + "search [title]\nSearch a music link (with embed info like " + prefix + "play)" + "\n\n" +
-				"#» " + prefix + "skip\nThe bot will skip the current music" + "\n\n" +
-				"#» " + prefix + "stop\nClear the queue and stop the music" + "\n\n" +
-				"#» " + prefix + "queue\nShow the queue list" + "\n\n" +
-				"#» " + prefix + "loop\nWill loop the currently song forever" + "\n\n" +
-				"#» " + prefix + "status\nShow the status of the current song !" +
-				"```" +
-				"\n\n" + "```md\n" +
-				"<» Other Commands>\n\n\n" +
-				"#» " + prefix + "say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'" + "\n\n" +
-				"#» " + prefix + "github\nSend you my GitHub project in your DMs" + "\n\n" +
-				"#» " + prefix + "ping\nShow the ping of the bot" + "\n\n" +
-				"#» " + prefix + "purge [number]\nClear a selected number of messages (Max 100)" + "\n\n" +
-				//prefix + "restart", "Redémarre le bot **(Expérimental**"
-				"#» " + prefix + "random-number [min_number] [max_number]\nGenerate a number between one and an another" + "\n\n" +
-				"#» " + prefix + "random-member\nRandomly choose one member of the server" + "\n\n" +
-				"#» " + prefix + "poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers" + "\n\n" +
-				"#» " + prefix + "kappa\nSend a kappa image" + "\n\n" +
-				"#» " + prefix + "rekt [@someone]\nRekt one of your friends" + "\n\n" +
-				"#» [NEW COMMAND!!] " + prefix + "welcome\nSet a welcome message to your incredible server !" +
-
-				"\n" + "```" +
-
-				"\n" +
-				"```md\n" +
-				"#» " + prefix + "bot-info\nSend you the information of the bot" + "\n\n" +
-				"#» " + prefix + "server-info\nSend a lot of information about the currently server" + "\n\n" +
-				"#» " + prefix + "user-info [@someone]\nGet secret informations about someone" + "\n\n" +
-				"#» " + prefix + "verif-perms\nTell you about the perms I have in this channel" + "\n\n" +
-				"#» " + prefix + "staff\nSend a message to my creators" + "\n\n" +
-				"#» " + prefix + "invite\nGive you the invite link to add me !" + "\n\n" +
-				"#» " + prefix + "help\nShow all the bot commands (This message ;-) )!" +
-				"\n" +
-				"```" + "\n\n\n")
-
-			var help_msgToSend_channelTags = (
-
-				"```md\n" +
-				"<» Channel Tags>\n\n\n" +
-				"#» To use channel tags, just add the tags in a channel topic, it will be detected instantly\n\n" +
-				"#» <nocmds>\nAvoid the use of commands in the channel \n\n" +
-				"#» <ideas>\nWith this tag, the bot will add a upvote / downvote reaction to every message \n \n" +
-				"#» <autopurge:TIME:>\nDelete every message in the channel after TIME seconds" +
-				"```")
-
-			/*
-			Mess_Channel.send(help_msgToSend).then(function (msg) {
-				deleteMyMessage(msg, 120 * 1000);
-			})
-			*/
-
-			sendDMToUser(message, help_msgToSend_summary)
-			sendDMToUser(message, help_msgToSend_cmds)
-			sendDMToUser(message, help_msgToSend_channelTags)
-
-			/*
-			try {
-				message.author.createDM();
-				message.author.send(help_msgToSend, { split: true })
-					.then(function (msg) {
-						deleteMyMessage(msg, 300 * 1000);
+				break;
+			//--------
+			case "user-info":
+				if (!args[1] || !message.mentions.members.first()) {
+					message.reply(EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg) {
+						deleteMyMessage(msg, 10 * 1000)
 					})
-					.catch(() => {
-						message.reply(EmojiRedTickString + " Sorry but i can't DM you.").then(msg => {
-							deleteMyMessage(msg, 8 * 1000)
+					return;
+				}
+				var infomember = message.mentions.members.first();
+				var infouser = infomember.user;
+				var usercreated_date = moment(infouser.createdTimestamp).format("DD-MM-YYYY HH:mm:ss");
+				var userjoining_date = moment(infomember.joinedTimestamp).format("DD-MM-YYYY HH:mm:ss");
+				var embeduser_info = new Discord.RichEmbed()
+					.setColor(infomember.displayHexColor)
+					.setAuthor(infomember.displayName + " informations", infouser.displayAvatarURL)
+					.setTitle("DiscordTag: " + infouser.tag + " | ID: " + infouser.id)
+					.addBlankField()
+					.addField("**Account created: **", usercreated_date, true)
+					.addField("**Joining date: **", userjoining_date, true)
+					.addBlankField()
+					.addField("**Avatar url:**", infouser.displayAvatarURL)
+					.setFooter(AskedBy_EmbedFooter(message.author))
+					.setTimestamp();
+
+				Mess_Channel.send(embeduser_info).then(function (msg) {
+					deleteMyMessage(msg, 300 * 1000)
+				})
+
+				break;
+			//--------
+			case "verif-perms":
+
+				var embed = new Discord.RichEmbed()
+					.setColor("#00FF00")
+					.setAuthor("Permissions checking", bot.user.avatarURL)
+					.setThumbnail(message.author.avatarURL)
+					.setDescription("Looking **my** permission for **<#" + Mess_Channel.id + ">**")
+
+					.addField("SEND_MESSAGES", PermissionCheck(BOT_SEND_MESSAGESPerm), true)
+					.addField("MANAGE_MESSAGES", PermissionCheck(BOT_MANAGE_MESSAGESPerm), true)
+					.addField("ADMINISTRATOR", PermissionCheck(BOT_ADMINISTRATORPerm), true)
+					.addField("USE_EXTERNAL_EMOJIS", PermissionCheck(BOT_USE_EXTERNAL_EMOJISPerm), true)
+
+					.setFooter("Asked by " + Mess_Member.displayName + " • ID: " + Mess_Member.id);
+
+				Mess_Channel.send(embed).then(function (msg) {
+					deleteMyMessage(msg, 25 * 1000);
+				})
+
+				//message.guild.me).hasPermissions("SEND_MESSAGES") && c.type === 'text')
+				//const truc = message.guild.channels.find(c => c.permissionsFor(message.guild.me).hasPermissions("SEND_MESSAGES") && c.type === 'text')
+
+				break;
+			//-------
+			case "staff":
+				try {
+					if (!args[1]) {
+						message.reply(current_lang.Command_Staff_No_Message).then(function (msg) {
+							deleteMyMessage(msg, 15 * 1000)
+						});
+						return;
+					}
+
+					var msgStaff = message.content.substr(6);
+					bot.guilds.forEach(guild => {
+						const staff_commands_channels = guild.channels.find("id", "418847993182289926");
+						if (!staff_commands_channels) return;
+						staff_commands_channels.send(
+							"Message de: `" + message.author.tag + "` - ID: `" + message.author.id + "`" +
+							"\nSur le serveur: `" + message.guild.name + "` - ID guild: `" + message.guild.id + "`" +
+							"\n(via la commande `" + prefix + "staff`) \n```" + msgStaff + "```" +
+							"\n------------------------------------------------------------------------------------------"
+						);
+
+						message.reply(current_lang.Command_Staff_Sended_Message).then(function (msg) {
+							deleteMyMessage(msg, 13 * 1000)
 						})
-					});
-			} catch (error) {
-				console.log("Help error: " + error);
-			}*/
-
-			break;
-		//----------
-		default:
-
-			clearInterval(deleteUserMsg);
-			try {
-				setTimeout(() => {
-					message.react("❓").catch(e => {
-						if (e.name === "DiscordAPIError") return;
-						console.log("Error default > " + e);
 					})
-					message.react(EmojiThonkong).catch(e => {
-						if (e.name === "DiscordAPIError") return;
-						console.log("Error default > " + e);
+
+				} catch (error) {
+					console.log(error)
+				}
+				break;
+
+			//--------
+			case "servers":
+				if (message.author.id === "145632403946209280" || message.author.id === "268813812281376769") {
+					var ServerListArray = bot.guilds.array();
+					var ServerListString = "";
+					ServerListString = "I am on " + bot.guilds.size + " servers\n\n"
+					for (var i in ServerListArray) {
+						ServerListString += `${i} » Server Name: ${ServerListArray[i].name} - Server ID: ${ServerListArray[i].id}\n| Containing: ${ServerListArray[i].memberCount} members\n| Server Owner: ${ServerListArray[i].owner} - Owner ID: ${ServerListArray[i].ownerID}\n\n`
+
+					}
+					message.author.send(ServerListString, { split: true }).then(msg => {
+						deleteMyMessage(msg, 600 * 1000);
+						ServerListString.length = 0;
+						ServerListString = "";
 					})
-				}, 250);
-				setTimeout(() => {
-					message.clearReactions().catch(e => {
-						if (e.name === "DiscordAPIError") return;
-						console.log("Error default > " + e);
+				}
+				break;
+
+			//-------
+			case "invite":
+				try {
+					message.author.createDM();
+					message.author.send("Hello, thanks for inviting me to your server\n\nHere is my link: https://discordapp.com/oauth2/authorize?&client_id=" + bot.user.id + "&scope=bot&permissions=8");
+					message.author.send("And here is the link of my official discord server: " + Server_Link)
+
+				} catch (error) {
+					message.reply("Your DM are closed. I can't DM you :worried: ").then(function (msg) {
+						deleteMyMessage(msg, 15 * 1000);
 					})
-				}, 5 * 1000);
-			} catch (error) {
-				console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
-			}
-			break;
+					console.log("Invite error: " + error + " | User: " + message.author.username)
+				}
 
-		//#endregion
+				break;
+			//-------
+			case "credits":
+				var embed_credits = new Discord.RichEmbed()
+					.setAuthor(bot.user.username, bot.user.avatarURL)
+					.setDescription(
+						"A big thanks to:\n" +
+						"Amoky#2264 & Pyrothec06#1012 for the french translation\n"+
+						"Showehanle2000#9772 for the russian translation\n"+
+						"\nSpecial thanks: \n"+
+						"Sloper39#9509, Tard0sTV#8871 for being so active in our server !"
+					)
+				Mess_Channel.send(embed_credits)
+				break;
+			//-------
+			case "help":
 
-	}
+				var help_msgToSend_summary = ("```fix\n" +
+					"# » Created by RisedSky & PLfightX" + "\n" +
+					"# » And obviously helped by the bêta - testers.```" + "\n" +
+					"```dsconfig\n" +
+					"The prefix for the server " + message.guild.name + " is '" + prefix + "'\n" +
+					"```\n")
 
+				var help_msgToSend_cmds = (
+					"```md\n" +
+					"<» Music Commands>\n\n" +
+					`#» ${prefix}play [title / music's link]\nThe bot will join your channel and will play your music\n\n` +
+					`#» ${prefix}play-list [playlist link]\nThe bot will join your channel and will play the playlist\n\n` +
+					`#» ${prefix}pause\nThe bot pause the music (resume & pause included in)\n\n` +
+					`#» ${prefix}search [title]\nSearch a music link (with embed info like ${prefix}play)\n\n` +
+					`#» ${prefix}skip\nThe bot will skip the current music\n\n` +
+					`#» ${prefix}stop\nClear the queue and stop the music\n\n` +
+					`#» ${prefix}queue\nShow the queue list\n\n` +
+					`#» ${prefix}loop\nWill loop the currently song forever\n\n` +
+					`#» ${prefix}status\nShow the status of the current song !` +
+					"```" +
+					"\n\n" + "```md\n" +
+					"<» Other Commands>\n\n\n" +
+					`#» ${prefix}say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'\n\n` +
+					`#» ${prefix}github\nSend you my GitHub project in your DMs\n\n` +
+					`#» ${prefix}ping\nShow the ping of the bot\n\n` +
+					`#» ${prefix}purge [number]\nClear a selected number of messages (Max 100)\n\n` +
+					`#» ${prefix}random-number [min_number] [max_number]\nGenerate a number between one and an another\n\n` +
+					//prefix + "restart", "Redémarre le bot **(Expérimental**"
+					`#» ${prefix}random-member\nRandomly choose one member of the server\n\n` +
+					`#» ${prefix}poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers\n\n` +
+					`#» ${prefix}kappa\nSend a kappa image\n\n` +
+					`#» ${prefix}rekt [@someone]\nRekt one of your friends\n\n` +
+					`#» ${prefix}welcome\nSet a welcome message to your incredibleer !` +
+
+					"\n" + "```" +
+
+					"\n" +
+					"```md\n" +
+					`#» ${prefix}bot-info\nSend you the information of the bot\n\n` +
+					`#» ${prefix}server-info\nSend a lot of information about the currently server\n\n` +
+					`#» ${prefix}user-info [@someone]\nGet secret informations about someone\n\n` +
+					`#» ${prefix}verif-perms\nTell you about the perms I have in this channel\n\n` +
+					`#» ${prefix}staff\nSend a message to my creators\n\n` +
+					`#» ${prefix}invite\nGive you the invite link to add me !\n\n` +
+					`#» [NEW COMMAND!!] ${prefix}credits\nCredits for people who helped us !\n\n` +
+					`#» ${prefix}help\nShow all the bot commands (This message)!` +
+					"\n" +
+					"```" + "\n\n\n")
+
+				var help_msgToSend_channelTags = (
+
+					"```md\n" +
+					"<» Channel Tags>\n\n\n" +
+					"#» To use channel tags, just add the tags in a channel topic, it will be detected instantly\n\n" +
+					"#» <nocmds>\nAvoid the use of commands in the channel \n\n" +
+					"#» <ideas>\nWith this tag, the bot will add a upvote / downvote reaction to every message \n \n" +
+					"#» <autopurge:TIME:>\nDelete every message in the channel after TIME seconds" +
+					"```")
+
+				/*
+				Mess_Channel.send(help_msgToSend).then(function (msg) {
+					deleteMyMessage(msg, 120 * 1000);
+				})
+				*/
+
+				sendDMToUser(message, help_msgToSend_summary)
+				sendDMToUser(message, help_msgToSend_cmds)
+				sendDMToUser(message, help_msgToSend_channelTags)
+
+				/*
+				try {
+					message.author.createDM();
+					message.author.send(help_msgToSend, { split: true })
+						.then(function (msg) {
+							deleteMyMessage(msg, 300 * 1000);
+						})
+						.catch(() => {
+							message.reply(EmojiRedTickString + " Sorry but i can't DM you.").then(msg => {
+								deleteMyMessage(msg, 8 * 1000)
+							})
+						});
+				} catch (error) {
+					console.log("Help error: " + error);
+				}*/
+
+				break;
+			//----------
+			default:
+
+				clearInterval(deleteUserMsg);
+				try {
+					setTimeout(() => {
+						message.react("❓").catch(e => {
+							if (e.name === "DiscordAPIError") return;
+							console.log("Error default > " + e);
+						})
+						message.react(EmojiThonkong).catch(e => {
+							if (e.name === "DiscordAPIError") return;
+							console.log("Error default > " + e);
+						})
+					}, 250);
+					setTimeout(() => {
+						message.clearReactions().catch(e => {
+							if (e.name === "DiscordAPIError") return;
+							console.log("Error default > " + e);
+						})
+					}, 5 * 1000);
+				} catch (error) {
+					console.log("I can't add any reaction in this message: " + message.content + "\n" + error)
+				}
+				break;
+
+			//#endregion
+
+		}
+
+	}, 220);
 })
 
 /*
@@ -1664,9 +1869,28 @@ bot.on('resume', () => {
 //#region SQL
 
 async function SQL_Insert_NewServer(member) {
-	con.query(`INSERT INTO ${DB_Model} (servername, serverid, prefix, welcome_status) VALUES (?, ?, ?, ?)`, [member.guild.name, member.guild.id, prefix, false], (err, results) => {
+	con.query(`INSERT INTO ${DB_Model} (servername, serverid, prefix, lang, welcome_status) VALUES (?, ?, ?, ?, ?)`, [member.guild.name, member.guild.id, prefix, "english", false], (err, results) => {
 		if (err) console.log(err);
 		console.log("Inserted the new server !");
+	});
+}
+
+
+async function SQL_UpdateLang(message, set_this, set_that) {
+	con.query(`UPDATE ${DB_Model} SET ${set_this} = ? WHERE serverid = ${message.guild.id}`, [set_that], (err, results) => {
+		if (err) console.log(err);
+
+		console.log(`Changed successfully '${set_this}' to '${set_that}'`); // results contains rows returned by server
+		lang = set_that;
+		current_lang = require(`./lang/${lang}.js`).lang;
+	});
+}
+
+async function SQL_UpdateSomething(message, set_this, set_that) {
+	con.query(`UPDATE ${DB_Model} SET ${set_this} = ? WHERE serverid = ${message.guild.id}`, [set_that], (err, results) => {
+		if (err) console.log(err);
+
+		console.log(`Changed successfully '${set_this}' to '${set_that}'`); // results contains rows returned by server
 	});
 }
 
@@ -1691,7 +1915,7 @@ async function SQL_UpdateChannelMessage(message, channel) {
 function sendDMToUser(message, msgToSend) {
 	message.author.createDM().catch(e => {
 		if (e.name === "DiscordAPIError") {
-			message.reply("Sorry but i can't DM you, open them please.")
+			message.reply("Sorry but i can't DM you, open your DM please.")
 			return;
 		}
 	})
@@ -1702,7 +1926,7 @@ function sendDMToUser(message, msgToSend) {
 		})
 		.catch(e => {
 			if (e.name === "DiscordAPIError") {
-				message.reply("Sorry but i can't DM you, open them please.")
+				message.reply("Sorry but i can't DM you, open your DM please.")
 				return;
 			}
 		})
@@ -1746,8 +1970,55 @@ function deleteMyMessage(message, time) {
 	}
 }
 
+function DeleteTheMessage(message, time) {
+	//#region Permission Du Bot
+	const BOT_SEND_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("SEND_MESSAGES") && message.channel.type === 'text'
+	const BOT_MANAGE_MESSAGESPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("MANAGE_MESSAGES") && message.channel.type === 'text'
+	const BOT_ADMINISTRATORPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADMINISTRATOR") && message.channel.type === 'text'
+	const BOT_USE_EXTERNAL_EMOJISPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("USE_EXTERNAL_EMOJIS") && message.channel.type === 'text'
+	const BOT_ADD_REACTIONSPerm = message.guild.channels.find("id", message.channel.id).permissionsFor(message.guild.me).has("ADD_REACTIONS") && message.channel.type === 'text'
+	//#endregion
+
+	//#region Permission de la personne
+	const member_Has_BAN_MEMBERS = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("BAN_MEMBERS") && message.channel.type === 'text'
+	const member_Has_MANAGE_GUILD = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_GUILD") && message.channel.type === 'text'
+	const member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
+	//#endregion
+
+	try {
+		if (time == null || time == undefined) {
+			time = 750;
+		}
+
+		if (message.deletable && !message.pinned) {
+			message.delete(time)
+			console.log(`Deleted ${message.content}`);
+		} else console.log(`Not permitted`);
+
+	} catch (error) {
+		console.log(error);
+
+	}
+}
+
 function NotifyUser(ID) {
 	return `<@${ID}>`
+}
+
+function ReplaceThing(text, ThingToReplace, ReplaceTo) {
+	let new_text = String(text)
+	let new_ThingToReplace = String(ThingToReplace)
+	let new_ReplaceTo = String(ReplaceTo)
+
+	if (new_text.includes(new_ThingToReplace)) {
+		//var re = /`${new_ThingToReplace}`/gi
+		var re = new RegExp(new_ThingToReplace, "gi")
+
+		var result = new_text.replace(re, new_ReplaceTo)
+		console.log(result);
+
+		return result;
+	} else return new_text;
 }
 
 function PermissionCheck(PermToCheck) {
@@ -1823,15 +2094,15 @@ function add_to_queue(video, message) {
 
 		if (playit) {
 			if (server.annonce_it) {
-				embed = new Discord.RichEmbed()
+				var embed = new Discord.RichEmbed()
 					.setColor("#00FF00")
 
 					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
 
 					//petit logo à gauche du titre
-					.setTitle("Added to the queue in position [" + server.queue.length + "]")
+					.setTitle(`Added to the queue in position [${server.queue.length}]`)
 
-					.addField("Added " + YouTubeTitle, "*requested by " + message.author.username + "*")
+					.addField(`Added ${YouTubeTitle}`, `*${current_lang.Music_Requested_By} ${message.author.username}*`)
 					.setFooter(AskedBy_EmbedFooter(message.author))
 				message.channel.send(embed).then(function (msg) {
 					deleteMyMessage(msg, (YouTubeTimeSec * 1000) - 10);
@@ -1841,10 +2112,10 @@ function add_to_queue(video, message) {
 
 		if (!playit) {
 			//Si on NE doit PAS jouer la musique alors
-			EmbedAuthorName = "Song searched via YouTube";
-			EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
+			let EmbedAuthorName = "Song searched via YouTube";
+			let EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
 
-			search_embed = new Discord.RichEmbed()
+			var search_embed = new Discord.RichEmbed()
 				.setColor("#00FF00")
 
 
@@ -1858,13 +2129,13 @@ function add_to_queue(video, message) {
 
 				.addBlankField()
 
-				.addField("Uploaded by", YouTubeUploader, true)
-				.addField("Duration", "**" + YouTubeTime + "**", true) //temps
+				.addField(current_lang.Music_Status_Uploaded_By, YouTubeUploader, true)
+				.addField(current_lang.Music_Status_Song_Duration, "**" + YouTubeTime + "**", true) //temps
 
 				.addBlankField()
 
-				.addField("Views", YouTubeViews, true)
-				.addField("Link", "[Click here](" + YouTubeLink + ")", true)
+				.addField(current_lang.Music_Status_Views, YouTubeViews, true)
+				.addField(current_lang.Music_Status_Link, "[Click here](" + YouTubeLink + ")", true)
 
 				.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
 
@@ -1989,13 +2260,13 @@ function play(connection, message) {
 
 			.addBlankField()
 
-			.addField("Uploaded by", server.queue[0]["YouTubeUploader"], true)
-			.addField("Duration", "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
+			.addField(current_lang.Music_Status_Uploaded_By, server.queue[0]["YouTubeUploader"], true)
+			.addField(current_lang.Music_Status_Song_Duration, "**" + server.queue[0]["YouTubeTime"] + "**", true) //temps
 
 			.addBlankField()
 
-			.addField("Views", server.queue[0]["YouTubeViews"], true)
-			.addField("Link", "[Click here](" + server.queue[0]["YouTubeLink"] + ")", true)
+			.addField(current_lang.Music_Status_Views, server.queue[0]["YouTubeViews"], true)
+			.addField(current_lang.Music_Status_Link, "[Click here](" + server.queue[0]["YouTubeLink"] + ")", true)
 			/*.setAuthor(YouTubeTitle, message.author.avatarURL)
 			Code qui permet de définir le titre et le logo du demandeur
 			*/
