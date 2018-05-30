@@ -1719,6 +1719,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					"```" +
 					"\n\n" + "```md\n" +
 					"<» Other Commands>\n\n\n" +
+					`#» [NEW COMMAND!!] ${prefix}lang\nChange the language of the bot!\n\n` +
 					`#» ${prefix}say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'\n\n` +
 					`#» ${prefix}github\nSend you my GitHub project in your DMs\n\n` +
 					`#» ${prefix}ping\nShow the ping of the bot\n\n` +
