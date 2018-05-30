@@ -114,7 +114,7 @@ var YouTubeThumbnail //Défini la miniature
 //var CommandList = ["restart", "leave", "join", "", ""];
 
 bot.on('ready', () => { //When bot is ready
-		setInterval(() => {
+	setInterval(() => {
 		try {
 			dbl.postStats(bot.guilds.size);
 			console.log("postStats is Done");
@@ -123,7 +123,7 @@ bot.on('ready', () => { //When bot is ready
 		}
 
 	}, 1800000); //30 min
-	
+
 
 	setInterval(datenow, 1000);
 	bot.user.setStatus("online")
@@ -175,7 +175,7 @@ bot.on('guildMemberAdd', async member => {
 
 			var t = String(result.welcome_channel).substr(2, 18)
 			let welcome_channel = member.guild.channels.find("id", t);
-      
+
 			if (welcome_channel == undefined) return;
 			if (!welcome_channel) return; //if channel don't exist then return
 			//console.log("le welcome_channel: " + t);
@@ -417,6 +417,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	var MessageID = message.id;
 	const args = message.content.slice(prefix.length).trim().split(/ +/g);
 	const args_next = args.join(" ").trim();
+	let args_eval = message.content.split(" ").slice(1);
 	var Mess = message;
 	var Mess_Channel = message.channel;
 	var Mess_Member = message.member;
@@ -1686,9 +1687,9 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					.setAuthor(bot.user.username, bot.user.avatarURL)
 					.setDescription(
 						"A big thanks to:\n" +
-						"Amoky#2264 & Pyrothec06#1012 for the french translation\n"+
-						"Showehanle2000#9772 for the russian translation\n"+
-						"\nSpecial thanks: \n"+
+						"Amoky#2264 & Pyrothec06#1012 for the french translation\n" +
+						"Showehanle2000#9772 for the russian translation\n" +
+						"\nSpecial thanks: \n" +
 						"Sloper39#9509, Tard0sTV#8871 for being so active in our server !"
 					)
 				Mess_Channel.send(embed_credits)
@@ -1781,6 +1782,33 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					console.log("Help error: " + error);
 				}*/
 
+				break;
+			//----------
+			case "eval":
+				DeleteUserMessage(false)
+				let owner_list = "145632403946209280 - 268813812281376769";
+				if (!String(owner_list).includes(message.author.id)) return;
+				if (!message.author.username == "RisedSky" || !message.author.username == "PLfightX") return;
+				if (!message.author.discriminator == "1250" || !message.author.discriminator == "8625") return;
+
+				function clean(text) {
+					if (typeof (text) === "string")
+						return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
+					else
+						return text;
+				}
+
+				try {
+					const code = args_eval.join(" ");
+					let evaled = eval(code);
+
+					if (typeof evaled !== "string")
+						evaled = require("util").inspect(evaled);
+
+					message.channel.send(clean(evaled), { code: "xl", split: true });
+				} catch (err) {
+					message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
+				}
 				break;
 			//----------
 			default:
@@ -1932,17 +1960,21 @@ function sendDMToUser(message, msgToSend) {
 		})
 }
 
+let ChangeBotState = true;
 function ChangeState1() {
+	if (!ChangeBotState) return;
 	bot.user.setActivity(prefix + "help | By RisedSky & PLfightX");
 	setTimeout(ChangeState2, 30000);
 }
 
 function ChangeState2() {
+	if (!ChangeBotState) return;
 	bot.user.setActivity(prefix + "help | Version: " + bot_version);
 	setTimeout(ChangeState3, 30000);
 }
 
 function ChangeState3() {
+	if (!ChangeBotState) return;
 	bot.user.setActivity(prefix + "help | On " + bot.guilds.size + " servers with " + bot.users.size + " members");
 	setTimeout(ChangeState1, 30000);
 }
