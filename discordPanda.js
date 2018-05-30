@@ -934,7 +934,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			break;
 		//----------
 		case "restart":
-			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
+				if (message.author.id === "145632403946209280" || message.author.id === "268813812281376769") {
 				Mess_Channel.send("Restarting ...");
 				bot.user.setStatus("invisible");
 				bot.disconnect;
@@ -1461,7 +1461,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 
 		//--------
 		case "servers":
-			if (message.author.username === "RisedSky" || message.author.username === "PLfightX") {
+				if (message.author.id === "145632403946209280" || message.author.id === "268813812281376769") {
 				var ServerListArray = bot.guilds.array();
 				var ServerListString = "";
 				ServerListString = "I am on " + bot.guilds.size + " servers\n\n"
