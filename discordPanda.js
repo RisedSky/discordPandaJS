@@ -175,6 +175,8 @@ bot.on('guildMemberAdd', async member => {
 
 			var t = String(result.welcome_channel).substr(2, 18)
 			let welcome_channel = member.guild.channels.find("id", t);
+      
+			if (welcome_channel == undefined) return;
 			if (!welcome_channel) return; //if channel don't exist then return
 			//console.log("le welcome_channel: " + t);
 
