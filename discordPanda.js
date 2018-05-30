@@ -1077,7 +1077,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 
 		//--------
 		case "kappa":
-			message.reply({ file: __dirname + "/images/Kappahd.png" })/*.then(function (msg) {
+				message.reply({ file: __dirname + "/images/kappa.png" })/*.then(function (msg) {
 				deleteMyMessage(msg, 600 * 1000);
 			})*/
 			break;
