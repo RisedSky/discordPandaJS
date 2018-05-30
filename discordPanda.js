@@ -1114,7 +1114,11 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					deleteMyMessage(msg, 8 * 1000)
 				})
 			}).then(function (user) {
-				user.send(message.content.slice(prefix.length + args[0].length + args[1].length + 2))
+					var message_to_send = message.content.slice(prefix.length + args[0].length + args[1].length + 2)
+					user.send(message_to_send)
+						.then(() => {
+							Mess_Channel.send(`${message.author.tag} Sended the message to ${user.tag} - ${NotifyUser(user.id)} \n\`\`\`${message_to_send}\`\`\` `)
+						})
 					.catch(() => {
 					message.reply(EmojiRedTickString + " Sorry but i can't DM him.").then(msg => {
 						deleteMyMessage(msg, 8 * 1000)
