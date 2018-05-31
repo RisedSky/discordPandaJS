@@ -1281,7 +1281,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				}
 				var embed = new Discord.RichEmbed()
 					.setColor("RED")
-					.setAuthor(`${Command_Rekt_By} ${message.author.username}`, message.author.avatarURL)
+					.setAuthor(`${current_lang.Command_Rekt_By} ${message.author.username}`, message.author.avatarURL)
 					.setDescription(String(current_lang.Command_Rekt_Got_Rekt_By).replace("{0}", message.mentions.users.first()).replace("{1}", NotifyUser(message.member.id)))
 					.setImage("https://media1.tenor.com/images/f0515e416fd1ba95974412c18fd90d46/tenor.gif?itemid=5327720")
 				message.channel.send(embed)
