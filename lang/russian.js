@@ -36,21 +36,21 @@ var PermissionNo = EmojiRedTickString;
 const lang = {
 	//exemple: "exemple_text"
 	Something_Done: `${EmojiGreenTickString} Готово`,
-	Permission_Manage_Server_Required: `(**MANAGE_SERVER** is required)`,
+	Permission_Manage_Server_Required: `(**Управление Сервером** Понадобится)`,
 
 	//Database_Error: ``,
-	Command_User_Not_Allowed: `${EmojiRedTickString} Эта комманда не доступа для тебя !`,
-	Command_User_Message_Is_Empty: `${EmojiRedTickString} Your message is empty`,
-	Command_User_Need_Permission_Manage_Messages: `${EmojiRedTickString} You need the permission **(MANAGE_MESSAGES)** to do that`,
+	Command_User_Not_Allowed: `${EmojiRedTickString} Эта комманда не доступа для тебя!`,
+	Command_User_Message_Is_Empty: `${EmojiRedTickString} твое сообщение пустое`,
+	Command_User_Need_Permission_Manage_Messages: `${EmojiRedTickString} ты должен иметь право: **(Управление сообщениями)** чтобы зделать это`,
 
-	Command_Github_Project: `My GitHub project`,
-	Command_Bot_My_Ping: `My ping is`,
+	Command_Github_Project: `мой GitHub проект`,
+	Command_Bot_My_Ping: `мой пинг это:`,
 
-	Command_Bot_Need_Permission_Manage_Messages: `${EmojiProhibitedString} У тебя нету **(MANAGE_MESSAGES)** Права`,
-	Command_Purge_No_Number: `You didn't put the number of message you want to clear`,
-	Command_Purge_Not_Number: `${EmojiRedTickString} \`{0}\` isn't a number.`,
-	Command_Purge_Need_Number: `${EmojiRedTickString} Please put a number of message to purge`,
-	Command_Purge_Max_100_Message_Delete: `${EmojiRedTickString} Sadly, the bot can only delete 100 messages at a time`,
+	Command_Bot_Need_Permission_Manage_Messages: `${EmojiProhibitedString} У тебя нету **(Управление сообщениями)** Права`,
+	Command_Purge_No_Number: `ты не указал кол-во(номер)`,
+	Command_Purge_Not_Number: `${EmojiRedTickString} \`{0}\` не кол-во.`,
+	Command_Purge_Need_Number: `${EmojiRedTickString} укажыте кол-во удалених сообщений`,
+	Command_Purge_Max_100_Message_Delete: `${EmojiRedTickString} Бот может удалить только 100 сообшений`,
 
 	//#region SQL_Database
 
@@ -99,14 +99,14 @@ const lang = {
 
 	Music_Skip_Not_In_Vocal: `${EmojiRedTickString} ты должен быть в голосовом канале чтобы пропускать музыку.`,
 	Music_Skip_No_Music_Found: `${EmojiRedTickString} Я не могу найти Музыку/Видео по этому запросу.`,
-	Music_Skip_Success: `${EmojiGreenTickString} Successfuly skipped the song: `,
-	Music_Requested_By: `requested by`,
-	Music_Now_Playing: `Now playing`,
-	Music_Stopped_From: `${EmojiGreenTickString} Stopped all the music from channel`,
+	Music_Skip_Success: `${EmojiGreenTickString} успешно пропущена музыка: `,
+	Music_Requested_By: `Запрошеный`,
+	Music_Now_Playing: `Сейчас играет`,
+	Music_Stopped_From: `${EmojiGreenTickString} останавливаю играть музыку в канале`,
 
-	Music_Currently_Queue_Empty: `${EmojiRedTickString} The queue is actually empty.`,
-	Music_Queue_List: `Queue list`,
-	Music_Here_Queue_List: `Here is your queue list`,
+	Music_Currently_Queue_Empty: `${EmojiRedTickString} Очередь сейчас пуста.`,
+	Music_Queue_List: `список очереди`,
+	Music_Here_Queue_List: `твой список очереди`,
 	Music_Queue_List_Requested_By: `Список очередей запрошенный`,
 
 	Music_And: `And`,
@@ -118,8 +118,8 @@ const lang = {
 	Music_Status_Status: `Status`,
 	Music_Status_No_Music: `${EmojiRedTickString} это не музыка`,
 
-	Music_Status_Yes: `Yes`,
-	Music_Status_No: `No`,
+	Music_Status_Yes: `Да`,
+	Music_Status_No: `Нет`,
 
 	Music_Status_Current_Status: `текущий статус муцзыки`,
 	Music_Status_Current_Song: `эта песня/музыка`,
@@ -136,6 +136,7 @@ const lang = {
 
 
 	// current_lang.
+	//current translate version: 1.2 BETA
 }
 module.exports = {
 	lang: lang
