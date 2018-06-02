@@ -11,7 +11,7 @@ A big thanks to the bêta-testers, the list is on our discord server.
 Just fork the project, then modify what you want, and do a pull request, we will see if it's a good idea or not to add what you did on your forked project.
 
 ## Translations
-If you want yours, just fork and translate english and then change the file name to your language and do a pull request (PR)
+If you want your language, just fork and translate the /lang/english.js and then change the file name to your language and do a pull request (PR)
 
 Language                              | Code    | State      | Translator(s)
 --------------------------------------|---------|------------|------------------------------------------------
