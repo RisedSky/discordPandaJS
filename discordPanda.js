@@ -103,7 +103,22 @@ var YouTubeThumbnail //Défini la miniature
 
 //var CommandList = ["restart", "leave", "join", "", ""];
 
+bot.loaders = { enabledLoaders: [], disabledLoaders: [] };
+fs.readdirSync(__dirname + "/load").forEach(file => {
+	try {
+		let loader = require("./load/" + file);
+		bot.loaders.enabledLoaders.push(loader);
+	} catch (err) {
+		bot.loaders.disabledLoaders.push(file);
+		console.log(`\nThe ${file} load module failed to load:`);
+		console.log(err);
+	}
+});
+
 bot.on('ready', () => { //When bot is ready
+	bot.loaders.enabledLoaders.forEach(loader => {
+		if (loader.exec != null) loader.exec(bot);
+	});
 	setInterval(() => {
 		try {
 			dbl.postStats(bot.guilds.size);
@@ -129,47 +144,7 @@ bot.on('ready', () => { //When bot is ready
 		console.log(i + " » '" + bot.guilds.array()[i] + "'")
 	}
 
-})
-
-bot.on('guildMemberAdd', async member => {
-
-	let SQL_GetResult = function (callback) {
-		con.query(`SELECT * FROM ${DB_Model} WHERE serverid = '${member.guild.id}'`, (err, results) => {
-			if (err) return callback(err)
-
-			callback(null, results[0])
-		})
-	}
-
-	await SQL_GetResult(function (err, result) {
-		if (err) console.log("Database error!");
-		else {
-			if (result == undefined) {
-				SQL_Insert_NewServer(member)
-				return;
-			}
-
-			if (!result.welcome_status) return;
-
-			var t = String(result.welcome_channel).substr(2, 18)
-			let welcome_channel = member.guild.channels.find("id", t);
-
-			if (welcome_channel == undefined) return;
-			if (!welcome_channel) return;
-
-			let welcome_message = String(result.welcome_message)
-
-			if (welcome_message.includes("{user}")) {
-				let welcome_msg_new = ReplaceThing(welcome_message, "{user}", "<@" + member.id + ">")
-
-				welcome_channel.send(welcome_msg_new)
-			} else {
-				welcome_channel.send(welcome_message)
-			}
-		}
-	});
-
-})
+});
 
 bot.on('guildCreate', async Guild => {
 
@@ -189,7 +164,7 @@ bot.on('guildCreate', async Guild => {
 
 	defaultChannel.send(msgToSend);
 
-})
+});
 
 
 bot.on('message', async message => { //Quand une personne envoi un message
