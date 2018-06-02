@@ -55,11 +55,6 @@ con.connect(async err => {
 
 var prefixLog = "[!] ";
 var servers = {};
-//var now_playing_data = {};
-var online_since = 0;
-function datenow() {
-	online_since++;
-}
 
 var Server_Link = "https://discord.gg/52PcVRh";
 
@@ -119,8 +114,6 @@ bot.on('ready', () => { //When bot is ready
 
 	}, 1800000); //30 min
 
-
-	setInterval(datenow, 1000);
 	bot.user.setStatus("online")
 	console.log("------------------------------")
 	console.log(prefixLog + "Bot created by RisedSky & PLfightX <3")
@@ -1334,7 +1327,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			//#region
 			case "bot-info":
 				var d = new Date(null);
-				d.setSeconds(online_since);
+				d.setMilliseconds(bot.uptime);
 				var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
 
 				var time = moment.duration(bot.uptime, "milliseconds");
