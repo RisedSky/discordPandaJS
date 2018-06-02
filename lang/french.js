@@ -101,7 +101,7 @@ const lang = {
 	Command_Welcome_Help_Line1: `Pour configurer le welcomer vous devez faire les étapes suivantes:\n\n`,
 	Command_Welcome_Help_Line2: `:one: Activer le welcomer via les commandes: \`{0}welcome on\`\n`,
 	Command_Welcome_Help_Line3: `:two: Personaliser le avec la commande: \`{0}welcome set #channel Votre message\`\n`,
-	Command_Welcome_Help_Line4: `:notepad_spiral: Vous pouvez marquer le nouvel utilisateur dans le message de bienvenue lors de la configuration du message: \`{User}\`\n`,
+	Command_Welcome_Help_Line4: `:notepad_spiral: Vous pouvez marquer le nouvel utilisateur dans le message de bienvenue lors de la configuration du message: \`{user}\`\n`,
 	Command_Welcome_Help_Line5: `\nC'est tout ! Vous l'avez fait ! (facile hein? :wink:)`,
 
 	Command_Welcome_User_Their_Args: `Utilisez les arguments suivant`,

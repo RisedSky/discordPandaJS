@@ -51,6 +51,65 @@ const lang = {
 	Command_Purge_Not_Number: `${EmojiRedTickString} \`{0}\` не кол-во.`,
 	Command_Purge_Need_Number: `${EmojiRedTickString} укажыте кол-во удалених сообщений`,
 	Command_Purge_Max_100_Message_Delete: `${EmojiRedTickString} Бот может удалить только 100 сообшений`,
+	//missed russian
+
+	Command_Purge_X_Messages: `удаляю \`{0}\` сообщений :cloud_tornado: :cloud_tornado: :cloud_tornado:`, //don't change emoji plz
+	Command_Purged_X_Messages: `я всего удалил \`{0}\` / \`{1}\` сообщений`,
+	Command_Purge_Deleted_X_Messages: `удалено \`{0}\` сообшений ! :cloud_tornado: :cloud_tornado: :cloud_tornado: `,
+
+
+	Command_Random_Number_No_First_Number: `добавь число (Первое это минимум)`,
+	Command_Random_Number_No_Second_Number: `добавь число (второе максимальное)`,
+
+	Command_Random_Number_No_Number: `укажите минимум и максимальное число для генерации номера`,
+	Command_Random_Number_No_Minimum_Value: `укажите минимальное число`,
+	Command_Random_Number_No_Maximum_Value: `укажите максима`,
+	Command_Random_Number_Result: `хмм дай мне подумать, ..., между **{0}** и **{1}** я вибераю **{2}** !`,
+
+
+	Command_Random_Member_By: `Random-Member by`, //Don't translate Random-Member
+	Command_Random_Member_User_Chosen: `{0} был вибран между {1} пользователей сервера!`,
+
+	Command_Poll_No_Question_Or_Answer: `${EmojiRedTickString} извини, ты не указал вопрос/ответ1/ответ2 для вопроса.\n(Просто зделай как на примере: \`{0}вопрос | ответ1 | ответ2\`)`,
+	Command_Poll_By: `вопрос от`,
+
+	Command_Rekt_Nobody_To_Rekt: `${EmojiRedTickString} ты не выбрал кого хочешь зделать РЕКТ (упамяни его)`,
+	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} ты не можешь зделать себя REKT"`,
+	Command_Rekt_By: `Рект от`,
+	Command_Rekt_Got_Rekt_By: `Воу, {0} ты получил REKT от {1}`,
+
+	Command_Welcome_User_Dont_Have_Permission: `${EmojiRedTickString} у тебя нет прав ! (**Управление сервером** понадобится)`,
+	Command_Welcome_Create_Server_To_Database: `:warning: Создаем сервер а БД... (Может занять некоторое времмя)`,
+
+	Command_Welcome_Already_Activated: `${EmojiRedTickString} сообщение при заходе пользователя уже активированы."`,
+	Command_Welcome_Now_Activated: `${EmojiGreenTickString} сообщение при заходе пользователя Активированы.`,
+
+	Command_Welcome_Now_Deactivated: `${EmojiRedTickString} сообщение при заходе пользователя деактирированы`,
+	Command_Welcome_Already_Deactivated: `${EmojiRedTickString} сообщение при заходе пользователя уже деактивированы.`,
+
+
+	Command_Welcome_No_Channel_In_Message: `${EmojiRedTickString} ты не вставил в какой  (Пример: \`{0}welcome set #channel твое сообщение\``,
+	Command_Welcome_No_Welcome_Channel_In_Message: `${EmojiRedTickString} ты не вставил сообшение при заходе`,
+	Command_Welcome_Setting_Up_Your_Welcome_Message: `устанавливаем сообщение при заходе:`,
+	Command_Welcome_Message_In_Channel_Changed: `сообщение при заходе в канале: {0} успешно изменено.`,
+
+	Command_Welcome_Error_On_Setting_Welcome_Message: `что-то пошло не так сообщение при заходе:`,
+
+	Command_Welcome_Welcome_Channel: `Сообщение при заходе в канале: {0} \n`,
+	Command_Welcome_Welcome_Message: `Сообщение при заходе: {0} \n`,
+	Command_Welcome_Welcome_Status: `Сообщение при заходе активированы: {0} \n`,
+
+	Command_Welcome_Help_Line1: `для настройки приветствия следуй этим шагам:\n\n`,
+	Command_Welcome_Help_Line2: `:one: активируй приветствие при помощи комманды: \`{0}welcome on\`\n`,
+	Command_Welcome_Help_Line3: `:two: зделай сове сообщение и канал: \`{0}welcome set #channel твое сообщение\`\n`,
+	Command_Welcome_Help_Line4: `:notepad_spiral: 'это тег пользователя для привес=тствия: \`{user}\`\n`,
+	Command_Welcome_Help_Line5: `\nэто все! (легко? :wink:)`,
+
+	Command_Welcome_User_Their_Args: `используй эти аргументы:`,
+
+	Command_Staff_No_Message: `${EmojiRedTickString} это не текст.`,
+	Command_Staff_Sended_Message: `${EmojiGreenTickString} твое сообщение было отправлено создателям :wink:`,
+
 
 	//#region SQL_Database
 
@@ -69,7 +128,7 @@ const lang = {
 	Lang_Changing_To_Default: `Currently changing the lang to default (english)...`,
 
 	Lang_Defined_To_English: `${EmojiGreenTickString} Ваш язык был изменен на английский`,
-	Lang_Defined_To_French:  `${EmojiGreenTickString} Ваш язык был изменен на Французский`,
+	Lang_Defined_To_French: `${EmojiGreenTickString} Ваш язык был изменен на Французский`,
 	Lang_Defined_To_Russian: `${EmojiGreenTickString} Ваш язык был изменен на русский`,
 	Lang_Defined_To_Spanish: `${EmojiGreenTickString} Ваш язык был изменен на испанский`, //Espagnol
 	Lang_Defined_To_Italian: `${EmojiGreenTickString} Ваш язык был изменен на итальянский`,
