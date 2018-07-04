@@ -2025,7 +2025,7 @@ function DeleteTheMessage(message, time) {
 
 		if (message.deletable && !message.pinned) {
 			message.delete(time)
-			console.log(`Deleted ${message.content}`);
+			//console.log(`Deleted ${message.content}`);
 		} else console.log(`Not permitted`);
 
 	} catch (error) {
