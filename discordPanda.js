@@ -35,18 +35,21 @@ var DB_Model = config.MySQL_DB_Model; //Model qu'on utilise pour récup les info
 
 const mysql = require('mysql2');
 
-const con = mysql.createConnection({
+//Before
+/*const con = mysql.createConnection({
 	host: config.MySQL_host,
 	user: config.MySQL_user,
 	database: config.MySQL_database,
 	password: config.MySQL_password,
-	reconnect: true
-});
+	//reconnect: true
+});*/
 
-con.connect(async err => {
-	console.log("Connecting to the database...");
-	if (err) throw err.message;
-	console.log("Connected to the database: " + con.config.database);
+//And now the new connection is this shit thing, it's now great and faster
+const con = mysql.createPool({
+	host: config.MySQL_host,
+	user: config.MySQL_user,
+	database: config.MySQL_database,
+	password: config.MySQL_password
 })
 
 //#endregion
@@ -312,7 +315,9 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	if (!message.content.startsWith(prefix) || message.content.startsWith(prefix + prefix)) return;
 
 	await SQL_GetResult(function (err, result) {
-		if (err) console.log("Database error!");
+
+		if (err) console.log(err)
+
 		else {
 			if (result == undefined) {
 				return message.reply(lang_english.Command_Welcome_Create_Server_To_Database).then(msg => {
@@ -1607,7 +1612,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			case "eval":
 				DeleteUserMessage(false)
 				let owner_list = "145632403946209280 - 268813812281376769";
-				if (!String(owner_list).includes(message.author.id)) return;
+				if (!owner_list.includes(message.author.id)) return;
 				if (!message.author.username == "RisedSky" || !message.author.username == "PLfightX") return;
 				if (!message.author.discriminator == "1250" || !message.author.discriminator == "8625") return;
 

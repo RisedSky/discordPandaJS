@@ -156,7 +156,7 @@ const lang = {
 	Music_Skip_No_Music_Found: `${EmojiRedTickString} Je n'ai trouvé aucune autre musique`,
 	Music_Skip_Success: `${EmojiGreenTickString} Saute la chanson: `,
 	Music_Requested_By: `demandé par`,
-	Music_Now_Playing: `joué maintenant`,
+	Music_Now_Playing: `joue maintenant`,
 	Music_Stopped_From: `${EmojiGreenTickString} Toutes les musiques sont coupés sur le salon `,
 
 	Music_Currently_Queue_Empty: `${EmojiRedTickString} La liste est actuellement vide.`,
