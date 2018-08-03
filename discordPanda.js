@@ -7,51 +7,49 @@ const request = require("request");
 const moment = require("moment");
 const bot = new Discord.Client({ autoReconnect: true });
 
-//#region Language config
 let lang = this.lang;
-//let current_lang = require(`./lang/${lang}.js`).lang;
 let current_lang;
 
 const lang_english = require("./lang/english.js").lang;
 const lang_french = require("./lang/french.js").lang;
 const lang_russian = require("./lang/russian.js").lang;
-//#endregion
 
-//#region Discord Bot List Stats
 const DBL = require("dblapi.js");
 const dbl = new DBL(config.dbl_token);
-//#endregion
 
 var BlackListUser = require("./blacklistUser.js");
 var StringBlackListUser = String(BlackListUser.BlackListUser);
 
 //#region Dev
 var DefaultGuildID = config.DefaultGuildID;
-var yt_api_key = config.yt_api_key; //process.env.yt_api_key;
+var yt_api_key = config.yt_api_key;
 
-var BOT_TOKEN = config.BOT_TOKEN;//process.env.BOT_TOKEN;
+var BOT_TOKEN = config.BOT_TOKEN;
 bot.login(BOT_TOKEN);
 
 let prefix = config.prefix;
 let bot_version = config.bot_version;
 
 //#region MySQL
-var DB_Model = config.MySQL_DB_Model //Model qu'on utilise pour récup les infos
+var DB_Model = config.MySQL_DB_Model; //Model qu'on utilise pour récup les infos
 
 const mysql = require('mysql2');
 
-const con = mysql.createConnection({
+//Before
+/*const con = mysql.createConnection({
 	host: config.MySQL_host,
 	user: config.MySQL_user,
 	database: config.MySQL_database,
 	password: config.MySQL_password,
-	reconnect: true
-});
+	//reconnect: true
+});*/
 
-con.connect(async err => {
-	console.log("Connecting to the database...");
-	if (err) throw err.message;
-	console.log("Connected to the database: " + con.config.database);
+//And now the new connection is this shit thing, it's now great and faster
+const con = mysql.createPool({
+	host: config.MySQL_host,
+	user: config.MySQL_user,
+	database: config.MySQL_database,
+	password: config.MySQL_password
 })
 
 //#endregion
@@ -60,11 +58,6 @@ con.connect(async err => {
 
 var prefixLog = "[!] ";
 var servers = {};
-//var now_playing_data = {};
-var online_since = 0;
-function datenow() {
-	online_since++;
-}
 
 var Server_Link = "https://discord.gg/52PcVRh";
 
@@ -124,8 +117,6 @@ bot.on('ready', () => { //When bot is ready
 
 	}, 1800000); //30 min
 
-
-	setInterval(datenow, 1000);
 	bot.user.setStatus("online")
 	console.log("------------------------------")
 	console.log(prefixLog + "Bot created by RisedSky & PLfightX <3")
@@ -136,23 +127,15 @@ bot.on('ready', () => { //When bot is ready
 	bot.user.setActivity(prefix + "help | Started and ready !");
 	setTimeout(ChangeState1, 20000);
 	console.log("The bot is now ready !")
-	/*if (bot.guilds.exists("fetchAuditLogs", "ban")) {
-		console.log("Il y'a eu des bans");
-	} else {
-		console.log("Pas eu de ban");
-	}*/
 
 	for (var i in bot.guilds.array()) {
 		console.log(i + " » '" + bot.guilds.array()[i] + "'")
-		//Récupere le nombre de serveur et nous les montre (a garder)
 	}
 
 })
 
 bot.on('guildMemberAdd', async member => {
-	//When someone join a server wher the bot is too
 
-	//console.log("Une nouvelle personne vient de rejoindre: " + member.displayName)
 	let SQL_GetResult = function (callback) {
 		con.query(`SELECT * FROM ${DB_Model} WHERE serverid = '${member.guild.id}'`, (err, results) => {
 			if (err) return callback(err)
@@ -170,15 +153,12 @@ bot.on('guildMemberAdd', async member => {
 			}
 
 			if (!result.welcome_status) return;
-			//console.log(result);
-			//console.log(result.welcome_channel);
 
 			var t = String(result.welcome_channel).substr(2, 18)
 			let welcome_channel = member.guild.channels.find("id", t);
 
 			if (welcome_channel == undefined) return;
-			if (!welcome_channel) return; //if channel don't exist then return
-			//console.log("le welcome_channel: " + t);
+			if (!welcome_channel) return;
 
 			let welcome_message = String(result.welcome_message)
 
@@ -189,44 +169,12 @@ bot.on('guildMemberAdd', async member => {
 			} else {
 				welcome_channel.send(welcome_message)
 			}
-
-
-            /*if (result.length < 1) {
-                show_welcome_channel = "`Not defined`"
-                console.log("No results");
-            } else {
-                console.log(result)
-                show_welcome_channel = result.welcome_channel;
-                console.log(show_welcome_channel);
-
-                show_welcome_message = result.welcome_message;
-                console.log(show_welcome_message);
-            }*/
-
 		}
 	});
 
-	/*if (member.guild.id == DefaultGuildID) {
-		try {
-			const defaultChannel = member.guild.channels.find(c => c.permissionsFor(member.guild.me).has("SEND_MESSAGES") && c.type === 'text');
-
-			defaultChannel.send("Bienvenue sur mon serveur " + NotifyUser(member.id) + ", prend du bon temps parmi nous !")
-			console.log(member.guild.roles.find("name", "Bêta-Tester").id);
-			RoleMember = member.guild.roles.find("name", "Bêta-Tester").id;
-
-			setTimeout(function () {
-				member.addRole(RoleMember, "Auto joining role");
-			}, 3000);
-		} catch (error) {
-			console.log("guildMemberAddError : " + error);
-		}
-	} else {
-		return;
-	}*/
-
 })
 
-bot.on('guildCreate', async Guild => { //Quand le bot est ajouté sur un serveur
+bot.on('guildCreate', async Guild => {
 
 	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
 
@@ -258,10 +206,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	}
 
 	let SQL_GetResult = async function (callback) {
-		/*console.log(
-			"callback = " + callback + "\n" +
-			"msg dans getresult = " + message
-		);*/
 
 		con.query(`SELECT * FROM ${DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
 			if (err) return callback(err);
@@ -271,15 +215,10 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				return;
 			}
 
-			/*lang = results[0].lang;
-			current_lang = require(`./lang/${lang}.js`).lang;
-			console.log("DB answer");*/
-
 			callback(null, results[0])
 		})
 	}
 
-	//vérifie si le serveur est déjà dans la liste
 	if (!servers[message.guild.id]) {
 		servers[message.guild.id] = {
 			queue: [],
@@ -297,7 +236,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 
 		if (channelTopic.includes("<ideas>")) {
 			if (!message.author.bot) {
-				//console.log("Le salon " + message.channel.name + " | Contient 'ideas' | Serveur: " + message.guild.name)
 				setTimeout(() => {
 					message.react(EmojiUpvote).catch(e => {
 						if (e.name === "DiscordAPIError") return;
@@ -314,6 +252,8 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			}
 		}
 		if (channelTopic.includes("<wait:")) {
+			//Ignore the comments
+
 			/*
 			//doit trouver où est le wait pour récuperer le nombre (en terme de timeout en s).
 
@@ -345,7 +285,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 							});
 					}
 				}
-				//return;
 			}
 		}
 		if (channelTopic.includes("<nocmds>")) {
@@ -364,9 +303,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					})
 				}, 6 * 1000);
 
-				/*message.reply(EmojiProhibitedString + " Sorry, but in the channelTopic it say `< nocmds > ` !").then(function (msg) {
-					deleteMyMessage(msg, 6500)
-				})*/
 				return;
 			}
 		}
@@ -378,12 +314,10 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix) || message.content.startsWith(prefix + prefix)) return;
 
-	//console.log(moment(Date.now()).format("HH:mm:ss:ms DD-MM-YYYY"));
-	//console.log(moment(Date.now()).get("milliseconds"));
-
-
 	await SQL_GetResult(function (err, result) {
-		if (err) console.log("Database error!");
+
+		if (err) console.log(err)
+
 		else {
 			if (result == undefined) {
 				return message.reply(lang_english.Command_Welcome_Create_Server_To_Database).then(msg => {
@@ -400,14 +334,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					deleteMyMessage(msg, 16 * 1000)
 				})
 			}
-			//lang = result.lang;
-			//console.log("result.lang : " + result.lang);
 			current_lang = require(`./lang/${lang}.js`).lang;
-			/*
-			console.log("Defined current_lang " + lang);
-			console.log(moment(Date.now()).format("HH:mm:ss:ms DD-MM-YYYY"));
-			console.log(moment(Date.now()).get("milliseconds"));
-			*/
 
 		}
 	})
@@ -454,11 +381,8 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		}
 	}
 
-	//console.log("The current lang is : " + lang);
-
 	setTimeout(async => {
 
-		//DeleteTheMessage(message, 750)
 		switch (args[0].toLowerCase()) {
 			//Music Commands
 			//#region
@@ -470,8 +394,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					if (result == undefined) {
 						return
 					}
-
-					//console.log(result.lang);
 
 					lang = result.lang;
 					if (!args[1]) {
@@ -497,7 +419,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 							})
 							break;
 						case "french":
-							//define the current server to french
 							SQL_UpdateLang(message, "lang", "french").then(() => {
 								setTimeout(() => {
 									message.reply(current_lang.Lang_Defined_To_French)
@@ -647,33 +568,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 									deleteMyMessage(msg, 14 * 1000)
 								})
 							}
-							//var test = args[1].match(/^.*v=([^#\&\?]*).*/)
-							/*
-							console.log("TEST DE OUF => " + test[1]);
-	
-							console.log("C'est un lien youtube")
-							console.log("args[1] => " + args[1]);
-	
-							q = args[1]
-	
-							if (q.includes("&t=")) {
-								//console.log("ça donnerait => " + args[1].split("&t="));
-								q.split("&t=").shift();
-							}
-							if (q.includes("&feature=youtu.be")) {
-								q.replace("&feature=youtu.be", "")
-							}
-							if (q.includes("&index=")) {
-								q.split("&index=").shift()
-							}
-							if (q.includes("&list=")) {
-								q.split("&list=").shift()
-							}
-	
-							console.log("q=> " + q);
-							search_video(message, q);
-							*/
-
 
 							return;
 
@@ -694,8 +588,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 						for (var i = 1; i < argsSearch.length; i++) {
 							q += argsSearch[i] + " ";
 						}
-						//console.log(argsSearch)
-						//console.log("q => " + q)
 						search_video(message, q);
 						return;
 					}
@@ -757,8 +649,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				for (var i = 1; i < argsSearch.length; i++) {
 					q += argsSearch[i] + " ";
 				}
-				/*console.log(argsSearch);
-				console.log("q => " + q);*/
 				search_video(message, q);
 
 				break;
@@ -796,13 +686,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				var title = server.queue[1]["title"];
 				var user = server.queue[1]["user"];
 
-				/*if (currentlySong === null) {
-					message.reply("No music is actually playing.").then(function (msg) {
-						deleteMyMessage(msg, 10000)
-					})
-					return;
-				}*/
-
 				if (server.dispatcher) {
 					var msg = [];
 					msg.push(`${current_lang.Music_Skip_Success} \n\`${server.now_playing_data["title"]}\` *(${current_lang.Music_Requested_By} ${server.now_playing_data["user"]})* \n\n`);
@@ -818,7 +701,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				break;
 			//-------
 			case "stop":
-				//var server = servers[message.guild.id];
 
 				if (message.guild.voiceConnection) {
 					for (var i = server.queue.length - 1; i >= 0; i--) {
@@ -834,15 +716,9 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			case "queue":
 
 				var argsQueue = message.content.substring(5).split(" ");
-				//var server = servers[message.guild.id];
 				var xQueue = server.queue;
-				//var answer = "";
 
 				try {
-					// CE CODE FONCTIONNE
-					/*if (argsQueue[1] === "list") {
-						Mess_Channel.send("Oui.");
-					}*/
 
 					if (!xQueue[0]) {
 						message.reply(current_lang.Music_Currently_Queue_Empty).then(function (msg) {
@@ -913,11 +789,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				function CheckInfo_ToBooleanEmoji(thing) { if (thing) { return `${current_lang.Music_Status_Yes} ${EmojiGreenTickString}` } else { return `${current_lang.Music_Status_No} ${EmojiRedTickString}` } }
 				var disp_time = moment.duration(server.dispatcher.time, "milliseconds")
 				var time_remainingSec = (server.queue[0]["YouTubeTimeSec"] - disp_time.get("seconds"))
-				/*
-				console.log(server.queue[0]["YouTubeTimeSec"])
-				console.log(disp_time.get("seconds"))
-				console.log(time_remainingSec);
-				*/
 
 				var de = new Date(null);
 				de.setSeconds(time_remainingSec);
@@ -1082,32 +953,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 
 										}
 									}
-									/*messages.forEach(mess => {
-										nmbr++;
-					
-										console.log(nmbr + " > " + mess.content)
-										if (mess.pinned) return;
-										if (!mess.deletable) return;
-										DeleteTheMessage(mess, 3000)
-										nmbrdeleted++;
-										msgdeleted.edit("Deleted `" + nmbrdeleted + "` message(s) ! :cloud_tornado: :cloud_tornado: :cloud_tornado: ")
-										mess.delete().then(t => {
-											//console.log(t.content)
-											if (nmbrdeleted == NumberToDelete) {
-												console.log("1> fini !")
-												msgdeleted.edit("That's it, I deleted a total of `" + nmbrdeleted + "` / `" + NumberToDelete + "` messages")
-					
-												setTimeout(() => {
-													nmbrdeleted = 0;
-													NumberToDelete = 0;
-													nmbr = 0;
-													messages.clear();
-												}, 6000);
-												deleteMyMessage(msgdeleted, 13 * 1000)
-											}
-										})
-					
-									})*/
 
 								})
 							});
@@ -1487,7 +1332,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			//#region
 			case "bot-info":
 				var d = new Date(null);
-				d.setSeconds(online_since);
+				d.setMilliseconds(bot.uptime);
 				var bot_online_since_time = d.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
 
 				var time = moment.duration(bot.uptime, "milliseconds");
@@ -1687,6 +1532,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					.setAuthor(bot.user.username, bot.user.avatarURL)
 					.setDescription(
 						"A big thanks to:\n" +
+						"gt-c for the big help in contributing to the bot in github" +
 						"Amoky#2264 & Pyrothec06#1012 for the french translation\n" +
 						"Showehanle2000#9772 for the russian translation\n" +
 						"\nSpecial thanks: \n" +
@@ -1757,38 +1603,16 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					"#» <autopurge:TIME:>\nDelete every message in the channel after TIME seconds" +
 					"```")
 
-				/*
-				Mess_Channel.send(help_msgToSend).then(function (msg) {
-					deleteMyMessage(msg, 120 * 1000);
-				})
-				*/
-
 				sendDMToUser(message, help_msgToSend_summary)
 				sendDMToUser(message, help_msgToSend_cmds)
 				sendDMToUser(message, help_msgToSend_channelTags)
-
-				/*
-				try {
-					message.author.createDM();
-					message.author.send(help_msgToSend, { split: true })
-						.then(function (msg) {
-							deleteMyMessage(msg, 300 * 1000);
-						})
-						.catch(() => {
-							message.reply(EmojiRedTickString + " Sorry but i can't DM you.").then(msg => {
-								deleteMyMessage(msg, 8 * 1000)
-							})
-						});
-				} catch (error) {
-					console.log("Help error: " + error);
-				}*/
 
 				break;
 			//----------
 			case "eval":
 				DeleteUserMessage(false)
 				let owner_list = "145632403946209280 - 268813812281376769";
-				if (!String(owner_list).includes(message.author.id)) return;
+				if (!owner_list.includes(message.author.id)) return;
 				if (!message.author.username == "RisedSky" || !message.author.username == "PLfightX") return;
 				if (!message.author.discriminator == "1250" || !message.author.discriminator == "8625") return;
 
@@ -1844,30 +1668,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	}, 220);
 })
 
-/*
-bot.on('voiceStateUpdate', member => {
-	console.log(`${member.displayName}\n${member.selfDeaf} `)
-
-	//console.log("voiceStateUpdate =>" + GuildMember.voiceChannel.name);
-})
-*/
-
-/*
-//NOT INTERESTING FOR NOW
-bot.on('messageReactionAdd', MessageReaction => {
-	//En cours de création, risque de crash ou de problème technique si utilisé.
-	if (!MessageReaction.message.author.equals(bot.user)) return;
-	if (!MessageReaction.message.guild) return;
-
-	console.log("Ajout d'une emote: " + MessageReaction.emoji.identifier)
-	console.log(MessageReaction.emoji.name + " - " + MessageReaction.emoji.id)
-	if (MessageReaction.emoji.equals = "😃") {
-		console.log("oui")
-	}
-})
-*/
-
-
 bot.on('messageDelete', message => {
 	//verifier si la personne qui supprime est le bot
 	//si c'est le cas on doit vérifier si le message est pinned
@@ -1890,9 +1690,6 @@ bot.on('disconnect', () => {
 bot.on('resume', () => {
 	console.log("resumed!");
 })
-
-
-
 //#region Functions
 
 //#region SQL
@@ -1982,21 +1779,17 @@ function ChangeState3() {
 
 function AskedBy_EmbedFooter(author) {
 	return `Asked by ${author.username} • ID: ${author.id}`;
-	//.setFooter("Asked by " + message.member. + " • ID: " + message.author.id);
 }
 
 function deleteMyMessage(message, time) {
 	try {
 		if (time === null) {
 			time = 750;
-			//console.log("time changed to 750 bcs it's null")
 		}
 
 		if (!message.author.name === bot.user.name || !message.author.name === bot.user.username) {
-			//console.log("Not my message")
 			return;
 		}
-		//console.log("deleted: " + message)
 		message.delete(time).catch(error => (console.log("deleteMyMessage prblm : " + error)));
 	} catch (error) {
 		console.log("Problem on deleteMyMessage function: " + error)
@@ -2084,12 +1877,6 @@ function search_video(message, query) {
 				})
 		} else {
 			add_to_queue(json.items[0].id.videoId, message);
-
-			/*
-			console.log(json.items[0].id);
-			console.log(json.items[0].id.videoId);
-			console.log(message.content + "\n");
-			*/
 		}
 	})
 }
@@ -2097,9 +1884,7 @@ function search_video(message, query) {
 function add_to_queue(video, message) {
 	var server = servers[message.guild.id];
 
-	//console.log("Add to queue | Video: " + video)
 	var video_id = video;
-	//console.log("Add to queue | video_id: " + video_id)
 
 	var playit = server.playit;
 
@@ -2117,12 +1902,12 @@ function add_to_queue(video, message) {
 		date.setSeconds(info.length_seconds); //défini la date avec des secondes
 		var result = date.toISOString().substr(11, 8); // récupere le temps et le transforme en HH:mm:ss
 
-		var YouTubeTimeSec = info.length_seconds //défini en secondes
-			, YouTubeViews = info.view_count //défini le nombre de vues de la vidéo
-			, YouTubeUploader = info.author.name //récupere le nom du YTBeur
-			, YouTubeTitle = info.title //récupere le titre
-			, YouTubeThumbnail = info.thumbnail_url //récupere la minia
-			, YouTubeLink = info.video_url //récupere le lien de la vidéo
+		var YouTubeTimeSec = info.length_seconds
+			, YouTubeViews = info.view_count
+			, YouTubeUploader = info.author.name
+			, YouTubeTitle = info.title
+			, YouTubeThumbnail = info.thumbnail_url
+			, YouTubeLink = info.video_url
 			, YouTubeTime = result
 
 		if (playit) {
@@ -2130,7 +1915,7 @@ function add_to_queue(video, message) {
 				var embed = new Discord.RichEmbed()
 					.setColor("#00FF00")
 
-					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
+					.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
 
 					//petit logo à gauche du titre
 					.setTitle(`Added to the queue in position [${server.queue.length}]`)
@@ -2143,8 +1928,8 @@ function add_to_queue(video, message) {
 			}
 		}
 
-		if (!playit) {
-			//Si on NE doit PAS jouer la musique alors
+		if (!playit) {//Si on NE doit PAS jouer la musique alors
+
 			let EmbedAuthorName = "Song searched via YouTube";
 			let EmbedAuthorIcon = "https://cdn.discordapp.com/emojis/" + YouTube_Logo_ID + ".png?v=1";
 
@@ -2152,7 +1937,7 @@ function add_to_queue(video, message) {
 				.setColor("#00FF00")
 
 
-				.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink) //miniature + lien vers la vidéo en cliquant sur la minia
+				.setThumbnail(YouTubeThumbnail).setURL(YouTubeLink)
 
 				//petit logo à gauche du titre
 				.setAuthor(EmbedAuthorName, EmbedAuthorIcon)
@@ -2163,7 +1948,7 @@ function add_to_queue(video, message) {
 				.addBlankField()
 
 				.addField(current_lang.Music_Status_Uploaded_By, YouTubeUploader, true)
-				.addField(current_lang.Music_Status_Song_Duration, "**" + YouTubeTime + "**", true) //temps
+				.addField(current_lang.Music_Status_Song_Duration, "**" + YouTubeTime + "**", true)
 
 				.addBlankField()
 
@@ -2316,14 +2101,6 @@ function play(connection, message) {
 
 		server.dispatcher.setVolume(0.3);
 
-		/*
-		message.channel.send(`Now playing: '${title}' requested by '${user}'`).then(function (msg) {
-			deleteMyMessage(msg, server.queue[0]["YouTubeTimeSec"] * 1000)
-		})
-		*/
-
-		//console.log(currentlySong)
-
 		server.dispatcher.on("end", function () {
 
 			if (!server.loopit) {
@@ -2335,7 +2112,6 @@ function play(connection, message) {
 					play(connection, message);
 				}, 1000);
 			} else {
-				//connection.disconnect;
 				if (message.guild.voiceConnection) {
 					message.channel.send(EmojiGreenTickString + " Finished the queue from channel: `" + message.guild.voiceConnection.channel.name + "` :wave:").then(function (msg) {
 						deleteMyMessage(msg, 13 * 1000);

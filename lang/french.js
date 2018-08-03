@@ -101,7 +101,7 @@ const lang = {
 	Command_Welcome_Help_Line1: `Pour configurer le welcomer vous devez faire les étapes suivantes:\n\n`,
 	Command_Welcome_Help_Line2: `:one: Activer le welcomer via les commandes: \`{0}welcome on\`\n`,
 	Command_Welcome_Help_Line3: `:two: Personaliser le avec la commande: \`{0}welcome set #channel Votre message\`\n`,
-	Command_Welcome_Help_Line4: `:notepad_spiral: Vous pouvez marquer le nouvel utilisateur dans le message de bienvenue lors de la configuration du message: \`{User}\`\n`,
+	Command_Welcome_Help_Line4: `:notepad_spiral: Vous pouvez marquer le nouvel utilisateur dans le message de bienvenue lors de la configuration du message: \`{user}\`\n`,
 	Command_Welcome_Help_Line5: `\nC'est tout ! Vous l'avez fait ! (facile hein? :wink:)`,
 
 	Command_Welcome_User_Their_Args: `Utilisez les arguments suivant`,
@@ -156,7 +156,7 @@ const lang = {
 	Music_Skip_No_Music_Found: `${EmojiRedTickString} Je n'ai trouvé aucune autre musique`,
 	Music_Skip_Success: `${EmojiGreenTickString} Saute la chanson: `,
 	Music_Requested_By: `demandé par`,
-	Music_Now_Playing: `joué maintenant`,
+	Music_Now_Playing: `joue maintenant`,
 	Music_Stopped_From: `${EmojiGreenTickString} Toutes les musiques sont coupés sur le salon `,
 
 	Music_Currently_Queue_Empty: `${EmojiRedTickString} La liste est actuellement vide.`,
