@@ -41,7 +41,6 @@ bot.con = mysql.createPool({
 	database: config.MySQL_database,
 	password: config.MySQL_password
 });
-
 //#endregion
 
 //#endregion
@@ -643,7 +642,7 @@ bot.DeleteTheMessage = function (message, time) {
 
 		if (message.deletable && !message.pinned) {
 			message.delete(time)
-			console.log(`Deleted ${message.content}`);
+			//console.log(`Deleted ${message.content}`);
 		} else console.log(`Not permitted`);
 
 	} catch (error) {
