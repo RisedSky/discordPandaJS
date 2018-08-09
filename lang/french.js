@@ -45,7 +45,7 @@ const lang = {
 
 	Command_Github_Project: `Mon projet GitHub`,
 	Command_Bot_My_Ping: `Mon ping est de`,
-	Command_Bot_Need_Permission_Manage_Messages: `${EmojiProhibitedString} Malheureusement, je n'ai pas la permission**(MANAGE_MESSAGES)** `,
+	Command_Bot_Need_Permission_Manage_Messages: `${EmojiProhibitedString} Malheureusement, je n'ai pas la permission **(MANAGE_MESSAGES)**`,
 
 	Command_Purge_No_Number: `Vous n'avez pas mis le numéro de message que vous voulez effacer`,
 	Command_Purge_Not_Number: `${EmojiRedTickString} \`{0}\` n'est pas un nombre.`,
@@ -73,17 +73,17 @@ const lang = {
 	Command_Poll_By: `Sondage par`,
 
 	Command_Rekt_Nobody_To_Rekt: `${EmojiRedTickString} Il n'y a personne à rekt (@ un utilisateur pour le rekt)`,
-	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} Vous ne pouvez pas vous rekt vous même"`,
+	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} Vous ne pouvez pas vous rekt vous même`,
 	Command_Rekt_By: `Rekt commande par`,
 	Command_Rekt_Got_Rekt_By: `Wow, {0} vous avez été rekt par {1}`,
 
 	Command_Welcome_User_Dont_Have_Permission: `${EmojiRedTickString} Vous n'avez pas la permission de le faire ! (** MANAGE_SERVER ** est nécessaire)`,
-	Command_Welcome_Create_Server_To_Database: `:warning: Créer le serveur dans ma base de données ... (refaire la commande s'il vous plait)`,
+	Command_Welcome_Create_Server_To_Database: `:warning: Créer le serveur dans ma base de données ... (refaites la commande s'il vous plait)`,
 
-	Command_Welcome_Already_Activated: `${EmojiRedTickString} Le message de bienvenue est déjà activé."`,
 	Command_Welcome_Now_Activated: `${EmojiGreenTickString} Le message de bienvenue est désormais activé.`,
+	Command_Welcome_Already_Activated: `${EmojiRedTickString} Le message de bienvenue est déjà activé.`,
 
-	Command_Welcome_Now_Deactivated: `${EmojiRedTickString} Le message de bienvenue est désormais désactivé.`,
+	Command_Welcome_Now_Deactivated: `${EmojiGreenTickString} Le message de bienvenue est désormais désactivé.`,
 	Command_Welcome_Already_Deactivated: `${EmojiRedTickString} Le message de bienvenue est déjà désactivé.`,
 
 
@@ -135,34 +135,34 @@ const lang = {
 	//#endregion
 
 	//#region Music
-	Music_Tell_Me_Something_Play_Playlist: `${EmojiRedTickString} S'il vous plaît dites-moi quelque chose à jouer (le lien playlist)`,
-	Music_Not_In_Vocal: `${EmojiRedTickString} Vous devez être connecté à une chaîne vocale`,
-	Music_Should_Not_Deafen: `${EmojiRedTickString} Vous devez être à l'écoute (ne pas souffrir)`,
+	Music_Tell_Me_Something_Play_Playlist: `${EmojiRedTickString} Merci de me dire quoi jouer (le lien playlist)`,
+	Music_Not_In_Vocal: `${EmojiRedTickString} Vous devez être connecté à un salon vocal`,
+	Music_Should_Not_Deafen: `${EmojiRedTickString} Vous devez être à l'écoute (ne pas être deafen)`,
 	Music_Not_Playlist: `${EmojiRedTickString} Ce n'est pas une playlist.`,
 	Music_Not_Link: `${EmojiRedTickString} Hmm désolé mais ... ce n'est pas un lien :/`,
 
-	Music_Tell_Me_Something_Play: `${EmojiRedTickString} S'il vous plaît dites-moi quelque chose à jouer (un lien ou un titre)`,
+	Music_Tell_Me_Something_Play: `${EmojiRedTickString} Merci de me dire quoi jouer (un lien ou un titre)`,
 	Music_Soundcloud_Not_Supported: `${EmojiRedTickString} Soundcloud n'est pas réellement supporté. Ce sera bientôt :tm:`,
 
 	Music_No_Music_Playing: `${EmojiRedTickString} Il n'y a pas de musique en train de jouer`,
-	Music_Not_In_The_Same_Vocal: `${EmojiRedTickString} Vous n'êtes pas dans le même canal vocal que moi`,
+	Music_Not_In_The_Same_Vocal: `${EmojiRedTickString} Vous n'êtes pas dans le même salon vocal que moi`,
 
 	Music_Resume_Success: `${EmojiGreenTickString} Musique reprise`,
 	Music_Pause_Success: `${EmojiGreenTickString} Musique en pause`,
 
-	Music_Need_Music_Title: `${EmojiRedTickString} S'il vous plaît, mettez un titre de musique`,
+	Music_Need_Music_Title: `${EmojiRedTickString} Merci de mettre un titre de musique`,
 
-	Music_Skip_Not_In_Vocal: `${EmojiRedTickString} Vous devriez être dans un canal vocal avant de me demander de sauter quelques musiques.`,
+	Music_Skip_Not_In_Vocal: `${EmojiRedTickString} Vous devriez être dans un salon vocal avant de me demander de sauter quelques musiques.`,
 	Music_Skip_No_Music_Found: `${EmojiRedTickString} Je n'ai trouvé aucune autre musique`,
-	Music_Skip_Success: `${EmojiGreenTickString} Saute la chanson: `,
+	Music_Skip_Success: `${EmojiGreenTickString} Saut de la chanson: `,
 	Music_Requested_By: `demandé par`,
-	Music_Now_Playing: `joué maintenant`,
+	Music_Now_Playing: `En train de jouer`,
 	Music_Stopped_From: `${EmojiGreenTickString} Toutes les musiques sont coupés sur le salon `,
 
 	Music_Currently_Queue_Empty: `${EmojiRedTickString} La liste est actuellement vide.`,
 	Music_Queue_List: `Liste de file d'attente`,
-	Music_Here_Queue_List: `Voici votre liste de files d'attente`,
-	Music_Queue_List_Requested_By: `Liste de files d'attente demandée par`,
+	Music_Here_Queue_List: `Voici votre liste de file d'attente`,
+	Music_Queue_List_Requested_By: `Liste de file d'attente demandée par`,
 
 	Music_And: `Et`,
 	Music_More: `plus...`,
@@ -172,7 +172,7 @@ const lang = {
 	Music_Song_Will_Be_Repeated: `sera répété`,
 
 	Music_Status_Status: `Statut`,
-	Music_Status_No_Music: `${EmojiRedTickString} il n'y a pas de musique`,
+	Music_Status_No_Music: `${EmojiRedTickString} Il n'y a pas de musique`,
 
 	Music_Status_Yes: `Oui`,
 	Music_Status_No: `Non`,
@@ -180,9 +180,9 @@ const lang = {
 	Music_Status_Current_Status: `L'état actuel de la chanson`,
 	Music_Status_Current_Song: `La chanson actuelle`,
 
-	Music_Status_Track_Loop: `Le morceau est il en boucle ?`,
-	Music_Status_Track_Paused: `Le morceau est il en pause ?`,
-	Music_Status_Uploaded_By: `Uploadé par`,
+	Music_Status_Track_Loop: `Le morceau est-il en boucle ?`,
+	Music_Status_Track_Paused: `Le morceau est-il en pause ?`,
+	Music_Status_Uploaded_By: `Mis en ligne par`,
 	Music_Status_Song_Duration: `Durée de`,
 	Music_Status_Time_Remaining: `Temps restant`,
 	Music_Status_Views: `Vues`,

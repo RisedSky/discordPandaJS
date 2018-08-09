@@ -74,17 +74,17 @@ const lang = {
 	Command_Poll_By: `вопрос от`,
 
 	Command_Rekt_Nobody_To_Rekt: `${EmojiRedTickString} ты не выбрал кого хочешь зделать РЕКТ (упамяни его)`,
-	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} ты не можешь зделать себя REKT"`,
+	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} ты не можешь зделать себя REKT`,
 	Command_Rekt_By: `Рект от`,
 	Command_Rekt_Got_Rekt_By: `Воу, {0} ты получил REKT от {1}`,
 
 	Command_Welcome_User_Dont_Have_Permission: `${EmojiRedTickString} у тебя нет прав ! (**Управление сервером** понадобится)`,
 	Command_Welcome_Create_Server_To_Database: `:warning: Создаем сервер а БД... (Может занять некоторое времмя)`,
 
-	Command_Welcome_Already_Activated: `${EmojiRedTickString} сообщение при заходе пользователя уже активированы."`,
 	Command_Welcome_Now_Activated: `${EmojiGreenTickString} сообщение при заходе пользователя Активированы.`,
+	Command_Welcome_Already_Activated: `${EmojiRedTickString} сообщение при заходе пользователя уже активированы.`,
 
-	Command_Welcome_Now_Deactivated: `${EmojiRedTickString} сообщение при заходе пользователя деактирированы`,
+	Command_Welcome_Now_Deactivated: `${EmojiGreenTickString} сообщение при заходе пользователя деактирированы`,
 	Command_Welcome_Already_Deactivated: `${EmojiRedTickString} сообщение при заходе пользователя уже деактивированы.`,
 
 

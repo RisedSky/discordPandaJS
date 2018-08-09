@@ -73,17 +73,17 @@ const lang = {
 	Command_Poll_By: `Poll by`,
 
 	Command_Rekt_Nobody_To_Rekt: `${EmojiRedTickString} There is nobody to rekt (@ a user to rekt him)`,
-	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} You can't rekt yourself"`,
+	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} You can't rekt yourself`,
 	Command_Rekt_By: `Rekt command by`,
 	Command_Rekt_Got_Rekt_By: `Wow, {0} you got rekt by {1}`,
 
 	Command_Welcome_User_Dont_Have_Permission: `${EmojiRedTickString} You don't have the permission to do that ! (**MANAGE_SERVER** is needed)`,
 	Command_Welcome_Create_Server_To_Database: `:warning: Creating the server in my DataBase... (redo the command please)`,
 
-	Command_Welcome_Already_Activated: `${EmojiRedTickString} The welcome message is already enabled."`,
 	Command_Welcome_Now_Activated: `${EmojiGreenTickString} The welcome message is now activated.`,
+	Command_Welcome_Already_Activated: `${EmojiRedTickString} The welcome message is already enabled.`,
 
-	Command_Welcome_Now_Deactivated: `${EmojiRedTickString} The welcome message is now deactivated.`,
+	Command_Welcome_Now_Deactivated: `${EmojiGreenTickString} The welcome message is now deactivated.`,
 	Command_Welcome_Already_Deactivated: `${EmojiRedTickString} The welcome message is already deactivated.`,
 
 
