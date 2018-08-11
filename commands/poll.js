@@ -64,16 +64,16 @@ module.exports = {
             if (prop9 != "") embed.addField(prop9, ":nine:", true);
 
             Mess_Channel.send(embed)
-                .then(function (msg) {
-                    msg.react("1%E2%83%A3")
-                    setTimeout(function () { msg.react("2%E2%83%A3") }, 1000);
-                    setTimeout(function () { if (prop3 != "") msg.react("3%E2%83%A3") }, 2000);
-                    setTimeout(function () { if (prop4 != "") msg.react("4%E2%83%A3") }, 3000);
-                    setTimeout(function () { if (prop5 != "") msg.react("5%E2%83%A3") }, 4000);
-                    setTimeout(function () { if (prop6 != "") msg.react("6%E2%83%A3") }, 5000);
-                    setTimeout(function () { if (prop7 != "") msg.react("7%E2%83%A3") }, 6000);
-                    setTimeout(function () { if (prop8 != "") msg.react("8%E2%83%A3") }, 7000);
-                    setTimeout(function () { if (prop9 != "") msg.react("9%E2%83%A3") }, 8000);
+                .then(function (msg) { 
+                    msg.react("1⃣")
+                    setTimeout(function () { msg.react("2⃣") }, 500);
+                    setTimeout(function () { if (prop3 != "") msg.react("3⃣") }, 1500);
+                    setTimeout(function () { if (prop4 != "") msg.react("4⃣") }, 2000);
+                    setTimeout(function () { if (prop5 != "") msg.react("5⃣") }, 2500);
+                    setTimeout(function () { if (prop6 != "") msg.react("6⃣") }, 3000);
+                    setTimeout(function () { if (prop7 != "") msg.react("7⃣") }, 3500);
+                    setTimeout(function () { if (prop8 != "") msg.react("8⃣") }, 4000);
+                    setTimeout(function () { if (prop9 != "") msg.react("9⃣") }, 4500);
                 });
 
         } catch (error) {
