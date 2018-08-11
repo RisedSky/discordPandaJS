@@ -18,7 +18,7 @@ module.exports = {
             }
             call.bot.fetchUser(call.args[0]).catch(() => {
                 message.reply(call.bot.EmojiRedTickString + " Sorry, can't find this user ! :thinking:").then(msg => {
-                    deleteMyMessage(msg, 8 * 1000)
+                    call.bot.deleteMyMessage(msg, 8 * 1000)
                 })
             }).then(function (user) {
                 var message_to_send = call.content.slice(call.args[0].length + 1)
