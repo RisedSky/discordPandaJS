@@ -399,7 +399,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		clearInterval(deleteUserMsg);
 		if (!deleteit) return;
 		if (message.deletable) {
-			-+
 				message.delete(1500).catch(e => {
 					if (e.name === "DiscordAPIError") return;
 					console.log("can't delete this message: " + e)
@@ -417,8 +416,8 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					commandFile.run(new Call(message, bot, bot.commands, args, content, prefix, cmd));
 				} else message.reply("This command isn't working in DM")
 			} else {
-				bot.DeleteUserMessage(false)
 				try {
+				bot.DeleteUserMessage(false)
 					//message.react(bot.EmojiThonkong)
 
 					try {
