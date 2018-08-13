@@ -2,7 +2,7 @@ const config = {
     yt_api_key: process.env.yt_api_key,
     BOT_TOKEN: process.env.BOT_TOKEN,
     prefix: "*",
-    bot_version: "2.0.1",
+    bot_version: "2.1.0",
     DefaultGuildID: "412262889156771842",
     dbl_token: process.env.dbl_token,
 
