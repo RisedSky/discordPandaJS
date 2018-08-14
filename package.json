@@ -19,7 +19,7 @@
     "ffmpeg-binaries": "3.2.2-3",
     "request": "2.83.0",
     "url": "0.11.0",
-    "moment": "2.20.1",
+    "moment": "2.22.2",
     "mysql2": "1.5.3",
     "dblapi.js": "1.2.1",
     "fs": "0.0.1-security"
