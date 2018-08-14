@@ -231,19 +231,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		//cmd = message.content.slice(bot.config.prefix.length).trim().split(/ +/g),
 		content = args.join(" ");
 
-	let SQL_GetResult = async function (callback) {
-
-		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
-			if (err) return callback(err);
-
-			if (results == undefined) {
-				bot.SQL_Insert_NewServer(member)
-				return;
-			}
-
-			callback(null, results[0])
-		})
-	}
 
 	if (!bot.servers[message.guild.id]) {
 		bot.servers[message.guild.id] = {
@@ -346,15 +333,9 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix) || message.content.startsWith(prefix + prefix)) return;
 
-	await SQL_GetResult(function (err, result) {
-		if (err) console.log(err);
-		else {
-			if (result == undefined) {
-				return message.reply(lang_english.Command_Welcome_Create_Server_To_Database).then(msg => {
-					bot.SQL_Insert_NewServer(message.member).then(msg.edit(`~~${lang_english.Command_Welcome_Create_Server_To_Database}~~ ${lang_english.Something_Done}`))
-					bot.deleteMyMessage(msg, 16 * 1000)
-				})
-			}
+	bot.SQL_GetResult(message, message.member).then(result => {
+		if (result == undefined) return;
+
 			lang = result.lang;
 			if (lang == undefined || lang == null || lang == "") {
 				console.log("not defined");
@@ -366,8 +347,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 			}
 			current_lang = require(`./lang/${lang}.js`).lang
 			bot.current_lang = require(`./lang/${lang}.js`).lang
-
-		}
 	})
 
 	//Declaring variable
@@ -484,7 +463,6 @@ bot.SQL_Insert_NewServer = async function (member) {
 	});
 }
 
-
 bot.SQL_UpdateLang = async function (message, set_this, set_that) {
 	bot.con.query(`UPDATE ${bot.DB_Model} SET ${set_this} = ? WHERE serverid = ${message.guild.id}`, [set_that], (err, results) => {
 		if (err) console.log(err);
@@ -521,22 +499,6 @@ bot.SQL_UpdateChannelMessage = async function (message, channel) {
 //#endregion
 
 //#region Important functions
-/*
-bot.SQL_GetResult = async function (callback) {
-
-	bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
-		if (err) return callback(err);
-
-		if (results == undefined) {
-			SQL_Insert_NewServer(member)
-			return;
-		}
-
-		callback(null, results[0])
-	})
-}
-*/
-
 bot.SQL_GetResult = function (message, member) {
 	return new Promise((resolve, reject) => {
 		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
