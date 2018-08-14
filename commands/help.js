@@ -28,7 +28,7 @@ module.exports = {
                 "```" +
                 "\n\n" + "```md\n" +
                 "<» Other Commands>\n\n\n" +
-                `#» [NEW COMMAND!!] ${call.bot.config.prefix}lang\nChange the language of the bot!\n\n` +
+                `#» ${call.bot.config.prefix}lang\nChange the language of the bot!\n\n` +
                 `#» ${call.bot.config.prefix}say [text]\nCommand to speak the bot (Need the perm 'MANAGE_MESSAGES'\n\n` +
                 `#» ${call.bot.config.prefix}github\nSend you my GitHub project in your DMs\n\n` +
                 `#» ${call.bot.config.prefix}ping\nShow the ping of the bot\n\n` +
@@ -51,6 +51,7 @@ module.exports = {
                 `#» ${call.bot.config.prefix}verif-perms\nTell you about the perms I have in this channel\n\n` +
                 `#» ${call.bot.config.prefix}staff\nSend a message to my creators\n\n` +
                 `#» ${call.bot.config.prefix}invite\nGive you the invite link to add me !\n\n` +
+                `#» [NEW COMMAND!!] ${call.bot.config.prefix}nsfw\nGive you some NSFW image\n\n` +
                 `#» [NEW COMMAND!!] ${call.bot.config.prefix}credits\nCredits for people who helped us !\n\n` +
                 `#» ${call.bot.config.prefix}help\nShow all the bot commands (This message)!` +
                 "\n" +
