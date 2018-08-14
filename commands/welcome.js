@@ -19,7 +19,7 @@ module.exports = {
                     if (result == undefined) return;
 
                     activated = result.welcome_status;
-                    console.log(result.welcome_status);
+                    //console.log(result.welcome_status);
 
                     if (activated == undefined) {
                         call.bot.SQL_Insert_NewServer(message.member)
@@ -27,17 +27,17 @@ module.exports = {
                     }
 
                     if (activated === 1) {
-                        console.log("Already activated");
+                        //console.log("Already activated");
                         message.reply(call.bot.current_lang.Command_Welcome_Already_Activated)
                         return;
                     } else {
-                        console.log("Now Activated");
+                        //console.log("Now Activated");
                         call.bot.con.query(`UPDATE ${call.bot.DB_Model} SET welcome_status = true WHERE serverid = '${message.guild.id}'`, (err, results) => {
                             if (err) throw err;
 
-                            console.log("welcome_status activated!");
+                            //console.log("welcome_status activated!");
                             message.reply(call.bot.current_lang.Command_Welcome_Now_Activated)
-                            console.log(result)
+                            //console.log(result)
                         });
                     }
                 })
@@ -49,18 +49,18 @@ module.exports = {
                     if (result == undefined) return;
 
                     activated = result.welcome_status;
-                    console.log(result.welcome_status);
+                    //console.log(result.welcome_status);
 
                     if (activated === 0) {
-                        console.log("Already deactivated");
+                        //console.log("Already deactivated");
                         return message.reply(call.bot.current_lang.Command_Welcome_Already_Deactivated)
                         
                     } else {
-                        console.log("Now Activated");
+                        //console.log("Now Activated");
                         call.bot.con.query(`UPDATE ${call.bot.DB_Model} SET welcome_status = false WHERE serverid = '${message.guild.id}'`, (err, results) => {
                             if (err) throw err;
 
-                            console.log("welcome_status deactivated !");
+                            //console.log("welcome_status deactivated !");
                             message.reply(call.bot.current_lang.Command_Welcome_Now_Deactivated)
                             //console.log(results[0])
                         });
@@ -77,7 +77,7 @@ module.exports = {
                 //console.log("TEST >> " + call.content.substr(call.args[0].length + 1 + call.args[1].length + 1))
                 //console.log(call.args_next)
                 const channelMsg = call.content.substr(call.args[0].length + 1 + call.args[1].length + 1)
-                console.log("channelmsg: '" + channelMsg + "'")
+                //console.log("channelmsg: '" + channelMsg + "'")
 
                 if (channelMsg.length === 0) {
                     return message.reply(call.bot.current_lang.Command_Welcome_No_Welcome_Channel_In_Message)
