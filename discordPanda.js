@@ -1,11 +1,8 @@
 //import { default as config } from "./config.js";
-const config = require("./config.js").config
-	, Discord = require("discord.js")
-	, YTDL = require("ytdl-core")
-	, URL = require('url')
-const request = require("request")
-	, moment = require("moment")
-	, bot = new Discord.Client({ autoReconnect: true })
+const Discord = require("discord.js")
+const bot = new Discord.Client({ autoReconnect: true })
+bot.YTDL = require("ytdl-core")
+bot.request = require("request")
 bot.moment = require("moment")
 bot.URL = require("url")
 bot.config = require("./config.js").config;
@@ -18,28 +15,28 @@ let current_lang;
 const lang_english = require("./lang/english.js").lang;
 
 const DBL = require("dblapi.js");
-const dbl = new DBL(config.dbl_token);
+const dbl = new DBL(bot.config.dbl_token);
 
 //#region Dev
-var DefaultGuildID = config.DefaultGuildID;
-var yt_api_key = config.yt_api_key;
+var DefaultGuildID = bot.config.DefaultGuildID;
+var yt_api_key = bot.config.yt_api_key;
 
-var BOT_TOKEN = config.BOT_TOKEN;
+var BOT_TOKEN = bot.config.BOT_TOKEN;
 bot.login(BOT_TOKEN);
 
-let prefix = config.prefix;
-let bot_version = config.bot_version;
+let prefix = bot.config.prefix;
+let bot_version = bot.config.bot_version;
 
 //#region MySQL
-bot.DB_Model = config.MySQL_DB_Model; //Model qu'on utilise pour récup les infos
+bot.DB_Model = bot.config.MySQL_DB_Model; //Model qu'on utilise pour récup les infos
 
 const mysql = require('mysql2');
 
 bot.con = mysql.createPool({
-	host: config.MySQL_host,
-	user: config.MySQL_user,
-	database: config.MySQL_database,
-	password: config.MySQL_password
+	host: bot.config.MySQL_host,
+	user: bot.config.MySQL_user,
+	database: bot.config.MySQL_database,
+	password: bot.config.MySQL_password
 });
 //#endregion
 
@@ -683,7 +680,7 @@ bot.PermissionCheck = function (PermToCheck) {
 
 //#region "Functions pour la musique"
 bot.search_video = function (message, query) {
-	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=" + encodeURIComponent(query) + "&key=" + yt_api_key, (error, response, body) => {
+	bot.request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=" + encodeURIComponent(query) + "&key=" + yt_api_key, (error, response, body) => {
 
 		var json = JSON.parse(body);
 
@@ -708,7 +705,7 @@ bot.add_to_queue = function (video, message) {
 		, video_id = video
 		, playit = server.playit
 
-	YTDL.getInfo("https://www.youtube.com/watch?v=" + video, (error, info) => {
+	bot.YTDL.getInfo("https://www.youtube.com/watch?v=" + video, (error, info) => {
 		if (error) {
 			message.reply("The requested video (" + video + ") does not exist or cannot be played.").then(function (msg) {
 				bot.deleteMyMessage(msg, 15000);
@@ -820,7 +817,7 @@ bot.queue_playlist = function (playlistId, message, pageToken = '') {
 	var server = bot.servers[message.guild.id];
 
 
-	request("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playlistId + "&key=" + yt_api_key + "&pageToken=" + pageToken, (error, response, body) => {
+	bot.request("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playlistId + "&key=" + yt_api_key + "&pageToken=" + pageToken, (error, response, body) => {
 		var json = JSON.parse(body);
 
 		if ("error" in json) {
@@ -917,7 +914,7 @@ bot.play = function (connection, message) {
 		})
 
 		server.dispatcher = connection.playStream(
-			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
+			bot.YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
 		);
 
 		server.dispatcher.setVolume(0.3);
