@@ -96,7 +96,7 @@ bot.on('ready', () => { //When bot is ready
 		}
 
 	}, 1800000); //30 min
-	
+
 	bot.user.setStatus("online")
 	console.log("------------------------------")
 	console.log(bot.prefixLog + "Bot created by RisedSky & PLfightX <3")
@@ -336,17 +336,17 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	bot.SQL_GetResult(message, message.member).then(result => {
 		if (result == undefined) return;
 
-			lang = result.lang;
-			if (lang == undefined || lang == null || lang == "") {
-				console.log("not defined");
+		lang = result.lang;
+		if (lang == undefined || lang == null || lang == "") {
+			console.log("not defined");
 
-				return message.reply(`Currently changing the lang to default (english)...`).then(msg => {
-					bot.SQL_UpdateSomething(message, "lang", "english").then(msg.edit(`~~Currently changing the lang to default (english)...~~ ${lang_english.Something_Done}`))
-					bot.deleteMyMessage(msg, 16 * 1000)
-				})
-			}
-			current_lang = require(`./lang/${lang}.js`).lang
-			bot.current_lang = require(`./lang/${lang}.js`).lang
+			return message.reply(`Currently changing the lang to default (english)...`).then(msg => {
+				bot.SQL_UpdateSomething(message, "lang", "english").then(msg.edit(`~~Currently changing the lang to default (english)...~~ ${lang_english.Something_Done}`))
+				bot.deleteMyMessage(msg, 16 * 1000)
+			})
+		}
+		current_lang = require(`./lang/${lang}.js`).lang
+		bot.current_lang = require(`./lang/${lang}.js`).lang
 	})
 
 	//Declaring variable
@@ -375,10 +375,10 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		clearInterval(deleteUserMsg);
 		if (!deleteit) return;
 		if (message.deletable) {
-				message.delete(1500).catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("can't delete this message: " + e)
-				});
+			message.delete(1500).catch(e => {
+				if (e.name === "DiscordAPIError") return;
+				console.log("can't delete this message: " + e)
+			});
 		}
 	}
 	var deleteUserMsg = setInterval(bot.DeleteUserMessage, 1200);
@@ -393,7 +393,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 				} else message.reply("This command isn't working in DM")
 			} else {
 				try {
-				bot.DeleteUserMessage(false)
+					bot.DeleteUserMessage(false)
 					//message.react(bot.EmojiThonkong)
 
 					try {
@@ -885,7 +885,7 @@ bot.play = function (connection, message) {
 			/*.setAuthor(YouTubeTitle, message.author.avatarURL)
 			Code qui permet de définir le titre et le logo du demandeur
 			*/
-			.setFooter(bot.AskedBy_EmbedFooter(message.member.author));
+			.setFooter(bot.AskedBy_EmbedFooter(message.author));
 
 
 		message.channel.send(embed).then(function (msg) {
