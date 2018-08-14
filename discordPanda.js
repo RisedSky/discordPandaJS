@@ -577,7 +577,7 @@ function ChangeState4() {
 }
 
 bot.AskedBy_EmbedFooter = function (author) {
-	return `Asked by ${author.username} • ID: ${author.id}`;
+	return `Asked by ${author.tag} • ID: ${author.id}`;
 }
 
 bot.deleteMyMessage = function (message, time) {
@@ -885,7 +885,7 @@ bot.play = function (connection, message) {
 			/*.setAuthor(YouTubeTitle, message.author.avatarURL)
 			Code qui permet de définir le titre et le logo du demandeur
 			*/
-			.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
+			.setFooter(bot.AskedBy_EmbedFooter(message.member.author));
 
 
 		message.channel.send(embed).then(function (msg) {
