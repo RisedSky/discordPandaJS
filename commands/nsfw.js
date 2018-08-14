@@ -11,10 +11,10 @@ module.exports = {
 
         let requested_nsfw;
         try {
-            if (!message.channel.nsfw || !message.channel.name.toLowerCase() == "nsfw") return message.reply("This channel must be NSFW")
+            if (!message.channel.nsfw || !message.channel.name.toLowerCase() == "nsfw") return message.reply("This channel must be NSFW").then(msg => call.bot.deleteMyMessage(msg, 12000))
 
             //console.log(call.args[0]);
-            if (!call.args[0]) return message.reply("List of all NSFW tag : \n" + `${call.bot.config.prefix}NSFW ` + "`random, bj, anal, pussy, ass, boobs, cum, futa, ero, yuri, neko, lesbian`")
+            if (!call.args[0]) return message.reply("List of all NSFW tag : \n" + `${call.bot.config.prefix}NSFW ` + "`random, bj, anal, pussy, ass, boobs, cum, futa, ero, yuri, neko, lesbian`").then(msg => call.bot.deleteMyMessage(msg, 15000))
 
             //if (call.args[0] == "neko") {
 
