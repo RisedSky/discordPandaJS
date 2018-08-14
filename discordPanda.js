@@ -452,9 +452,26 @@ bot.on('disconnect', () => {
 bot.on('resume', () => {
 	console.log("resumed!");
 })
+
+bot.on('guildUpdate', async (old, now) => {
+	//console.log(`Detected a guildUpdate`);
+
+	if (old.name !== now.name) {
+		//console.log(`Detected a guildUpdate#NameChange`);
+		bot.Update_Server_Name(now)
+	}
+})
 //#region Functions
 
 //#region SQL
+
+bot.Update_Server_Name = async function (guild) {
+	bot.con.query(`UPDATE ${bot.DB_Model} SET servername = ? WHERE serverid = ${guild.id}`, [guild.name], (err, results) => {
+		if (err) console.log(err);
+
+		console.log(`Changed successfully 'servername' of '${guild.id}' to '${guild.name}'`);
+	});
+}
 
 bot.SQL_Insert_NewServer = async function (member) {
 	bot.con.query(`INSERT INTO ${bot.DB_Model} (servername, serverid, prefix, lang, welcome_status) VALUES (?, ?, ?, ?, ?)`, [member.guild.name, member.guild.id, prefix, "english", false], (err, results) => {
