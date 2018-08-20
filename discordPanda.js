@@ -154,21 +154,30 @@ bot.on('guildMemberAdd', async member => {
 
 })
 
-bot.on('guildCreate', async Guild => {
+bot.on('guildCreate', async guild => {
+	guild.channels.find(c => c.permissionsFor(guild.me).has("SEND_MESSAGES") && c.type === "text").fetchMessages({ limit: "1" }).then(m => {
+		bot.SQL_GetResult(m.array().shift(), guild.me).then(result => {
+			if (result == undefined) bot.SQL_Insert_NewServer(guild.me)
+			else {
+				console.log("The server already exist");
+			}
+		})
+	})
 
-	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
+	setTimeout(() => {
+		const defaultChannel = guild.channels.find(c => c.permissionsFor(guild.me).has("SEND_MESSAGES") && c.type === 'text');
 
 	var msgToSend = [];
-	msgToSend.push(`${current_lang.guild_joining1}`)
+		msgToSend.push(`${lang_english.guild_joining1}`)
 	//msgToSend.push(`${current_lang.guild_joining2} **${prefix}help** ${current_lang.guild_joining3}`);
-	msgToSend.push(`${String(current_lang.guild_joining2).replace("{0}", `**${prefix}help**`)}`);
+		msgToSend.push(`${String(lang_english.guild_joining2).replace("{0}", `**${prefix}help**`)}`);
 	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-	msgToSend.push(`${current_lang.guild_joining4}: ${bot.Server_Link}`)
-	msgToSend.push(`${current_lang.guild_joining5} ;-)`)
+		msgToSend.push(`${lang_english.guild_joining4}: ${bot.Server_Link}`)
+		msgToSend.push(`${lang_english.guild_joining5} ;-)`)
 	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
 	defaultChannel.send(msgToSend);
-
+	}, 2500);
 })
 
 bot.commands = new Discord.Collection();
