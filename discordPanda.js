@@ -86,91 +86,6 @@ var PermissionNo = bot.EmojiRedTickString;
 
 //var CommandList = ["restart", "leave", "join", "", ""];
 
-bot.on('ready', () => { //When bot is ready
-	setInterval(() => {
-		try {
-			dbl.postStats(bot.guilds.size);
-			console.log("postStats is Done");
-		} catch (error) {
-			console.log("postStats error: " + error);
-		}
-
-	}, 1800000); //30 min
-
-	bot.user.setStatus("online")
-	console.log("------------------------------")
-	console.log(bot.prefixLog + "Bot created by RisedSky & PLfightX <3")
-	console.log(bot.prefixLog + "All rights reserved")
-	console.log(bot.prefixLog + "Bot ready")
-	console.log("------------------------------")
-
-	bot.user.setActivity(prefix + "help | Started and ready !");
-	setTimeout(ChangeState1, 20000);
-	console.log("The bot is now ready !")
-
-	for (var i in bot.guilds.array()) {
-		console.log(i + " » '" + bot.guilds.array()[i] + "'")
-	}
-
-})
-
-bot.on('guildMemberAdd', async member => {
-
-	let SQL_GetResult = function (callback) {
-		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${member.guild.id}'`, (err, results) => {
-			if (err) return callback(err)
-
-			callback(null, results[0])
-		})
-	}
-
-	await SQL_GetResult(function (err, result) {
-		if (err) console.log("Database error!");
-		else {
-			if (result == undefined) {
-				bot.SQL_Insert_NewServer(member)
-				return;
-			}
-
-			if (!result.welcome_status) return;
-
-			var t = String(result.welcome_channel).substr(2, 18)
-			let welcome_channel = member.guild.channels.find("id", t);
-
-			if (welcome_channel == undefined) return;
-			if (!welcome_channel) return;
-
-			let welcome_message = String(result.welcome_message)
-
-			if (welcome_message.includes("{user}")) {
-				let welcome_msg_new = bot.ReplaceThing(welcome_message, "{user}", "<@" + member.id + ">")
-
-				welcome_channel.send(welcome_msg_new)
-			} else {
-				welcome_channel.send(welcome_message)
-			}
-		}
-	});
-
-})
-
-bot.on('guildCreate', async Guild => {
-
-	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
-
-	var msgToSend = [];
-	msgToSend.push(`${current_lang.guild_joining1}`)
-	//msgToSend.push(`${current_lang.guild_joining2} **${prefix}help** ${current_lang.guild_joining3}`);
-	msgToSend.push(`${String(current_lang.guild_joining2).replace("{0}", `**${prefix}help**`)}`);
-	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-	msgToSend.push(`${current_lang.guild_joining4}: ${bot.Server_Link}`)
-	msgToSend.push(`${current_lang.guild_joining5} ;-)`)
-	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
-
-	defaultChannel.send(msgToSend);
-
-})
-
 bot.commands = new Discord.Collection();
 bot.disabledCommands = [];
 var jsfiles;
@@ -214,6 +129,121 @@ class Call {
 		this.cmd = cmd;
 	}
 }
+
+bot.on('ready', () => { //When bot is ready
+	setInterval(() => {
+		try {
+			dbl.postStats(bot.guilds.size);
+			console.log("postStats is Done");
+		} catch (error) {
+			console.log("postStats error: " + error);
+		}
+
+	}, 1800000); //30 min
+
+	bot.user.setStatus("online")
+	console.log("------------------------------")
+	console.log(bot.prefixLog + "Bot created by RisedSky & PLfightX <3")
+	console.log(bot.prefixLog + "All rights reserved")
+	console.log(bot.prefixLog + "Bot ready")
+	console.log("------------------------------")
+
+	bot.user.setActivity(prefix + "help | Started and ready !");
+	setTimeout(ChangeState1, 20000);
+	console.log("The bot is now ready !")
+	console.log(`I am connected as '${bot.user.tag}'`)
+
+	for (var i in bot.guilds.array()) {
+		console.log(`${i} » '${bot.guilds.array()[i]}' with ${bot.guilds.array()[i].members.size} members`)
+	}
+
+})
+
+bot.on('guildMemberAdd', async member => {
+
+	let SQL_GetResult = function (callback) {
+		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${member.guild.id}'`, (err, results) => {
+			if (err) return callback(err)
+
+			callback(null, results[0])
+		})
+	}
+
+	await SQL_GetResult(function (err, result) {
+		if (err) console.log("Database error!");
+		else {
+			if (result == undefined || result == null) {
+				bot.SQL_Insert_NewServer(member)
+				return;
+			}
+
+			autorole()
+			welcome_message()
+			function autorole() {
+				if (!result.autorole_status) return;
+				if (result.autorole_role) {
+					var role = member.guild.roles.find("id", result.autorole_role)
+					if (!role) return
+					try {
+						member.addRole(role, `Automatic AutoRole (${bot.config.prefix}autorole)`)
+					} catch (error) {
+						console.log(`Can't give the role to the member 'discordPanda.js:guildMemberAdd`)
+						console.log(error);
+					}
+				}
+			}
+
+			function welcome_message() {
+				if (!result.welcome_status) return;
+
+				var t = String(result.welcome_channel).substr(2, 18)
+				let welcome_channel = member.guild.channels.find("id", t);
+
+				if (welcome_channel == undefined) return;
+				if (!welcome_channel) return;
+
+				let welcome_message = String(result.welcome_message)
+
+				if (welcome_message.includes("{user}")) {
+					let welcome_msg_new = bot.ReplaceThing(welcome_message, "{user}", bot.NotifyUser(member.id))
+
+					welcome_channel.send(welcome_msg_new)
+				} else {
+					welcome_channel.send(welcome_message)
+				}
+			}
+		}
+
+	});
+
+
+})
+
+bot.on('guildCreate', async guild => {
+	guild.channels.find(c => c.permissionsFor(guild.me).has("SEND_MESSAGES") && c.type === "text").fetchMessages({ limit: "1" }).then(m => {
+		bot.SQL_GetResult(m.array().shift(), guild.me).then(result => {
+			if (result == undefined) bot.SQL_Insert_NewServer(guild.me)
+			else {
+				console.log("The server already exist");
+			}
+		})
+	})
+
+	setTimeout(() => {
+		const defaultChannel = guild.channels.find(c => c.permissionsFor(guild.me).has("SEND_MESSAGES") && c.type === 'text');
+
+		var msgToSend = [];
+		msgToSend.push(`${lang_english.guild_joining1}`)
+		//msgToSend.push(`${current_lang.guild_joining2} **${prefix}help** ${current_lang.guild_joining3}`);
+		msgToSend.push(`${String(lang_english.guild_joining2).replace("{0}", `**${prefix}help**`)}`);
+		//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
+		msgToSend.push(`${lang_english.guild_joining4}: ${bot.Server_Link}`)
+		msgToSend.push(`${lang_english.guild_joining5} ;-)`)
+		msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
+
+		defaultChannel.send(msgToSend);
+	}, 2500);
+})
 
 bot.on('message', async message => { //Quand une personne envoi un message
 	if (!message.guild) {
@@ -365,6 +395,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	//#region Permission de la personne
 	bot.member_Has_BAN_MEMBERS = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("BAN_MEMBERS") && message.channel.type === 'text'
 	bot.member_Has_MANAGE_GUILD = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_GUILD") && message.channel.type === 'text'
+	bot.member_Has_MANAGE_ROLES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_ROLES") && message.channel.type === 'text'
 	bot.member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 
 	//#endregion
@@ -640,7 +671,7 @@ bot.ReplaceThing = function (text, ThingToReplace, ReplaceTo) {
 		var re = new RegExp(new_ThingToReplace, "gi")
 
 		var result = new_text.replace(re, new_ReplaceTo)
-		console.log(result);
+		//console.log(result);
 
 		return result;
 	} else return new_text;
