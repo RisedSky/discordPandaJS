@@ -47,10 +47,11 @@ module.exports = {
                 })
                 return;
             }
+            message.react(call.bot.EmojiGreenTick)
 
-            var nmbr = 0
-                , nmbrdeleted = 0
-                , time;
+            var nmbrdeleted = 0
+                , nmbrNotdeleted = 0
+                , time = 0;
             setTimeout(() => {
                 var allMsgs = message.channel.fetchMessages({ limit: NumberToDelete })
                     .then(async messages => {
@@ -62,30 +63,27 @@ module.exports = {
                             var IntervalDelete = setInterval(DeleteCollectionMessage, 1500)
 
                             function DeleteCollectionMessage() {
-                                try {
-                                    if (nmbrdeleted == NumberToDelete) {
-                                        msgdeleted.edit(String(call.bot.current_lang.Command_Purged_X_Messages).replace("{0}", nmbrdeleted).replace("{1}", NumberToDelete))
-                                        call.bot.deleteMyMessage(msgdeleted, 8 * 1000)
-                                        return clearInterval(IntervalDelete)
-                                    }
-                                    if (time == undefined || time == null) time = 750;
-                                    if (!message.deletable) return
-                                    if (message.pinned) return;
+                                //if (time == undefined || time == null) time = 750;
+                                if (!msg || msg == undefined || msg == null) return clearInterval(IntervalDelete)
 
-                                    if (!msg || msg == undefined || msg == null) return clearInterval(IntervalDelete)
-
-                                    let MsgToDelete = msg.shift()
-                                    //console.log(MsgToDelete)
-                                    if (MsgToDelete == null || MsgToDelete == undefined) return clearInterval(IntervalDelete)
-                                    nmbrdeleted++;
-                                    msgdeleted.edit(String(call.bot.current_lang.Command_Purge_Deleted_X_Messages).replace("{0}", nmbrdeleted))
-                                    MsgToDelete.delete(time)
-                                } catch (error) {
-                                    console.log("purge command error");
-                                    console.log(error);
-                                }
+                                let MsgToDelete = msg.shift()
+                                //console.log(MsgToDelete)
+                                if (MsgToDelete == null || MsgToDelete == undefined) return clearInterval(IntervalDelete)
+                                if (!MsgToDelete.deletable) { nmbrNotdeleted++; MsgNmbrVerification() }
+                                if (MsgToDelete.pinned) { nmbrNotdeleted++; MsgNmbrVerification() }
+                                nmbrdeleted++;
+                                MsgToDelete.delete(time)
+                                msgdeleted.edit(String(call.bot.current_lang.Command_Purge_Deleted_X_Messages).replace("{0}", nmbrdeleted))
+                                MsgNmbrVerification()
                             }
 
+                            function MsgNmbrVerification() {
+                                if ((nmbrdeleted + nmbrNotdeleted) == NumberToDelete) {
+                                    msgdeleted.edit(String(call.bot.current_lang.Command_Purged_X_Messages).replace("{0}", nmbrdeleted).replace("{1}", NumberToDelete))
+                                    call.bot.deleteMyMessage(msgdeleted, 10 * 1000)
+                                    return clearInterval(IntervalDelete)
+                                }
+                            }
                         })
                     });
             }, 3500);
