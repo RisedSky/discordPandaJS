@@ -213,11 +213,8 @@ bot.on('guildMemberAdd', async member => {
 				}
 			}
 		}
-
 	});
 
-
-})
 
 bot.on('guildCreate', async guild => {
 	guild.channels.find(c => c.permissionsFor(guild.me).has("SEND_MESSAGES") && c.type === "text").fetchMessages({ limit: "1" }).then(m => {

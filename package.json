@@ -13,7 +13,7 @@
     "erlpack": "0.1.2",
     "ultron": "1.1.1",
     "ws": "4.0.0",
-    "ytdl-core": "0.20.1",
+    "ytdl-core": "0.26.1",
     "ffmpeg": "0.0.4",
     "ffmpeg-node": "0.0.2",
     "ffmpeg-binaries": "4.0.0",
