@@ -39,7 +39,8 @@ module.exports = {
                 `#» ${call.bot.config.prefix}poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers\n\n` +
                 `#» ${call.bot.config.prefix}kappa\nSend a kappa image\n\n` +
                 `#» ${call.bot.config.prefix}rekt [@someone]\nRekt one of your friends\n\n` +
-                `#» ${call.bot.config.prefix}welcome\nSet a welcome message to your incredibleer !` +
+                `#» ${call.bot.config.prefix}welcome\nSet a welcome message to your incredible user !` +
+                `#» [NEW COMMAND!!] ${call.bot.config.prefix}autorole\nSet an autorole to your incredible user !` +
 
                 "\n" + "```" +
 
@@ -51,8 +52,8 @@ module.exports = {
                 `#» ${call.bot.config.prefix}verif-perms\nTell you about the perms I have in this channel\n\n` +
                 `#» ${call.bot.config.prefix}staff\nSend a message to my creators\n\n` +
                 `#» ${call.bot.config.prefix}invite\nGive you the invite link to add me !\n\n` +
-                `#» [NEW COMMAND!!] ${call.bot.config.prefix}nsfw\nGive you some NSFW image\n\n` +
-                `#» [NEW COMMAND!!] ${call.bot.config.prefix}credits\nCredits for people who helped us !\n\n` +
+                `#» ${call.bot.config.prefix}nsfw\nGive you some NSFW image\n\n` +
+                `#» ${call.bot.config.prefix}credits\nCredits for people who helped us !\n\n` +
                 `#» ${call.bot.config.prefix}help\nShow all the bot commands (This message)!` +
                 "\n" +
                 "```" + "\n\n\n")
