@@ -1,5 +1,4 @@
-[![Discord Bots](https://discordbots.org/api/widget/status/408697648216932372.svg)](https://discordbots.org/bot/408697648216932372)
-[![Discord Bots](https://discordbots.org/api/widget/servers/408697648216932372.svg)](https://discordbots.org/bot/408697648216932372)
+[![Discord Bots](https://discordbots.org/api/widget/408697648216932372.svg)](https://discordbots.org/bot/408697648216932372)
 
 
 ## discordPandaJS
