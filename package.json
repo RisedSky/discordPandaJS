@@ -16,7 +16,7 @@
     "ytdl-core": "0.20.1",
     "ffmpeg": "0.0.4",
     "ffmpeg-node": "0.0.2",
-    "ffmpeg-binaries": "3.2.2-3",
+    "ffmpeg-binaries": "4.0.0",
     "request": "2.83.0",
     "url": "0.11.0",
     "moment": "2.20.1",
