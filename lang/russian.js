@@ -39,6 +39,8 @@ const lang = {
 	Permission_Manage_Server_Required: `(**Управление Сервером** Понадобится)`,
 
 	//Database_Error: ``,
+	Command_Args_Missing: `${EmojiRedTickString} Некоторые аргументы отсутсвуют!`,
+
 	Command_User_Not_Allowed: `${EmojiRedTickString} Эта комманда не доступа для тебя!`,
 	Command_User_Message_Is_Empty: `${EmojiRedTickString} твое сообщение пустое`,
 	Command_User_Need_Permission_Manage_Messages: `${EmojiRedTickString} ты должен иметь право: **(Управление сообщениями)** чтобы зделать это`,
@@ -193,9 +195,30 @@ const lang = {
 	Music_Status_Requested_By: `Запросил`,
 	//#endregion
 
+	//region autorole
+	Command_Autorole_Now_Activated: `${EmojiGreenTickString} авто-роль активирована.`,
+	Command_Autorole_Now_Activated: `${EmojiGreenTickString} Авто-роль Активирована.`,
+	Command_Autorole_Already_Activated: `${EmojiRedTickString} авто-роль уже активрована.`,
 
+	Command_Autorole_Now_Deactivated: `${EmojiGreenTickString} автороль деактивирована.`,
+	Command_Autorole_Now_Deactivated: `${EmojiGreenTickString} Авто-роль деативирована.`,
+	Command_Autorole_Already_Deactivated: `${EmojiRedTickString} авто-роль уже деактивирована.`,
+
+	Command_Autorole_Is_Now_Defined_As: `${EmojiGreenTickString} теперь автороль выдает каждому роль: {0}`,
+
+	Command_AutoRole_Not_Found_Role: `${EmojiRedTickString} роль  \`{0}\` Не найдена`,
+	Command_AutoRole_Not_Defined: `${EmojiRedTickString} Роль не найдена`,
+
+	//Embed
+	Command_AutoRole_Embed_Description1: `Что-бы использовать комманду \`auto_role\` надо посмотреть сюда на подсказки :\n`,
+	Command_AutoRole_Embed_Description2: `:one: 1-е, тебе надо выбрать роль коммандой : \`{0}auto_role set @role\`\n\n`,
+	Command_AutoRole_Embed_Description3: `:two: После этого, если все пошло так как надо тогда включаем авто-роль коммандой: \`{0}auto_role on\`\n\n\n`,
+
+	Command_AutoRole_Embed_Description4: `:information_source: Аргументы к этой комманде: \`help, show, on, off\`\n`,
+	Command_AutoRole_Embed_Description5: `:information_source: если тебе надо выключить авто - роль, пропишы эту комманду: \`{0}auto_role off\`\n`,
+	Command_AutoRole_Embed_Description6: `:information_source: Вы можете использовать команду \`{0}autorole\` **вместо** \`{1}auto_role\`\n`
+	//#endregion
 	// current_lang.
-	//current translate version: 1.2 BETA
 }
 module.exports = {
 	lang: lang
