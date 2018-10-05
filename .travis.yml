@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - 8
+  - 9
+install: npm install
+jobs:
+  include:
+    - stage: deploy
+      node_js: 9
+cache:
+  directories:
+    - node_modules
+dist: trusty
+sudo: false

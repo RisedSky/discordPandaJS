@@ -22,6 +22,7 @@
     "moment": "2.20.1",
     "mysql2": "1.5.3",
     "dblapi.js": "2.2.0",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "nekos.life": "1.1.3"
   }
 }

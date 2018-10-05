@@ -1,11 +1,8 @@
 //import { default as config } from "./config.js";
-const config = require("./config.js").config
-	, Discord = require("discord.js")
-	, YTDL = require("ytdl-core")
-	, URL = require('url')
-const request = require("request")
-	, moment = require("moment")
-	, bot = new Discord.Client({ autoReconnect: true })
+const Discord = require("discord.js")
+const bot = new Discord.Client({ autoReconnect: true })
+bot.YTDL = require("ytdl-core")
+bot.request = require("request")
 bot.moment = require("moment")
 bot.URL = require("url")
 bot.config = require("./config.js").config;
@@ -18,28 +15,28 @@ let current_lang;
 const lang_english = require("./lang/english.js").lang;
 
 const DBL = require("dblapi.js");
-const dbl = new DBL(config.dbl_token);
+const dbl = new DBL(bot.config.dbl_token);
 
 //#region Dev
-var DefaultGuildID = config.DefaultGuildID;
-var yt_api_key = config.yt_api_key;
+var DefaultGuildID = bot.config.DefaultGuildID;
+var yt_api_key = bot.config.yt_api_key;
 
-var BOT_TOKEN = config.BOT_TOKEN;
+var BOT_TOKEN = bot.config.BOT_TOKEN;
 bot.login(BOT_TOKEN);
 
-let prefix = config.prefix;
-let bot_version = config.bot_version;
+let prefix = bot.config.prefix;
+let bot_version = bot.config.bot_version;
 
 //#region MySQL
-bot.DB_Model = config.MySQL_DB_Model; //Model qu'on utilise pour récup les infos
+bot.DB_Model = bot.config.MySQL_DB_Model; //Model qu'on utilise pour récup les infos
 
 const mysql = require('mysql2');
 
 bot.con = mysql.createPool({
-	host: config.MySQL_host,
-	user: config.MySQL_user,
-	database: config.MySQL_database,
-	password: config.MySQL_password
+	host: bot.config.MySQL_host,
+	user: bot.config.MySQL_user,
+	database: bot.config.MySQL_database,
+	password: bot.config.MySQL_password
 });
 //#endregion
 
@@ -89,91 +86,6 @@ var PermissionNo = bot.EmojiRedTickString;
 
 //var CommandList = ["restart", "leave", "join", "", ""];
 
-bot.on('ready', () => { //When bot is ready
-	setInterval(() => {
-		try {
-			dbl.postStats(bot.guilds.size);
-			console.log("postStats is Done");
-		} catch (error) {
-			console.log("postStats error: " + error);
-		}
-
-	}, 1800000); //30 min
-	
-	bot.user.setStatus("online")
-	console.log("------------------------------")
-	console.log(bot.prefixLog + "Bot created by RisedSky & PLfightX <3")
-	console.log(bot.prefixLog + "All rights reserved")
-	console.log(bot.prefixLog + "Bot ready")
-	console.log("------------------------------")
-
-	bot.user.setActivity(prefix + "help | Started and ready !");
-	setTimeout(ChangeState1, 20000);
-	console.log("The bot is now ready !")
-
-	for (var i in bot.guilds.array()) {
-		console.log(i + " » '" + bot.guilds.array()[i] + "'")
-	}
-
-})
-
-bot.on('guildMemberAdd', async member => {
-
-	let SQL_GetResult = function (callback) {
-		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${member.guild.id}'`, (err, results) => {
-			if (err) return callback(err)
-
-			callback(null, results[0])
-		})
-	}
-
-	await SQL_GetResult(function (err, result) {
-		if (err) console.log("Database error!");
-		else {
-			if (result == undefined) {
-				bot.SQL_Insert_NewServer(member)
-				return;
-			}
-
-			if (!result.welcome_status) return;
-
-			var t = String(result.welcome_channel).substr(2, 18)
-			let welcome_channel = member.guild.channels.find("id", t);
-
-			if (welcome_channel == undefined) return;
-			if (!welcome_channel) return;
-
-			let welcome_message = String(result.welcome_message)
-
-			if (welcome_message.includes("{user}")) {
-				let welcome_msg_new = bot.ReplaceThing(welcome_message, "{user}", "<@" + member.id + ">")
-
-				welcome_channel.send(welcome_msg_new)
-			} else {
-				welcome_channel.send(welcome_message)
-			}
-		}
-	});
-
-})
-
-bot.on('guildCreate', async Guild => {
-
-	const defaultChannel = Guild.channels.find(c => c.permissionsFor(Guild.me).has("SEND_MESSAGES") && c.type === 'text');
-
-	var msgToSend = [];
-	msgToSend.push(`${current_lang.guild_joining1}`)
-	//msgToSend.push(`${current_lang.guild_joining2} **${prefix}help** ${current_lang.guild_joining3}`);
-	msgToSend.push(`${String(current_lang.guild_joining2).replace("{0}", `**${prefix}help**`)}`);
-	//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
-	msgToSend.push(`${current_lang.guild_joining4}: ${bot.Server_Link}`)
-	msgToSend.push(`${current_lang.guild_joining5} ;-)`)
-	msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
-
-	defaultChannel.send(msgToSend);
-
-})
-
 bot.commands = new Discord.Collection();
 bot.disabledCommands = [];
 var jsfiles;
@@ -218,6 +130,121 @@ class Call {
 	}
 }
 
+bot.on('ready', () => { //When bot is ready
+	setInterval(() => {
+		try {
+			dbl.postStats(bot.guilds.size);
+			console.log("postStats is Done");
+		} catch (error) {
+			console.log("postStats error: " + error);
+		}
+
+	}, 1800000); //30 min
+
+	bot.user.setStatus("online")
+	console.log("------------------------------")
+	console.log(bot.prefixLog + "Bot created by RisedSky & PLfightX <3")
+	console.log(bot.prefixLog + "All rights reserved")
+	console.log(bot.prefixLog + "Bot ready")
+	console.log("------------------------------")
+
+	bot.user.setActivity(prefix + "help | Started and ready !");
+	setTimeout(ChangeState1, 20000);
+	console.log("The bot is now ready !")
+	console.log(`I am connected as '${bot.user.tag}'`)
+
+	for (var i in bot.guilds.array()) {
+		console.log(`${i} » '${bot.guilds.array()[i]}' with ${bot.guilds.array()[i].members.size} members`)
+	}
+
+})
+
+bot.on('guildMemberAdd', async member => {
+
+	let SQL_GetResult = function (callback) {
+		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${member.guild.id}'`, (err, results) => {
+			if (err) return callback(err)
+
+			callback(null, results[0])
+		})
+	}
+
+	await SQL_GetResult(function (err, result) {
+		if (err) console.log("Database error!");
+		else {
+			if (result == undefined || result == null) {
+				bot.SQL_Insert_NewServer(member)
+				return;
+			}
+
+			autorole()
+			welcome_message()
+			function autorole() {
+				if (!result.autorole_status) return;
+				if (result.autorole_role) {
+					var role = member.guild.roles.find("id", result.autorole_role)
+					if (!role) return
+					try {
+						member.addRole(role, `Automatic AutoRole (${bot.config.prefix}autorole)`)
+					} catch (error) {
+						console.log(`Can't give the role to the member 'discordPanda.js:guildMemberAdd`)
+						console.log(error);
+					}
+				}
+			}
+
+			function welcome_message() {
+				if (!result.welcome_status) return;
+
+				var t = String(result.welcome_channel).substr(2, 18)
+				let welcome_channel = member.guild.channels.find("id", t);
+
+				if (welcome_channel == undefined) return;
+				if (!welcome_channel) return;
+
+				let welcome_message = String(result.welcome_message)
+
+				if (welcome_message.includes("{user}")) {
+					let welcome_msg_new = bot.ReplaceThing(welcome_message, "{user}", bot.NotifyUser(member.id))
+
+					welcome_channel.send(welcome_msg_new)
+				} else {
+					welcome_channel.send(welcome_message)
+				}
+			}
+		}
+
+	});
+
+
+})
+
+bot.on('guildCreate', async guild => {
+	guild.channels.find(c => c.permissionsFor(guild.me).has("SEND_MESSAGES") && c.type === "text").fetchMessages({ limit: "1" }).then(m => {
+		bot.SQL_GetResult(m.array().shift(), guild.me).then(result => {
+			if (result == undefined) bot.SQL_Insert_NewServer(guild.me)
+			else {
+				console.log("The server already exist");
+			}
+		})
+	})
+
+	setTimeout(() => {
+		const defaultChannel = guild.channels.find(c => c.permissionsFor(guild.me).has("SEND_MESSAGES") && c.type === 'text');
+
+		var msgToSend = [];
+		msgToSend.push(`${lang_english.guild_joining1}`)
+		//msgToSend.push(`${current_lang.guild_joining2} **${prefix}help** ${current_lang.guild_joining3}`);
+		msgToSend.push(`${String(lang_english.guild_joining2).replace("{0}", `**${prefix}help**`)}`);
+		//msgToSend.push("I'm also in development and, if you want to contribute to me you can simply go here: https://github.com/RisedSky/discordPandaJS");
+		msgToSend.push(`${lang_english.guild_joining4}: ${bot.Server_Link}`)
+		msgToSend.push(`${lang_english.guild_joining5} ;-)`)
+		msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
+
+		defaultChannel.send(msgToSend);
+	}, 2500);
+})
+
 bot.on('message', async message => { //Quand une personne envoi un message
 	if (!message.guild) {
 		if (message.content.startsWith(bot.config.prefix + "invite")) {
@@ -234,19 +261,6 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		//cmd = message.content.slice(bot.config.prefix.length).trim().split(/ +/g),
 		content = args.join(" ");
 
-	let SQL_GetResult = async function (callback) {
-
-		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
-			if (err) return callback(err);
-
-			if (results == undefined) {
-				bot.SQL_Insert_NewServer(member)
-				return;
-			}
-
-			callback(null, results[0])
-		})
-	}
 
 	if (!bot.servers[message.guild.id]) {
 		bot.servers[message.guild.id] = {
@@ -349,28 +363,20 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	if (message.author.bot) return;
 	if (!message.content.startsWith(prefix) || message.content.startsWith(prefix + prefix)) return;
 
-	await SQL_GetResult(function (err, result) {
-		if (err) console.log(err);
-		else {
-			if (result == undefined) {
-				return message.reply(lang_english.Command_Welcome_Create_Server_To_Database).then(msg => {
-					bot.SQL_Insert_NewServer(message.member).then(msg.edit(`~~${lang_english.Command_Welcome_Create_Server_To_Database}~~ ${lang_english.Something_Done}`))
-					bot.deleteMyMessage(msg, 16 * 1000)
-				})
-			}
-			lang = result.lang;
-			if (lang == undefined || lang == null || lang == "") {
-				console.log("not defined");
+	bot.SQL_GetResult(message, message.member).then(result => {
+		if (result == undefined) return;
 
-				return message.reply(`Currently changing the lang to default (english)...`).then(msg => {
-					bot.SQL_UpdateSomething(message, "lang", "english").then(msg.edit(`~~Currently changing the lang to default (english)...~~ ${lang_english.Something_Done}`))
-					bot.deleteMyMessage(msg, 16 * 1000)
-				})
-			}
-			current_lang = require(`./lang/${lang}.js`).lang
-			bot.current_lang = require(`./lang/${lang}.js`).lang
+		lang = result.lang;
+		if (lang == undefined || lang == null || lang == "") {
+			console.log("not defined");
 
+			return message.reply(`Currently changing the lang to default (english)...`).then(msg => {
+				bot.SQL_UpdateSomething(message, "lang", "english").then(msg.edit(`~~Currently changing the lang to default (english)...~~ ${lang_english.Something_Done}`))
+				bot.deleteMyMessage(msg, 16 * 1000)
+			})
 		}
+		current_lang = require(`./lang/${lang}.js`).lang
+		bot.current_lang = require(`./lang/${lang}.js`).lang
 	})
 
 	//Declaring variable
@@ -389,6 +395,7 @@ bot.on('message', async message => { //Quand une personne envoi un message
 	//#region Permission de la personne
 	bot.member_Has_BAN_MEMBERS = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("BAN_MEMBERS") && message.channel.type === 'text'
 	bot.member_Has_MANAGE_GUILD = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_GUILD") && message.channel.type === 'text'
+	bot.member_Has_MANAGE_ROLES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_ROLES") && message.channel.type === 'text'
 	bot.member_has_MANAGE_MESSAGES = message.guild.channels.find("id", message.channel.id).permissionsFor(message.member).has("MANAGE_MESSAGES") && message.channel.type === 'text'
 
 	//#endregion
@@ -399,11 +406,10 @@ bot.on('message', async message => { //Quand une personne envoi un message
 		clearInterval(deleteUserMsg);
 		if (!deleteit) return;
 		if (message.deletable) {
-			-+
-				message.delete(1500).catch(e => {
-					if (e.name === "DiscordAPIError") return;
-					console.log("can't delete this message: " + e)
-				});
+			message.delete(1500).catch(e => {
+				if (e.name === "DiscordAPIError") return;
+				console.log("can't delete this message: " + e)
+			});
 		}
 	}
 	var deleteUserMsg = setInterval(bot.DeleteUserMessage, 1200);
@@ -417,8 +423,8 @@ bot.on('message', async message => { //Quand une personne envoi un message
 					commandFile.run(new Call(message, bot, bot.commands, args, content, prefix, cmd));
 				} else message.reply("This command isn't working in DM")
 			} else {
-				bot.DeleteUserMessage(false)
 				try {
+					bot.DeleteUserMessage(false)
 					//message.react(bot.EmojiThonkong)
 
 					try {
@@ -477,9 +483,26 @@ bot.on('disconnect', () => {
 bot.on('resume', () => {
 	console.log("resumed!");
 })
+
+bot.on('guildUpdate', async (old, now) => {
+	//console.log(`Detected a guildUpdate`);
+
+	if (old.name !== now.name) {
+		//console.log(`Detected a guildUpdate#NameChange`);
+		bot.Update_Server_Name(now)
+	}
+})
 //#region Functions
 
 //#region SQL
+
+bot.Update_Server_Name = async function (guild) {
+	bot.con.query(`UPDATE ${bot.DB_Model} SET servername = ? WHERE serverid = ${guild.id}`, [guild.name], (err, results) => {
+		if (err) console.log(err);
+
+		console.log(`Changed successfully 'servername' of '${guild.id}' to '${guild.name}'`);
+	});
+}
 
 bot.SQL_Insert_NewServer = async function (member) {
 	bot.con.query(`INSERT INTO ${bot.DB_Model} (servername, serverid, prefix, lang, welcome_status) VALUES (?, ?, ?, ?, ?)`, [member.guild.name, member.guild.id, prefix, "english", false], (err, results) => {
@@ -487,7 +510,6 @@ bot.SQL_Insert_NewServer = async function (member) {
 		console.log("Inserted the new server !");
 	});
 }
-
 
 bot.SQL_UpdateLang = async function (message, set_this, set_that) {
 	bot.con.query(`UPDATE ${bot.DB_Model} SET ${set_this} = ? WHERE serverid = ${message.guild.id}`, [set_that], (err, results) => {
@@ -525,22 +547,6 @@ bot.SQL_UpdateChannelMessage = async function (message, channel) {
 //#endregion
 
 //#region Important functions
-/*
-bot.SQL_GetResult = async function (callback) {
-
-	bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
-		if (err) return callback(err);
-
-		if (results == undefined) {
-			SQL_Insert_NewServer(member)
-			return;
-		}
-
-		callback(null, results[0])
-	})
-}
-*/
-
 bot.SQL_GetResult = function (message, member) {
 	return new Promise((resolve, reject) => {
 		bot.con.query(`SELECT * FROM ${bot.DB_Model} WHERE serverid = '${message.guild.id}'`, (err, results) => {
@@ -602,7 +608,7 @@ function ChangeState4() {
 }
 
 bot.AskedBy_EmbedFooter = function (author) {
-	return `Asked by ${author.username} • ID: ${author.id}`;
+	return `Asked by ${author.tag} • ID: ${author.id}`;
 }
 
 bot.deleteMyMessage = function (message, time) {
@@ -665,7 +671,7 @@ bot.ReplaceThing = function (text, ThingToReplace, ReplaceTo) {
 		var re = new RegExp(new_ThingToReplace, "gi")
 
 		var result = new_text.replace(re, new_ReplaceTo)
-		console.log(result);
+		//console.log(result);
 
 		return result;
 	} else return new_text;
@@ -684,7 +690,7 @@ bot.PermissionCheck = function (PermToCheck) {
 
 //#region "Functions pour la musique"
 bot.search_video = function (message, query) {
-	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=" + encodeURIComponent(query) + "&key=" + yt_api_key, (error, response, body) => {
+	bot.request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=" + encodeURIComponent(query) + "&key=" + yt_api_key, (error, response, body) => {
 
 		var json = JSON.parse(body);
 
@@ -709,7 +715,7 @@ bot.add_to_queue = function (video, message) {
 		, video_id = video
 		, playit = server.playit
 
-	YTDL.getInfo("https://www.youtube.com/watch?v=" + video, (error, info) => {
+	bot.YTDL.getInfo("https://www.youtube.com/watch?v=" + video, (error, info) => {
 		if (error) {
 			message.reply("The requested video (" + video + ") does not exist or cannot be played.").then(function (msg) {
 				bot.deleteMyMessage(msg, 15000);
@@ -821,7 +827,7 @@ bot.queue_playlist = function (playlistId, message, pageToken = '') {
 	var server = bot.servers[message.guild.id];
 
 
-	request("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playlistId + "&key=" + yt_api_key + "&pageToken=" + pageToken, (error, response, body) => {
+	bot.request("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + playlistId + "&key=" + yt_api_key + "&pageToken=" + pageToken, (error, response, body) => {
 		var json = JSON.parse(body);
 
 		if ("error" in json) {
@@ -910,7 +916,7 @@ bot.play = function (connection, message) {
 			/*.setAuthor(YouTubeTitle, message.author.avatarURL)
 			Code qui permet de définir le titre et le logo du demandeur
 			*/
-			.setFooter("Asked by " + message.member.displayName + " • ID: " + message.author.id);
+			.setFooter(bot.AskedBy_EmbedFooter(message.author));
 
 
 		message.channel.send(embed).then(function (msg) {
@@ -918,7 +924,7 @@ bot.play = function (connection, message) {
 		})
 
 		server.dispatcher = connection.playStream(
-			YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
+			bot.YTDL(video_id, { filter: "audioonly", audioEncondig: "opus", audioBitrate: "64" })
 		);
 
 		server.dispatcher.setVolume(0.3);
