@@ -40,7 +40,7 @@ module.exports = {
                 `#» ${call.bot.config.prefix}kappa\nSend a kappa image\n\n` +
                 `#» ${call.bot.config.prefix}rekt [@someone]\nRekt one of your friends\n\n` +
                 `#» ${call.bot.config.prefix}welcome\nSet a welcome message to your incredible user !\n\n` +
-                `#» [NEW COMMAND!!] ${call.bot.config.prefix}autorole\nSet an autorole to your incredible user !` +
+                `#» [NEW COMMAND!!] ${call.bot.config.prefix}auto-role\nSet an autorole to your incredible user !` +
 
                 "\n" + "```" +
 

@@ -208,14 +208,14 @@ const lang = {
 	Command_AutoRole_Not_Defined: `${EmojiRedTickString} Le role n'est pas défini.`,
 
 	//Embed
-	Command_AutoRole_Embed_Description1: `Pour utiliser l'\`auto_role\`, voici quelques astuces:\n`,
+	Command_AutoRole_Embed_Description1: `Pour utiliser l'\`auto-role\`, voici quelques astuces:\n`,
 
-	Command_AutoRole_Embed_Description2: `:one: Premièrement, vous avez besoin de définir le rôle que vous voulez donner au nouvel utilisateur, avec cette commande: \`{0}auto_role set @role\`\n\n`,
-	Command_AutoRole_Embed_Description3: `:two: Après ça, si la première commande est rentrée sans problème, vous devez activer l'autorole, comme ceci: \`{0}auto_role on\`\n\n\n`,
+	Command_AutoRole_Embed_Description2: `:one: Premièrement, vous avez besoin de définir le rôle que vous voulez donner au nouvel utilisateur, avec cette commande: \`{0}auto-role set @role\`\n\n`,
+	Command_AutoRole_Embed_Description3: `:two: Après ça, si la première commande est rentrée sans problème, vous devez activer l'autorole, comme ceci: \`{0}auto-role on\`\n\n\n`,
 
 	Command_AutoRole_Embed_Description4: `:information_source: Liste des arguments: \`help, show, on, off\`\n`,
-	Command_AutoRole_Embed_Description5: `:information_source: Si vous voulez le **désactiver**, faites tout simplement: \`{0}auto_role off\`\n`,
-	Command_AutoRole_Embed_Description6: `:information_source: Vous pouvez utiliser la commande \`{0}autorole\` **à la place de** \`{1}auto_role\`\n`
+	Command_AutoRole_Embed_Description5: `:information_source: Si vous voulez le **désactiver**, faites tout simplement: \`{0}auto-role off\`\n`,
+	Command_AutoRole_Embed_Description6: `:information_source: Vous pouvez utiliser la commande \`{0}autorole\` **à la place de** \`{1}auto-role\`\n`
 	//#endregion
 	// current_lang.
 }

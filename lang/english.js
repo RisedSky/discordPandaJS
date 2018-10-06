@@ -207,13 +207,13 @@ const lang = {
 	Command_AutoRole_Not_Defined: `${EmojiRedTickString} Role not defined`,
 
 	//Embed
-	Command_AutoRole_Embed_Description1: `To use the \`auto_role\` command here is some tips:\n`,
-	Command_AutoRole_Embed_Description2: `:one: First, you need to put the role you want to define when a user come in your user, with that command: \`{0}auto_role set @role\`\n\n`,
-	Command_AutoRole_Embed_Description3: `:two: After that, if the first command is good, you need to enable the auto_role, here's how: \`{0}auto_role on\`\n\n\n`,
+	Command_AutoRole_Embed_Description1: `To use the \`auto-role\` command here is some tips:\n`,
+	Command_AutoRole_Embed_Description2: `:one: First, you need to put the role you want to define when a user come in your user, with that command: \`{0}auto-role set @role\`\n\n`,
+	Command_AutoRole_Embed_Description3: `:two: After that, if the first command is good, you need to enable the auto-role, here's how: \`{0}auto-role on\`\n\n\n`,
 
 	Command_AutoRole_Embed_Description4: `:information_source: List of args: \`help, show, on, off\`\n`,
-	Command_AutoRole_Embed_Description5: `:information_source: If you need to **disable** it, just do: \`{0}auto_role off\`\n`,
-	Command_AutoRole_Embed_Description6: `:information_source: You can use the command \`{0}autorole\` **instead of** \`{1}auto_role\` \n`
+	Command_AutoRole_Embed_Description5: `:information_source: If you need to **disable** it, just do: \`{0}auto-role off\`\n`,
+	Command_AutoRole_Embed_Description6: `:information_source: You can use the command \`{0}autorole\` **instead of** \`{1}auto-role\` \n`
 
 	//#endregion
 	// current_lang.

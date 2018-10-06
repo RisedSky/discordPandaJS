@@ -1,5 +1,5 @@
 module.exports = {
-    help: { name: "auto_role", aliases: ["autorole"] },
+    help: { name: "auto-role", aliases: ["autorole"] },
     run: async (call) => {
         var message = call.message
             , Mess_Member = call.message.member
@@ -110,13 +110,13 @@ module.exports = {
                     .setColor("ORANGE")
                     .setAuthor("AutoRole Help", call.bot.user.avatarURL)
                     /*
-                    .setDescription(`To use the \`auto_role\` command here is some tips:\n` +
-                        `:one: First, you need to put the role you want to define when a user come in your user, with that command: \`${call.bot.config.prefix}auto_role set @role\`\n\n` +
-                        `:two: After that, if the first command is good, you need to enable the auto_role, here's how: \`${call.bot.config.prefix}auto_role on\`\n\n\n` +
+                    .setDescription(`To use the \`auto-role\` command here is some tips:\n` +
+                        `:one: First, you need to put the role you want to define when a user come in your user, with that command: \`${call.bot.config.prefix}auto-role set @role\`\n\n` +
+                        `:two: After that, if the first command is good, you need to enable the auto-role, here's how: \`${call.bot.config.prefix}auto-role on\`\n\n\n` +
 
                         `:information_source: List of args: \`help, show, on, off\`\n` +
-                        `:information_source: If you need to **disable** it, just do: \`${call.bot.config.prefix}auto_role off\`\n` +
-                        `:information_source: You can use the command \`${call.bot.config.prefix}autorole\` **instead of** \`${call.bot.config.prefix}auto_role\` \n`
+                        `:information_source: If you need to **disable** it, just do: \`${call.bot.config.prefix}auto-role off\`\n` +
+                        `:information_source: You can use the command \`${call.bot.config.prefix}autorole\` **instead of** \`${call.bot.config.prefix}auto-role\` \n`
                     )
                     */
                     .setDescription(`${call.bot.current_lang.Command_AutoRole_Embed_Description1}` +
@@ -132,7 +132,7 @@ module.exports = {
                 message.channel.send(help_embed_msg)
             }
         } catch (error) {
-            console.log("auto_role error");
+            console.log("auto-role error");
             console.log(error);
 
         }

@@ -210,13 +210,13 @@ const lang = {
 	Command_AutoRole_Not_Defined: `${EmojiRedTickString} Роль не найдена`,
 
 	//Embed
-	Command_AutoRole_Embed_Description1: `Что-бы использовать комманду \`auto_role\` надо посмотреть сюда на подсказки :\n`,
-	Command_AutoRole_Embed_Description2: `:one: 1-е, тебе надо выбрать роль коммандой : \`{0}auto_role set @role\`\n\n`,
-	Command_AutoRole_Embed_Description3: `:two: После этого, если все пошло так как надо тогда включаем авто-роль коммандой: \`{0}auto_role on\`\n\n\n`,
+	Command_AutoRole_Embed_Description1: `Что-бы использовать комманду \`auto-role\` надо посмотреть сюда на подсказки :\n`,
+	Command_AutoRole_Embed_Description2: `:one: 1-е, тебе надо выбрать роль коммандой : \`{0}auto-role set @role\`\n\n`,
+	Command_AutoRole_Embed_Description3: `:two: После этого, если все пошло так как надо тогда включаем авто-роль коммандой: \`{0}auto-role on\`\n\n\n`,
 
 	Command_AutoRole_Embed_Description4: `:information_source: Аргументы к этой комманде: \`help, show, on, off\`\n`,
-	Command_AutoRole_Embed_Description5: `:information_source: если тебе надо выключить авто - роль, пропишы эту комманду: \`{0}auto_role off\`\n`,
-	Command_AutoRole_Embed_Description6: `:information_source: Вы можете использовать команду \`{0}autorole\` **вместо** \`{1}auto_role\`\n`
+	Command_AutoRole_Embed_Description5: `:information_source: если тебе надо выключить авто - роль, пропишы эту комманду: \`{0}auto-role off\`\n`,
+	Command_AutoRole_Embed_Description6: `:information_source: Вы можете использовать команду \`{0}autorole\` **вместо** \`{1}auto-role\`\n`
 	//#endregion
 	// current_lang.
 }
