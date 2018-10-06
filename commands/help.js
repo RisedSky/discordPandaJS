@@ -39,7 +39,7 @@ module.exports = {
                 `#» ${call.bot.config.prefix}poll [question | answer1 | answer2 | answer3 ... ]\nCreate a poll with a maximum of 9 answers\n\n` +
                 `#» ${call.bot.config.prefix}kappa\nSend a kappa image\n\n` +
                 `#» ${call.bot.config.prefix}rekt [@someone]\nRekt one of your friends\n\n` +
-                `#» ${call.bot.config.prefix}welcome\nSet a welcome message to your incredible user !` +
+                `#» ${call.bot.config.prefix}welcome\nSet a welcome message to your incredible user !\n\n` +
                 `#» [NEW COMMAND!!] ${call.bot.config.prefix}autorole\nSet an autorole to your incredible user !` +
 
                 "\n" + "```" +
