@@ -240,6 +240,7 @@ bot.on('guildCreate', async guild => {
 		msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
 		defaultChannel.send(msgToSend);
+
 	}, 2500);
 })
 
