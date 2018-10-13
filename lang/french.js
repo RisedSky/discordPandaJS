@@ -39,6 +39,9 @@ const lang = {
 	Permission_Manage_Server_Required: `(**MANAGE_SERVER** est nécessaire)`,
 
 	//Database_Error: ``,
+	Command_Args_Missing: `${EmojiRedTickString} Plusieurs arguments manquent !`,
+
+
 	Command_User_Not_Allowed: `${EmojiRedTickString} Vous n'êtes pas autorisé à utiliser cette commande!`,
 	Command_User_Message_Is_Empty: `${EmojiRedTickString} Votre message est vide`,
 	Command_User_Need_Permission_Manage_Messages: `${EmojiRedTickString} Vous avez besoin de la permission **(MANAGE_MESSAGES)** pour faire cela`,
@@ -190,7 +193,30 @@ const lang = {
 	Music_Status_Requested_By: `Statut demandé par`,
 	//#endregion
 
+	//#region autorole
+	Command_Autorole_Activated: `${EmojiGreenTickString} L'autorole est activé.`,
+	Command_Autorole_Now_Activated: `${EmojiGreenTickString} L'autorole est désormais activé.`,
+	Command_Autorole_Already_Activated: `${EmojiRedTickString} L'autorole est déjà activé.`,
 
+	Command_Autorole_Deactivated: `${EmojiGreenTickString} L'autorole est désormais désactivé.`,
+	Command_Autorole_Now_Deactivated: `${EmojiGreenTickString} L'autorole est désormais désactivé.`,
+	Command_Autorole_Already_Deactivated: `${EmojiRedTickString} L'autorole est déjà désactivé.`,
+
+	Command_Autorole_Is_Now_Defined_As: `${EmojiGreenTickString} L'autorole est désormais sur le rôle: {0}`,
+
+	Command_AutoRole_Not_Found_Role: `${EmojiRedTickString} Le rôle \`{0}\` semble ne pas exister`,
+	Command_AutoRole_Not_Defined: `${EmojiRedTickString} Le role n'est pas défini.`,
+
+	//Embed
+	Command_AutoRole_Embed_Description1: `Pour utiliser l'\`auto-role\`, voici quelques astuces:\n`,
+
+	Command_AutoRole_Embed_Description2: `:one: Premièrement, vous avez besoin de définir le rôle que vous voulez donner au nouvel utilisateur, avec cette commande: \`{0}auto-role set @role\`\n\n`,
+	Command_AutoRole_Embed_Description3: `:two: Après ça, si la première commande est rentrée sans problème, vous devez activer l'autorole, comme ceci: \`{0}auto-role on\`\n\n\n`,
+
+	Command_AutoRole_Embed_Description4: `:information_source: Liste des arguments: \`help, show, on, off\`\n`,
+	Command_AutoRole_Embed_Description5: `:information_source: Si vous voulez le **désactiver**, faites tout simplement: \`{0}auto-role off\`\n`,
+	Command_AutoRole_Embed_Description6: `:information_source: Vous pouvez utiliser la commande \`{0}autorole\` **à la place de** \`{1}auto-role\`\n`
+	//#endregion
 	// current_lang.
 }
 module.exports = {

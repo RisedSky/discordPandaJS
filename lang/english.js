@@ -39,6 +39,8 @@ const lang = {
 	Permission_Manage_Server_Required: `(**MANAGE_SERVER** is required)`,
 
 	//Database_Error: ``,
+	Command_Args_Missing: `${EmojiRedTickString} Some arguments are missing !`,
+
 	Command_User_Not_Allowed: `${EmojiRedTickString} You are not allowed to use that command !`,
 	Command_User_Message_Is_Empty: `${EmojiRedTickString} Your message is empty`,
 	Command_User_Need_Permission_Manage_Messages: `${EmojiRedTickString} You need the permission **(MANAGE_MESSAGES)** to do that`,
@@ -190,7 +192,30 @@ const lang = {
 	Music_Status_Requested_By: `Status requested by`,
 	//#endregion
 
+	//#region autorole
+	Command_Autorole_Activated: `${EmojiGreenTickString} The autorole is activated.`,
+	Command_Autorole_Now_Activated: `${EmojiGreenTickString} The autorole is now activated.`,
+	Command_Autorole_Already_Activated: `${EmojiRedTickString} The autorole is already enabled.`,
 
+	Command_Autorole_Deactivated: `${EmojiGreenTickString} The autorole is deactivated.`,
+	Command_Autorole_Now_Deactivated: `${EmojiGreenTickString} The autorole is now deactivated.`,
+	Command_Autorole_Already_Deactivated: `${EmojiRedTickString} The autorole is already deactivated.`,
+
+	Command_Autorole_Is_Now_Defined_As: `${EmojiGreenTickString} The autorole is now for the role: {0}`,
+
+	Command_AutoRole_Not_Found_Role: `${EmojiRedTickString} The role \`{0}\` seems to not exist`,
+	Command_AutoRole_Not_Defined: `${EmojiRedTickString} Role not defined`,
+
+	//Embed
+	Command_AutoRole_Embed_Description1: `To use the \`auto-role\` command here is some tips:\n`,
+	Command_AutoRole_Embed_Description2: `:one: First, you need to put the role you want to define when a user come in your user, with that command: \`{0}auto-role set @role\`\n\n`,
+	Command_AutoRole_Embed_Description3: `:two: After that, if the first command is good, you need to enable the auto-role, here's how: \`{0}auto-role on\`\n\n\n`,
+
+	Command_AutoRole_Embed_Description4: `:information_source: List of args: \`help, show, on, off\`\n`,
+	Command_AutoRole_Embed_Description5: `:information_source: If you need to **disable** it, just do: \`{0}auto-role off\`\n`,
+	Command_AutoRole_Embed_Description6: `:information_source: You can use the command \`{0}autorole\` **instead of** \`{1}auto-role\` \n`
+
+	//#endregion
 	// current_lang.
 }
 module.exports = {
