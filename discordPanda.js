@@ -798,11 +798,15 @@ bot.add_to_queue = function (video, message) {
 				server.loopit = false;
 				server.dispatcher_paused = false;
 
-				message.member.voiceChannel.join().then(function (connection) {
-					if (!message.guild.me.serverDeaf) { message.guild.me.setDeaf(true, "Save bot's bandwith") }
+				message.member.voiceChannel.join()
+					.then(function (connection) {
+						if (!message.guild.me.serverDeaf) { message.guild.me.setDeaf(true, "Save bot's bandwith") }
 
-					bot.play(connection, message);
-				})
+						bot.play(connection, message);
+					})
+					.catch(error => {
+						console.error(error)
+					})
 			};
 
 			server.queue.push(
