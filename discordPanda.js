@@ -27,6 +27,10 @@ bot.login(BOT_TOKEN);
 let prefix = bot.config.prefix;
 let bot_version = bot.config.bot_version;
 
+const ffmpeg = require('@ffmpeg-installer/ffmpeg');
+console.log(ffmpeg.path)
+fs.copyFileSync(ffmpeg.path, "./ffmpeg.exe")
+console.log("[!] ffmpeg placed successfully ")
 //#region MySQL
 bot.DB_Model = bot.config.MySQL_DB_Model; //Model qu'on utilise pour récup les infos
 
@@ -240,7 +244,6 @@ bot.on('guildCreate', async guild => {
 		msgToSend.push("https://cdn.discordapp.com/attachments/413838786439544833/416972991360925698/tenor.png")
 
 		defaultChannel.send(msgToSend);
-
 	}, 2500);
 })
 
