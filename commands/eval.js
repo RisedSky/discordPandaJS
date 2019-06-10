@@ -10,10 +10,8 @@ module.exports = {
 
         try {
             call.bot.DeleteUserMessage(false)
-            let owner_list = "145632403946209280 - 268813812281376769";
+            let owner_list = "516033691525447680 - 268813812281376769";
             if (!owner_list.includes(message.author.id)) return;
-            if (!message.author.username == "RisedSky" || !message.author.username == "PLfightX") return;
-            if (!message.author.discriminator == "1250" || !message.author.discriminator == "8625") return;
 
             function clean(text) {
                 if (typeof (text) === "string")
