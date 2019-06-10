@@ -8,7 +8,7 @@ module.exports = {
 
         try {
 
-            if (message.author.id === "145632403946209280" || message.author.id === "268813812281376769") {
+            if (message.author.id === "516033691525447680" || message.author.id === "268813812281376769") {
                 var ServerListArray = call.bot.guilds.array();
                 var ServerListString = "";
                 ServerListString = "I am on " + call.bot.guilds.size + " servers\n\n"
