@@ -5,7 +5,7 @@ module.exports = {
         //message, bot, bot.commands, args, content, prefix, cmd
 
         try {
-            if (message.author.id === "145632403946209280" || message.author.id === "268813812281376769") {
+            if (message.author.id === "516033691525447680" || message.author.id === "268813812281376769") {
                 message.channel.send("Restarting ...").then(m => {
                     call.bot.user.setStatus("invisible");
                     console.log("Disconnected")
