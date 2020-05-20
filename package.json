@@ -15,7 +15,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.0.16",
     "ffmpeg-node": "0.0.2",
     "fs": "0.0.1-security",
-    "moment": "2.22.2",
+    "moment": "2.26.0",
     "mysql2": "1.6.1",
     "nekos.life": "1.1.4",
     "node-opus": "0.3.0",
