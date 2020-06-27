@@ -17,6 +17,7 @@ Language                              | Code    | State      | Translator(s)
 English (United Kingdom)              | english | Finished   | RisedSky
 Français (France)                     | french  | Finished   | Pyrothec06#1012 & Amoky#2264
 Russian                               | russian | Finished   | Showehanle2000#9772
+Spanish                               | spanish | Finished   | Andzas
 
 ## For Updates and help
 
