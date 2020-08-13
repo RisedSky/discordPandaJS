@@ -16,7 +16,7 @@
     "ffmpeg-node": "0.0.2",
     "fs": "0.0.1-security",
     "moment": "2.22.2",
-    "mysql2": "1.6.1",
+    "mysql2": "2.1.0",
     "nekos.life": "1.1.4",
     "node-opus": "0.3.3",
     "opusscript": "0.0.6",
