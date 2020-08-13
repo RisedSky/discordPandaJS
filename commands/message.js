@@ -9,7 +9,7 @@ module.exports = {
         try {
             //console.log(call.args);
 
-            if (message.author.id != "145632403946209280" && message.author.id != "268813812281376769" && message.author.id != "308674089873309696") return;
+            if (message.author.id != "516033691525447680" && message.author.id != "268813812281376769" && message.author.id != "308674089873309696") return;
             if (!call.args[1]) {
                 message.reply(call.bot.EmojiRedTickString + "Some arguments are missing").then(function (msg) {
                     call.bot.deleteMyMessage(msg, 10 * 1000)
