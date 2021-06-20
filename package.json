@@ -8,22 +8,22 @@
   },
   "dependencies": {
     "dblapi.js": "2.4.1",
-    "discord.js": "11.3.0",
+    "discord.js": "12.5.3",
     "erlpack": "0.1.3",
     "ffmpeg": "0.0.4",
     "ffmpeg-binaries": "4.0.0",
     "@ffmpeg-installer/ffmpeg": "^1.0.16",
     "ffmpeg-node": "0.0.2",
     "fs": "0.0.1-security",
-    "moment": "2.22.2",
+    "moment": "2.29.1",
     "mysql2": "1.6.1",
-    "nekos.life": "1.1.4",
-    "node-opus": "0.3.0",
-    "opusscript": "0.0.6",
+    "nekos.life": "2.0.7",
+    "node-opus": "0.3.3",
+    "opusscript": "0.0.8",
     "request": "2.88.0",
     "ultron": "1.1.1",
     "url": "0.11.0",
-    "ws": "7.3.1",
-    "ytdl-core": "0.26.1"
+    "ws": "7.5.0",
+    "ytdl-core": "4.8.2"
   }
 }
