@@ -1,0 +1,223 @@
+//#region ---- ALL EMOJIS ------
+//Emoji string
+var EmojiThonkongString = "<:thonkong:414071099517698059>"
+	, EmojiGreenTickString = "<:greenTick:412663578009796619>"
+	, EmojiRedTickString = "<:redTick:412663578051477505>"
+	, EmojiYouTube_LogoString = "<:youtube-logo:413446051480076288>"
+	, EmojiUpvoteString = "<:upvote:416350074252034059>"
+	, EmojiDownvoteString = "<:downvote:416350074168279061>"
+	, EmojiProhibitedString = "<:prohibited:416350020355489803>"
+	, EmojiTwitchLogoString = "<:twitchlogo:416350019780870146>"
+
+//Emoji
+var EmojiThonkong = "thonkong:414071099517698059"
+	, EmojiYouTube_Logo = "youtube-logo:413446051480076288"
+	, EmojiGreenTick = "greenTick:412663578009796619"
+	, EmojiRedTick = "redTick:412663578051477505"
+	, EmojiUpvote = "upvote:416350074252034059"
+	, EmojiDownvote = "downvote:416350074168279061"
+	, EmojiProhibited = "prohibited:416350020355489803"
+	, EmojiTwitchLogo = "twitchlogo:416350019780870146"
+
+//Emoji ID
+var Thonkong_ID = "414071099517698059"
+	, YouTube_Logo_ID = "413446051480076288"
+	, GreenTick_ID = "412663578009796619"
+	, RedTick_ID = "412663578051477505"
+	, upvote_ID = "416350074252034059"
+	, downvote_ID = "416350074168279061"
+	, prohibited_ID = "416350020355489803"
+	, TwitchLogo_ID = "416350019780870146"
+
+var PermissionYes = EmojiGreenTickString;
+var PermissionNo = EmojiRedTickString;
+//#endregion
+//---- ALL EMOJIS ------
+const lang = {
+	//exemple: "exemple_text"
+	Something_Done: `${EmojiGreenTickString} تم`,
+	Permission_Manage_Server_Required: `(**MANAGE_SERVER** مطلوب)`,
+
+	//Database_Error: ``,
+	Command_Args_Missing: `${EmojiRedTickString} بعض  المشغلات مفقودة !`,
+
+	Command_User_Not_Allowed: `${EmojiRedTickString} لا يمكنك استخدام هذا الامر`,
+	Command_User_Message_Is_Empty: `${EmojiRedTickString} رسالتك فارغة`,
+	Command_User_Need_Permission_Manage_Messages: `${EmojiRedTickString}  **(MANAGE_MESSAGES)**تحتاج صلاحيات`,
+
+	Command_Github_Project: `مشروعي علي جيت هب`,
+	Command_Bot_My_Ping: `سرعة اتصالي `,
+	Command_Bot_Need_Permission_Manage_Messages: `${EmojiProhibitedString}  **(MANAGE_MESSAGES)** لا امتلك هذه الصلاحيات`,
+
+	Command_Purge_No_Number: `من فضلك اكتب عدد الرسائل التي تريد حذفها`,
+	Command_Purge_Not_Number: `${EmojiRedTickString} \`{0}\` ليس رقم.`,
+	Command_Purge_Need_Number: `${EmojiRedTickString} من فضلك اكتب عدد الرسائل التي تريد حذفها`,
+	Command_Purge_Max_100_Message_Delete: `${EmojiRedTickString} لا يمكنك حذف اكثر من 100 رسالة بالمرة الواحدة`,
+
+	Command_Purge_X_Messages: `تم حذف \`{0}\` رسالة :cloud_tornado: :cloud_tornado: :cloud_tornado:`, //don't change emoji plz
+	Command_Purged_X_Messages: `تم حذف  \`{0}\` / \`{1}\` رسالة`,
+	Command_Purge_Deleted_X_Messages: `تم حذف \`{0}\` رسالة ! :cloud_tornado: :cloud_tornado: :cloud_tornado: `,
+
+
+	Command_Random_Number_No_First_Number: ` تحتاج لوضع الرقم  الادني `,
+	Command_Random_Number_No_Second_Number: `تحتاج لوضع العدد الاقصي`,
+
+	Command_Random_Number_No_Number: `من فضلك ضع الرقم الادني والاقصي ليتم ذلك`,
+	Command_Random_Number_No_Minimum_Value: `من فضلك ضع الرقم الادني`,
+	Command_Random_Number_No_Maximum_Value: `من فضلك ضع الرقم الاقصي`,
+	Command_Random_Number_Result: `امممم اتركني افكر, ..., بين **{0}** و **{1}** لقد اخترت **{2}** !`,
+
+
+	Command_Random_Member_By: `رقم عشوائي بواسطة`, //Don't translate Random-Member
+	Command_Random_Member_User_Chosen: `{0} لقد اختار بين {1} اعضاء السرفر !`,
+
+	Command_Poll_No_Question_Or_Answer: `${EmojiRedTickString} اسف لم تضع السؤال و الاجابة الاولي و الثانية ليتم التصويت عليهم.\n(اتبع هذا المثال: \`{0} poll السؤال | الاجابة 1 | الاجابة 2\`)`,
+	Command_Poll_By: `تصويت بواسطة`,
+
+	Command_Rekt_Nobody_To_Rekt: `${EmojiRedTickString} لا يوجد هناك احد للريأكت (@ ريأكت لنفسك)`,
+	Command_Rekt_Cant_Rekt_Yourself: `${EmojiRedTickString} لا يمكن الريأكت لنفسك`,
+	Command_Rekt_By: `ريأكت امر بواسطة`,
+	Command_Rekt_Got_Rekt_By: `واو, {0} لقد حصلت علي {1}`,
+
+	Command_Welcome_User_Dont_Have_Permission: `${EmojiRedTickString} لا تمتلك صلاحيات لفعل ذلك! (**MANAGE_SERVER** مطلوبة)`,
+	Command_Welcome_Create_Server_To_Database: `:warning: انشاء عضو بالداتا بيس... (من فضلك اكتب الامر مرة اخري)`,
+
+	Command_Welcome_Now_Activated: `${EmojiGreenTickString} رسالة الترحيب فعالة حاليا.`,
+	Command_Welcome_Already_Activated: `${EmojiRedTickString} رسالة الترحيب فعالة مسبقا`,
+
+	Command_Welcome_Now_Deactivated: `${EmojiGreenTickString} تم الغاء تفعيل رسالة الترحيب.`,
+	Command_Welcome_Already_Deactivated: `${EmojiRedTickString} رسالة الترحيب بالفعل غير مفعلة.`,
+
+
+	Command_Welcome_No_Channel_In_Message: `${EmojiRedTickString} لم تضع اي قناة برسالة (مثال: \`{0} welcome set #channel رسالتك\``,
+	Command_Welcome_No_Welcome_Channel_In_Message: `${EmojiRedTickString} لم تضع رسالة الترحيب`,
+	Command_Welcome_Setting_Up_Your_Welcome_Message: `تم انشاء رسالة الترحيب:`,
+	Command_Welcome_Message_In_Channel_Changed: `رسالة الترحيب ب: {0} تم تعديلها بنجاح.`,
+
+	Command_Welcome_Error_On_Setting_Welcome_Message: `هناك خطأ:`,
+
+	Command_Welcome_Welcome_Channel: `قناة الترحيب: {0} \n`,
+	Command_Welcome_Welcome_Message: `رسالة الترحيب: {0} \n`,
+	Command_Welcome_Welcome_Status: `الترحيب مفعل: {0} \n`,
+
+	Command_Welcome_Help_Line1: `ليتم تثطيب الترحيب من فضلك اتبع التعليمات:\n\n`,
+	Command_Welcome_Help_Line2: `:one: تفعيل الترحيب بواسطة الامر: \`{0}welcome on\`\n`,
+	Command_Welcome_Help_Line3: `:two: تخصيص بواسطة : \`{0} welcome set #channel رسالتك\`\n`,
+	Command_Welcome_Help_Line4: `:notepad_spiral: يمكنك منشن شخص عند تسجيله بالسرفر بواسطة الامر: \`{user}\`\n`,
+	Command_Welcome_Help_Line5: `\nتم بنجاح  ! (هل هو سهل؟  :wink:)`,
+
+	Command_Welcome_User_Their_Args: `اتبع هذه التعليمات:`,
+
+	Command_Staff_No_Message: `${EmojiRedTickString} لا يوجد رسالة .`,
+	Command_Staff_Sended_Message: `${EmojiGreenTickString} تم ارسال رسالتك للمصممين :wink:`,
+	//#region SQL_Database
+	//#endregion
+
+	//#region Guild Joining
+
+	//When the bot join a new discord server
+	guild_joining1: `هلا انا **Boti-Panda**\n`,
+	guild_joining2: `يمكنك استخدام {0} لتري جميع الاوامر الخاصة بي.`,
+	guild_joining4: `هذا سيرفري بالديسكورد`,
+	guild_joining5: `لا تتردد في الانضمام إليه من أجل الحصول على أحدث المعلومات حول الروبوت`,
+	//#endregion
+
+	//#region Lang
+	Lang_Changing_To_Default: `حاليا يتم تغيير اللغة إلى الافتراضي (english)...`,
+
+	Lang_Defined_To_English: `${EmojiGreenTickString} تم تحديد اللغة الانجليزية `,
+	Lang_Defined_To_French: `${EmojiGreenTickString} تم تحديد اللغةالفرنسية`,
+	Lang_Defined_To_Russian: `${EmojiGreenTickString} تم تحديد اللغة الروسية`,
+	Lang_Defined_To_Spanish: `${EmojiGreenTickString} تم تحديد اللغة الاسبانية`, //Espagnol
+	Lang_Defined_To_Italian: `${EmojiGreenTickString} تم تحديد اللغة الايطالية`,
+	Lang_Defined_To_Deutsch: `${EmojiGreenTickString} تم تحديد اللغة الالمانية`, //Allemand
+
+	Lang_Didnt_Find_Lang: `${EmojiRedTickString} يبدو انه \`{0}\` لم تدرج بعد بقاعدة بياناتي.`,
+
+	//#endregion
+
+	//#region Music
+	Music_Tell_Me_Something_Play_Playlist: `${EmojiRedTickString} من فضلك اعطني شيئ لاشغله (the playlist link)`,
+	Music_Not_In_Vocal: `${EmojiRedTickString} انت لست بقناة صوتية`,
+	Music_Should_Not_Deafen: `${EmojiRedTickString} لا يمكنك الاستماع بوضعية (not deafen)`,
+	Music_Not_Playlist: `${EmojiRedTickString} هذه ليس قائمة تشغيل.`,
+	Music_Not_Link: `${EmojiRedTickString} هذا ليس رابط :/`,
+
+	Music_Tell_Me_Something_Play: `${EmojiRedTickString} اكتب شيئ ليتم تشغيله (a link or a title)`,
+	Music_Soundcloud_Not_Supported: `${EmojiRedTickString}السواند كلاود ليس مددعوم حاليا من فضلك حاول لاحقا :tm:`,
+
+	Music_No_Music_Playing: `${EmojiRedTickString} ليست هناك موسيقي لتشغيلها`,
+	Music_Not_In_The_Same_Vocal: `${EmojiRedTickString} انت لست بنفس قناتي الصوتية`,
+
+	Music_Resume_Success: `${EmojiGreenTickString} تم الاستمرار بنجاح`,
+	Music_Pause_Success: `${EmojiGreenTickString} تم الايقاف بنجاح`,
+
+	Music_Need_Music_Title: `${EmojiRedTickString} من فضلك ضع عنوان الموسيقي`,
+
+	Music_Skip_Not_In_Vocal: `${EmojiRedTickString} يجب ان تكون بقناتي الصوتية لتستطيع تخطي الموسيقي.`,
+	Music_Skip_No_Music_Found: `${EmojiRedTickString} لا يمكنني العثور علي موسيقي بعد.`,
+	Music_Skip_Success: `${EmojiGreenTickString} تم التخطي بنجاح: `,
+	Music_Requested_By: `بواسطة`,
+	Music_Now_Playing: `جاري التشغيل`,
+	Music_Stopped_From: `${EmojiGreenTickString} تم ايقاف جميع الموسيقي بالقناة`,
+
+	Music_Currently_Queue_Empty: `${EmojiRedTickString} القائمة بالفعل فارغة.`,
+	Music_Queue_List: `قائمة التشغيل`,
+	Music_Here_Queue_List: `قائمة التشغيل`,
+	Music_Queue_List_Requested_By: `قائمة تشغيل بواسطة`,
+
+	Music_And: `و`,
+	Music_More: `المزيد...`,
+	Music_End_Of_Text: `نهاية النص`,
+
+	Music_Song_Will_Not_Repeated: `لم تكرر`,
+	Music_Song_Will_Be_Repeated: `تكرار`,
+
+	Music_Status_Status: `بيانات`,
+	Music_Status_No_Music: `${EmojiRedTickString} لا يوجد موسيقي`,
+
+	Music_Status_Yes: `نعم`,
+	Music_Status_No: `لا`,
+
+	Music_Status_Current_Status: `بيانات الموسيقي الحالية`,
+	Music_Status_Current_Song: `الموسيقي الحالية`,
+
+	Music_Status_Track_Loop: `هل تم تحميلها؟`,
+	Music_Status_Track_Paused: `هل هو متوقف؟`,
+	Music_Status_Uploaded_By: `بواسطة`,
+	Music_Status_Song_Duration: `وقت الاغنية`,
+	Music_Status_Time_Remaining: `الوقت المتبقي`,
+	Music_Status_Views: `الزيارات`,
+	Music_Status_Link: `رابط`,
+	Music_Status_Requested_By: `بواسطة`,
+	//#endregion
+
+	//#region autorole
+	Command_Autorole_Activated: `${EmojiGreenTickString} الرول التلقائي مفعلة.`,
+	Command_Autorole_Now_Activated: `${EmojiGreenTickString} الرول التلقائي مفعلة.`,
+	Command_Autorole_Already_Activated: `${EmojiRedTickString} الرول التلقائي مفعلة بالفعل.`,
+
+	Command_Autorole_Deactivated: `${EmojiGreenTickString} الرول التلقائي غير مفعلة.`,
+	Command_Autorole_Now_Deactivated: `${EmojiGreenTickString} الرول التلقائي غير مفعلة حاليا.`,
+	Command_Autorole_Already_Deactivated: `${EmojiRedTickString} الرول التلقائي غير مفعلة بالفعل.`,
+
+	Command_Autorole_Is_Now_Defined_As: `${EmojiGreenTickString} الرول التلقائي حاليا: {0}`,
+
+	Command_AutoRole_Not_Found_Role: `${EmojiRedTickString} الرول  \`{0}\` يبدو انها غير مدرجة`,
+	Command_AutoRole_Not_Defined: `${EmojiRedTickString} الدور غير محدد`,
+
+	//Embed
+	Command_AutoRole_Embed_Description1: `  \`auto-role\` هنا هناك خطوات لتستطيع استخدام امر:\n`,
+	Command_AutoRole_Embed_Description2: `:one: أولاً ، تحتاج إلى وضع الدور الذي تريد تحديده عندما يأتي المستخدم إلى السرفر الخاص بك ، بهذا الأمر:  \`{0}auto-role set @role\`\n\n`,
+	Command_AutoRole_Embed_Description3: `:two: بعد ذلك ، إذا كان الأمر الأول جيدًا ، فأنت بحاجة إلى تمكين الدور التلقائي ، وإليك الطريقة: \`{0}auto-role on\`\n\n\n`,
+
+	Command_AutoRole_Embed_Description4: `:information_source: قائمة المساعدة: \`help, show, on, off\`\n`,
+	Command_AutoRole_Embed_Description5: `:information_source: إذا كنت بحاجة إلى ** تعطيل ** ذلك ، فقط افعل: \`{0}auto-role off\`\n`,
+	Command_AutoRole_Embed_Description6: `:information_source: يمكنك استخدام الأمر \`{0}autorole\` **بدلا من** \`{1}auto-role\` \n`
+
+	//#endregion
+	// current_lang.
+}
+module.exports = {
+	lang: lang
+}
