@@ -6,14 +6,10 @@ module.exports = {
             , Discord = require("discord.js")
         //message, bot, bot.commands, args, content, prefix, cmd
 
-        try {
-            if (!call.args[0] || !message.mentions.members.first()) {
-                message.reply(call.bot.EmojiRedTickString + " Please add someone to get informations about him (@ him)").then(function (msg) {
-                    call.bot.deleteMyMessage(msg, 10 * 1000)
-                })
-                return;
-            }
-            var infomember = message.mentions.members.first();
+            let userArray = message.content.split(" ");
+            let userArgs = userArray.slice(1);
+            let infomember = message.mentions.members.first() || message.guild.members.cache.get(userArgs[0]) || message.guild.members.cache.find(x => x.user.username.toLowerCase() === userArgs.slice(0).join(" ") || x.user.username === userArgs[0]) || message.member;
+
             var infouser = infomember.user;
             var usercreated_date = call.bot.moment(infouser.createdTimestamp).format("DD-MM-YYYY HH:mm:ss");
             var userjoining_date = call.bot.moment(infomember.joinedTimestamp).format("DD-MM-YYYY HH:mm:ss");
