@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "dblapi.js": "2.4.1",
-    "discord.js": "12.5.3",
+    "discord.js": "13.5.1",
     "erlpack": "0.1.3",
     "ffmpeg": "0.0.4",
     "ffmpeg-binaries": "4.0.0",
